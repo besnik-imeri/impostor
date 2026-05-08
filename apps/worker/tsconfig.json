@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["@cloudflare/workers-types", "vitest/globals"],
+    "paths": {
+      "@imposter/domain": ["../../packages/domain/src"]
+    }
+  },
+  "include": ["src", "tests", "wrangler.jsonc"]
+}

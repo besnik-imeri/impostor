@@ -1,0 +1,14 @@
+node_modules
+dist
+coverage
+.env
+.env.*
+!.env.example
+.wrangler
+.codex-logs
+.dev.vars
+playwright-report
+test-results
+*.local
+*.log
+*.tsbuildinfo

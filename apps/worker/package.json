@@ -1,0 +1,21 @@
+{
+  "name": "@imposter/worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local --port 8787",
+    "build": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@imposter/domain": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260508.0",
+    "vitest": "^4.0.0",
+    "wrangler": "^4.0.0"
+  }
+}
