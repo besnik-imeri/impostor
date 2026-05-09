@@ -1,5 +1,5 @@
 {
-  "name": "imposter",
+  "name": "impostor",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -9,15 +9,15 @@
     "pnpm": ">=11"
   },
   "scripts": {
-    "dev": "corepack pnpm --parallel --filter @imposter/worker --filter @imposter/web dev",
+    "dev": "corepack pnpm --filter @impostor/domain build && corepack pnpm --parallel --filter @impostor/worker --filter @impostor/web dev",
     "build": "corepack pnpm -r build",
     "typecheck": "corepack pnpm -r typecheck",
     "lint": "eslint . --max-warnings=0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "corepack pnpm -r --if-present test",
-    "test:e2e": "corepack pnpm --filter @imposter/web test:e2e",
-    "deploy": "corepack pnpm --filter @imposter/worker deploy && corepack pnpm --filter @imposter/web deploy"
+    "test:e2e": "corepack pnpm --filter @impostor/web test:e2e",
+    "deploy": "corepack pnpm --filter @impostor/worker deploy && corepack pnpm --filter @impostor/web deploy"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

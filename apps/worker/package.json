@@ -1,5 +1,5 @@
 {
-  "name": "@imposter/worker",
+  "name": "@impostor/worker",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@imposter/domain": "workspace:*"
+    "@impostor/domain": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260508.0",

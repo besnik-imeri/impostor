@@ -1,6 +1,6 @@
 import type { RoomSessionResponse } from "./api";
 
-const STORAGE_KEY = "imposter.room-session";
+const STORAGE_KEY = "impostor.room-session";
 
 export interface StoredRoomSession {
   code: string;

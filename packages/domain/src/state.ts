@@ -251,14 +251,14 @@ export function startNextRound(
     throw new GameRuleError("INVALID_CATEGORY", "The selected category is not available.");
   }
 
-  const imposter = randomItem(state.players, rng);
+  const impostor = randomItem(state.players, rng);
   const startingSpeaker = randomItem(state.players, rng);
   const secretWord = randomItem(category.words, rng);
   const round: RoundState = {
     id: `round-${nextRoundNumber}`,
     number: nextRoundNumber,
     categoryId: category.id,
-    imposterId: imposter.id,
+    impostorId: impostor.id,
     secretWord,
     startingSpeakerId: startingSpeaker.id,
     startedAt: now,
@@ -351,7 +351,7 @@ export function createAccusation(
   const resolution = scoreRound({
     mode: state.config.mode,
     players: state.players,
-    imposterId: round.imposterId,
+    impostorId: round.impostorId,
     secretWord: round.secretWord,
     accusation,
     suspicions: round.suspicions,
@@ -371,7 +371,7 @@ export function resolveTimerExpiry(state: RoomState, now: number): RoomState {
   const resolution = scoreRound({
     mode: state.config.mode,
     players: state.players,
-    imposterId: round.imposterId,
+    impostorId: round.impostorId,
     secretWord: round.secretWord,
     suspicions: round.suspicions,
     resolvedAt: now
@@ -434,18 +434,18 @@ export function buildPrivateSnapshot(state: RoomState, playerId: string): Privat
     };
   }
 
-  const role = currentRound.imposterId === playerId ? "imposter" : "non-imposter";
+  const role = currentRound.impostorId === playerId ? "impostor" : "non-impostor";
   const roundResolved = Boolean(currentRound.resolution);
 
   return {
     playerId,
     isHost: player.isHost,
     role,
-    visibleWord: role === "imposter" && !roundResolved ? "IMPOSTER" : currentRound.secretWord,
+    visibleWord: role === "impostor" && !roundResolved ? "IMPOSTOR" : currentRound.secretWord,
     ...(roundResolved
       ? {
           secretWord: currentRound.secretWord,
-          imposterId: currentRound.imposterId
+          impostorId: currentRound.impostorId
         }
       : {})
   };

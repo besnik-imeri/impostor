@@ -13,8 +13,8 @@ import {
   setPlayerConnected,
   setPlayerReady,
   startNextRound
-} from "@imposter/domain";
-import type { RoomState } from "@imposter/domain";
+} from "@impostor/domain";
+import type { RoomState } from "@impostor/domain";
 import { emptyResponse, jsonResponse, readJson } from "./http";
 import { createId, generateRoomCode } from "./ids";
 import type {

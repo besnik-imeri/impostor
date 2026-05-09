@@ -4,7 +4,7 @@ import type {
   PrivatePlayerSnapshot,
   PublicRoomSnapshot,
   RoomConfig
-} from "@imposter/domain";
+} from "@impostor/domain";
 
 export interface Env {
   ROOMS: DurableObjectNamespace;

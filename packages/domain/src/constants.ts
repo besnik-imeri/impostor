@@ -1,6 +1,6 @@
 import type { AvatarId, PlayerColor } from "./types";
 
-export const PRODUCT_NAME = "Imposter";
+export const PRODUCT_NAME = "Impostor";
 
 export const PLAYER_LIMITS = {
   min: 3,
@@ -26,30 +26,42 @@ export const DEFAULT_ROOM_CONFIG = {
 } as const;
 
 export const AVATARS: readonly AvatarId[] = [
-  "comet",
-  "spark",
-  "mask",
-  "moon",
-  "pulse",
-  "orbit",
-  "nova",
-  "echo",
-  "riddle",
-  "cipher",
-  "mimic",
-  "glimmer"
+  "boy-1",
+  "boy-2",
+  "boy-3",
+  "boy-4",
+  "boy-5",
+  "boy-6",
+  "boy-7",
+  "boy-8",
+  "boy-9",
+  "boy-10",
+  "boy-11",
+  "boy-12",
+  "girl-1",
+  "girl-2",
+  "girl-3",
+  "girl-4",
+  "girl-5",
+  "girl-6",
+  "girl-7",
+  "girl-8",
+  "girl-9",
+  "girl-10",
+  "girl-11",
+  "girl-12"
 ];
 
 export const PLAYER_COLORS: readonly PlayerColor[] = [
-  "#2563eb",
-  "#dc2626",
-  "#059669",
-  "#d97706",
+  "#276ef1",
+  "#e4475d",
+  "#13a47a",
+  "#f28c28",
   "#7c3aed",
-  "#0891b2",
-  "#be123c",
+  "#0f9bb7",
+  "#c9184a",
   "#4f46e5",
-  "#15803d",
+  "#198754",
   "#9333ea",
   "#0f766e",
   "#b45309"

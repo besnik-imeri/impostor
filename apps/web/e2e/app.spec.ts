@@ -1,9 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-test("home screen exposes host and join flows on mobile", async ({ page }) => {
+test("landing page routes into the play setup on mobile", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: /run the round/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Impostor" })).toBeVisible();
+  await page.getByRole("link", { name: "Start playing" }).click();
+  await expect(page).toHaveURL(/\/play/u);
   await expect(page.getByRole("button", { name: "Host" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Join" })).toBeVisible();
 
@@ -11,8 +13,15 @@ test("home screen exposes host and join flows on mobile", async ({ page }) => {
   await expect(page.getByLabel("Room code")).toBeVisible();
 });
 
+test("legacy room query opens the play join flow", async ({ page }) => {
+  await page.goto("/?room=ABC123");
+
+  await expect(page).toHaveURL(/\/play\?room=ABC123/u);
+  await expect(page.getByLabel("Room code")).toHaveValue("ABC123");
+});
+
 test("host can create a room and start a three-player round", async ({ browser, page }) => {
-  await page.goto("/");
+  await page.goto("/play");
   await page.getByLabel("Nickname").fill("Host");
   await page.getByRole("button", { name: "Create room" }).click();
 
@@ -26,12 +35,12 @@ test("host can create a room and start a three-player round", async ({ browser, 
   const playerThree = await playerThreeContext.newPage();
 
   try {
-    await playerTwo.goto(`/?room=${roomCode}`);
+    await playerTwo.goto(`/play?room=${roomCode}`);
     await playerTwo.getByLabel("Nickname").fill("Blair");
     await playerTwo.getByRole("button", { name: "Join room" }).click();
     await expect(playerTwo.getByText("Live")).toBeVisible();
 
-    await playerThree.goto(`/?room=${roomCode}`);
+    await playerThree.goto(`/play?room=${roomCode}`);
     await playerThree.getByLabel("Nickname").fill("Casey");
     await playerThree.getByRole("button", { name: "Join room" }).click();
     await expect(playerThree.getByText("Live")).toBeVisible();

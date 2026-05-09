@@ -1,6 +1,6 @@
-# Imposter
+# Impostor
 
-Imposter is a mobile-first web party game for in-person social deduction. One host creates a room, players join by code, QR, or link, and the app handles private roles, secret words, timers, suspicions, accusations, scoring, and the leaderboard.
+Impostor is a mobile-first web party game for in-person social deduction. One host creates a room, players join by code, QR, or link, and the app handles private roles, secret words, timers, suspicions, accusations, scoring, and the leaderboard.
 
 ## Current Scope
 
@@ -8,9 +8,13 @@ Imposter is a mobile-first web party game for in-person social deduction. One ho
 - In-person play only.
 - Room-scoped profiles; no accounts.
 - MVP modes: Accusation and Suspicion.
+- Public landing page at `/`.
+- Playable room flow at `/play`.
+- Room invite links use `/play?room=CODE`; old `/?room=CODE` links remain supported.
 - Cloudflare Pages for the web app.
 - Cloudflare Workers + Durable Objects for authoritative realtime rooms.
 - Curated word lists stored in code.
+- App-owned avatar assets in `apps/web/public/avatars`.
 
 ## Monorepo Layout
 
@@ -36,6 +40,8 @@ pnpm dev
 ```
 
 The web app runs on `http://127.0.0.1:5173`. The Worker runs on `http://127.0.0.1:8787`, and Vite proxies `/api` requests to it.
+
+Use `http://127.0.0.1:5173/` for the landing page and `http://127.0.0.1:5173/play` for the game shell.
 
 For local Worker development, create `apps/worker/.dev.vars`:
 

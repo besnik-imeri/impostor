@@ -1,5 +1,5 @@
 {
-  "name": "@imposter/web",
+  "name": "@impostor/web",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,10 +10,10 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --config vitest.config.ts",
     "test:e2e": "playwright test",
-    "deploy": "wrangler pages deploy dist --project-name imposter"
+    "deploy": "wrangler pages deploy dist --project-name impostor"
   },
   "dependencies": {
-    "@imposter/domain": "workspace:*",
+    "@impostor/domain": "workspace:*",
     "@vitejs/plugin-react": "^5.0.0",
     "lucide-react": "^0.555.0",
     "qrcode": "^1.5.4",

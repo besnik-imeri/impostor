@@ -11,7 +11,7 @@ import type {
 interface ScoreRoundInput {
   mode: GameMode;
   players: readonly PlayerProfile[];
-  imposterId: string;
+  impostorId: string;
   secretWord: string;
   resolvedAt: number;
   accusation?: Accusation;
@@ -50,41 +50,41 @@ class DeltaBuilder {
 
 export function scoreRound(input: ScoreRoundInput): RoundResolution {
   const builder = new DeltaBuilder();
-  const nonImposters = input.players.filter((player) => player.id !== input.imposterId);
-  const accusationCorrect = input.accusation?.accusedId === input.imposterId;
-  const outcome: RoundOutcome = accusationCorrect ? "imposter-caught" : "imposter-got-away";
+  const nonImpostors = input.players.filter((player) => player.id !== input.impostorId);
+  const accusationCorrect = input.accusation?.accusedId === input.impostorId;
+  const outcome: RoundOutcome = accusationCorrect ? "impostor-caught" : "impostor-got-away";
 
   if (input.accusation) {
     if (accusationCorrect) {
       builder.add(input.accusation.accuserId, 2, "Correct accusation");
 
       if (input.mode === "accusation") {
-        for (const player of nonImposters) {
+        for (const player of nonImpostors) {
           if (player.id !== input.accusation.accuserId) {
-            builder.add(player.id, 1, "Team found the imposter");
+            builder.add(player.id, 1, "Team found the impostor");
           }
         }
       }
 
-      builder.add(input.imposterId, -2, "Accused as imposter");
+      builder.add(input.impostorId, -2, "Accused as impostor");
     } else {
       builder.add(input.accusation.accuserId, -2, "Wrong accusation");
       builder.add(input.accusation.accusedId, -1, "Wrongfully accused");
-      builder.add(input.imposterId, 3, "Imposter got away");
+      builder.add(input.impostorId, 3, "Impostor got away");
     }
   } else {
-    builder.add(input.imposterId, 3, "Timer expired; imposter got away");
+    builder.add(input.impostorId, 3, "Timer expired; impostor got away");
   }
 
   if (input.mode === "suspicion") {
     for (const suspicion of input.suspicions) {
-      if (suspicion.suspectingPlayerId === input.imposterId) {
+      if (suspicion.suspectingPlayerId === input.impostorId) {
         continue;
       }
 
-      if (suspicion.targetPlayerId === input.imposterId) {
-        builder.add(suspicion.suspectingPlayerId, 1, "Suspected the imposter");
-        builder.add(input.imposterId, -1, "Was suspected");
+      if (suspicion.targetPlayerId === input.impostorId) {
+        builder.add(suspicion.suspectingPlayerId, 1, "Suspected the impostor");
+        builder.add(input.impostorId, -1, "Was suspected");
       } else {
         builder.add(suspicion.suspectingPlayerId, -1, "Suspected the wrong player");
       }
@@ -97,7 +97,7 @@ export function scoreRound(input: ScoreRoundInput): RoundResolution {
     reason: input.accusation ? "accusation" : "timer",
     outcome,
     resolvedAt: input.resolvedAt,
-    imposterId: input.imposterId,
+    impostorId: input.impostorId,
     secretWord: input.secretWord,
     ...(input.accusation
       ? {
@@ -107,7 +107,7 @@ export function scoreRound(input: ScoreRoundInput): RoundResolution {
       : {}),
     correctAccusation: Boolean(accusationCorrect),
     scoreDeltas,
-    summary: outcome === "imposter-caught" ? "The imposter was caught." : "The imposter got away."
+    summary: outcome === "impostor-caught" ? "The impostor was caught." : "The impostor got away."
   };
 }
 

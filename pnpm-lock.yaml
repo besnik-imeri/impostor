@@ -40,7 +40,7 @@ importers:
 
   apps/web:
     dependencies:
-      "@imposter/domain":
+      "@impostor/domain":
         specifier: workspace:*
         version: link:../../packages/domain
       "@vitejs/plugin-react":
@@ -92,7 +92,7 @@ importers:
 
   apps/worker:
     dependencies:
-      "@imposter/domain":
+      "@impostor/domain":
         specifier: workspace:*
         version: link:../../packages/domain
     devDependencies:

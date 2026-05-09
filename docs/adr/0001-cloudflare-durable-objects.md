@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Imposter needs authoritative realtime game rooms with private per-player state. The MVP should avoid paid databases and avoid splitting room state across multiple services too early.
+Impostor needs authoritative realtime game rooms with private per-player state. The MVP should avoid paid databases and avoid splitting room state across multiple services too early.
 
 ## Decision
 

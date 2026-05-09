@@ -1,21 +1,33 @@
 export type GameMode = "accusation" | "suspicion";
 export type RoomPhase = "lobby" | "round" | "results" | "finished" | "cancelled";
-export type PlayerRole = "imposter" | "non-imposter";
+export type PlayerRole = "impostor" | "non-impostor";
 export type ResolutionReason = "accusation" | "timer";
-export type RoundOutcome = "imposter-caught" | "imposter-got-away";
+export type RoundOutcome = "impostor-caught" | "impostor-got-away";
 export type AvatarId =
-  | "comet"
-  | "spark"
-  | "mask"
-  | "moon"
-  | "pulse"
-  | "orbit"
-  | "nova"
-  | "echo"
-  | "riddle"
-  | "cipher"
-  | "mimic"
-  | "glimmer";
+  | "boy-1"
+  | "boy-2"
+  | "boy-3"
+  | "boy-4"
+  | "boy-5"
+  | "boy-6"
+  | "boy-7"
+  | "boy-8"
+  | "boy-9"
+  | "boy-10"
+  | "boy-11"
+  | "boy-12"
+  | "girl-1"
+  | "girl-2"
+  | "girl-3"
+  | "girl-4"
+  | "girl-5"
+  | "girl-6"
+  | "girl-7"
+  | "girl-8"
+  | "girl-9"
+  | "girl-10"
+  | "girl-11"
+  | "girl-12";
 
 export type PlayerColor = `#${string}`;
 
@@ -61,7 +73,7 @@ export interface RoundResolution {
   reason: ResolutionReason;
   outcome: RoundOutcome;
   resolvedAt: number;
-  imposterId: string;
+  impostorId: string;
   secretWord: string;
   accuserId?: string;
   accusedId?: string;
@@ -74,7 +86,7 @@ export interface RoundState {
   id: string;
   number: number;
   categoryId: string;
-  imposterId: string;
+  impostorId: string;
   secretWord: string;
   startingSpeakerId: string;
   startedAt: number;
@@ -135,5 +147,5 @@ export interface PrivatePlayerSnapshot {
   role?: PlayerRole;
   visibleWord?: string;
   secretWord?: string;
-  imposterId?: string;
+  impostorId?: string;
 }

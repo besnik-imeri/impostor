@@ -5,7 +5,7 @@ import {
   PLAYER_LIMITS,
   ROUND_LIMITS,
   WORD_CATEGORIES
-} from "@imposter/domain";
+} from "@impostor/domain";
 import type {
   AvatarId,
   GameMode,
@@ -14,19 +14,24 @@ import type {
   PublicPlayerSnapshot,
   PublicRoomSnapshot,
   RoomConfig
-} from "@imposter/domain";
+} from "@impostor/domain";
 import {
+  ArrowRight,
   Check,
   Clipboard,
-  Clock,
+  Crown,
   Eye,
   Flag,
+  Gamepad2,
+  KeyRound,
   LogOut,
   Play,
-  ShieldQuestion,
-  Users,
+  Sparkles,
+  TimerReset,
+  Trophy,
   Wifi,
-  WifiOff
+  WifiOff,
+  X
 } from "lucide-react";
 import QRCode from "qrcode";
 import {
@@ -54,8 +59,10 @@ import {
   storeRoomSession,
   type StoredRoomSession
 } from "./lib/session";
+import { getAvatarLabel } from "./lib/avatars";
 
 type ConnectionState = "idle" | "connecting" | "open" | "closed" | "error";
+type SetupPanel = "host" | "join";
 
 interface ProfileDraft {
   nickname: string;
@@ -63,14 +70,31 @@ interface ProfileDraft {
   color: PlayerColor;
 }
 
+interface AppRoute {
+  screen: "landing" | "play";
+  initialRoomCode: string;
+  forceJoin: boolean;
+}
+
 const modeOptions: readonly { label: string; value: GameMode }[] = [
   { label: "Accusation", value: "accusation" },
   { label: "Suspicion", value: "suspicion" }
 ];
 
-const fallbackAvatar = AVATARS[0] ?? "comet";
-const fallbackColor = PLAYER_COLORS[0] ?? "#2563eb";
-const secondAvatar = AVATARS[1] ?? fallbackAvatar;
+const avatarGroups: readonly { label: string; avatars: readonly AvatarId[] }[] = [
+  {
+    label: "Boy avatars",
+    avatars: AVATARS.filter((avatar) => avatar.startsWith("boy-"))
+  },
+  {
+    label: "Girl avatars",
+    avatars: AVATARS.filter((avatar) => avatar.startsWith("girl-"))
+  }
+];
+
+const fallbackAvatar = AVATARS[0] ?? "boy-1";
+const fallbackColor = PLAYER_COLORS[0] ?? "#276ef1";
+const secondAvatar = AVATARS.find((avatar) => avatar.startsWith("girl-")) ?? fallbackAvatar;
 const secondColor = PLAYER_COLORS[1] ?? fallbackColor;
 
 const defaultProfile: ProfileDraft = {
@@ -80,7 +104,143 @@ const defaultProfile: ProfileDraft = {
 };
 
 export function App() {
-  const initialRoomCode = new URLSearchParams(window.location.search).get("room") ?? "";
+  const route = getRoute();
+
+  return route.screen === "play" ? (
+    <PlayApp forceJoin={route.forceJoin} initialRoomCode={route.initialRoomCode} />
+  ) : (
+    <LandingPage />
+  );
+}
+
+function getRoute(): AppRoute {
+  const url = new URL(window.location.href);
+  const initialRoomCode = (url.searchParams.get("room") ?? "").toUpperCase();
+
+  if (url.pathname === "/play") {
+    return {
+      screen: "play",
+      initialRoomCode,
+      forceJoin: Boolean(initialRoomCode) || url.searchParams.get("join") === "1"
+    };
+  }
+
+  if (initialRoomCode) {
+    const nextUrl = new URL("/play", window.location.origin);
+    nextUrl.searchParams.set("room", initialRoomCode);
+    window.history.replaceState(null, "", nextUrl.toString());
+    return {
+      screen: "play",
+      initialRoomCode,
+      forceJoin: true
+    };
+  }
+
+  return {
+    screen: "landing",
+    initialRoomCode: "",
+    forceJoin: false
+  };
+}
+
+function LandingPage() {
+  return (
+    <main className="landing-shell">
+      <nav className="landing-nav" aria-label="Primary navigation">
+        <a className="brand-lockup landing-brand" href="/">
+          <span className="brand-mark">IM</span>
+          <span>Impostor</span>
+        </a>
+        <div className="landing-nav-links">
+          <a href="#how-it-works">How it works</a>
+          <a href="#modes">Modes</a>
+          <a className="nav-play-link" href="/play">
+            Play
+          </a>
+        </div>
+      </nav>
+
+      <section className="landing-hero">
+        <div className="landing-copy">
+          <h1>Impostor</h1>
+          <p>
+            A fast social deduction game for the table. Everyone gets the secret word except one
+            player, and the room turns into a friendly hunt for the bluff.
+          </p>
+          <div className="landing-actions">
+            <a className="primary-link" href="/play">
+              Start playing
+              <ArrowRight size={19} />
+            </a>
+            <a className="secondary-link" href="/play?join=1">
+              Join with code
+            </a>
+          </div>
+        </div>
+
+        <div className="mystery-table" aria-label="Illustrated social deduction table scene">
+          <div className="table-card secret-card">
+            <span>Secret word</span>
+            <strong>?</strong>
+          </div>
+          <div className="table-card accusation-card">
+            <Flag size={22} />
+            <span>Accuse wisely</span>
+          </div>
+          <AvatarMark avatar="girl-1" color="#e4475d" size="xl" />
+          <AvatarMark avatar="boy-5" color="#276ef1" size="xl" />
+          <AvatarMark avatar="girl-8" color="#13a47a" size="xl" />
+          <AvatarMark avatar="boy-10" color="#f28c28" size="xl" />
+          <div className="spotlight-ring" />
+        </div>
+      </section>
+
+      <section className="landing-band" id="how-it-works">
+        <div>
+          <h2>Pass the phone, keep the secret.</h2>
+          <p>
+            Create a room, invite the table by QR or code, reveal private roles, then let the app
+            handle timers, accusations, scoring, and the leaderboard.
+          </p>
+        </div>
+        <div className="step-list" aria-label="How Impostor works">
+          <div>
+            <KeyRound size={22} />
+            <strong>Create</strong>
+            <span>Host a room with a word category and round timer.</span>
+          </div>
+          <div>
+            <Sparkles size={22} />
+            <strong>Reveal</strong>
+            <span>Players see either the secret word or the impostor role.</span>
+          </div>
+          <div>
+            <Trophy size={22} />
+            <strong>Resolve</strong>
+            <span>Accuse, score, and move cleanly into the next round.</span>
+          </div>
+        </div>
+      </section>
+
+      <section className="mode-band" id="modes">
+        <div className="mode-panel">
+          <Flag size={28} />
+          <h2>Accusation</h2>
+          <p>One bold call can end the round immediately. Great for fast, loud tables.</p>
+        </div>
+        <div className="mode-panel is-suspicion">
+          <Eye size={28} />
+          <h2>Suspicion</h2>
+          <p>
+            Each player locks one suspicion before the final accusation. Better for longer reads.
+          </p>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function PlayApp({ initialRoomCode, forceJoin }: { initialRoomCode: string; forceJoin: boolean }) {
   const socketRef = useRef<WebSocket | undefined>(undefined);
   const [storedSession, setStoredSession] = useState<StoredRoomSession | undefined>(() =>
     readStoredRoomSession()
@@ -172,6 +332,7 @@ export function App() {
     setPrivateSnapshot(undefined);
     setConnectionState("idle");
     setError(undefined);
+    window.history.replaceState(null, "", "/play");
   }, []);
 
   return (
@@ -186,10 +347,11 @@ export function App() {
           onLeave={leaveRoom}
         />
       ) : (
-        <HomeScreen
-          initialRoomCode={initialRoomCode}
+        <PlayHomeScreen
           connectionState={connectionState}
           error={error}
+          forceJoin={forceJoin}
+          initialRoomCode={initialRoomCode}
           onCreate={async (input) => acceptSession(await createRoom(input))}
           onJoin={async (code, input) => acceptSession(await joinRoom(code, input))}
           onClearError={() => setError(undefined)}
@@ -199,8 +361,9 @@ export function App() {
   );
 }
 
-function HomeScreen({
+function PlayHomeScreen({
   initialRoomCode,
+  forceJoin,
   connectionState,
   error,
   onCreate,
@@ -208,44 +371,24 @@ function HomeScreen({
   onClearError
 }: {
   initialRoomCode: string;
+  forceJoin: boolean;
   connectionState: ConnectionState;
   error: string | undefined;
   onCreate: Parameters<typeof CreateRoomForm>[0]["onCreate"];
   onJoin: Parameters<typeof JoinRoomForm>[0]["onJoin"];
   onClearError: () => void;
 }) {
-  const [activePanel, setActivePanel] = useState<"host" | "join">(
-    initialRoomCode ? "join" : "host"
+  const [activePanel, setActivePanel] = useState<SetupPanel>(
+    initialRoomCode || forceJoin ? "join" : "host"
   );
 
   return (
-    <section className="home-grid">
-      <div className="brand-panel">
-        <div className="brand-lockup">
+    <section className="play-home">
+      <div className="setup-panel play-setup-panel">
+        <a className="brand-lockup setup-brand" href="/">
           <span className="brand-mark">IM</span>
-          <span>Imposter</span>
-        </div>
-        <h1>Run the round, hide the word, catch the bluff.</h1>
-        <p>
-          A mobile-first room for in-person social deduction. The app handles roles, words, timers,
-          suspicions, accusations, and scoring while the group plays face-to-face.
-        </p>
-        <div className="hero-stats" aria-label="MVP game limits">
-          <span>
-            <Users size={18} />
-            3-12 players
-          </span>
-          <span>
-            <Clock size={18} />
-            30-600 sec
-          </span>
-          <span>
-            <ShieldQuestion size={18} />1 imposter
-          </span>
-        </div>
-      </div>
-
-      <div className="setup-panel">
+          <span>Impostor</span>
+        </a>
         <div className="panel-tabs" role="tablist" aria-label="Choose setup flow">
           <button
             aria-selected={activePanel === "host"}
@@ -283,6 +426,22 @@ function HomeScreen({
 
         {error ? <p className="form-error">{error}</p> : null}
       </div>
+
+      <aside className="play-aside">
+        <div className="play-aside-copy">
+          <h1>Set the table.</h1>
+          <p>
+            Pick a face, invite the group, and let the app handle the secret word, timer, scoring,
+            and next round.
+          </p>
+        </div>
+        <div className="play-avatar-strip" aria-hidden="true">
+          <AvatarMark avatar="girl-5" color="#e4475d" size="lg" />
+          <AvatarMark avatar="boy-3" color="#276ef1" size="lg" />
+          <AvatarMark avatar="girl-11" color="#13a47a" size="lg" />
+          <AvatarMark avatar="boy-8" color="#f28c28" size="lg" />
+        </div>
+      </aside>
     </section>
   );
 }
@@ -438,17 +597,24 @@ function ProfileFields({
       </label>
       <fieldset className="field-group">
         <legend>Avatar</legend>
-        <div className="avatar-picker">
-          {AVATARS.map((avatar) => (
-            <button
-              aria-label={`Use ${avatar} avatar`}
-              className={profile.avatar === avatar ? "is-selected" : ""}
-              key={avatar}
-              type="button"
-              onClick={() => onChange({ ...profile, avatar })}
-            >
-              <AvatarMark avatar={avatar} color={profile.color} size="sm" />
-            </button>
+        <div className="avatar-groups">
+          {avatarGroups.map((group) => (
+            <div className="avatar-group" key={group.label}>
+              <div className="avatar-group-title">{group.label}</div>
+              <div className="avatar-picker">
+                {group.avatars.map((avatar) => (
+                  <button
+                    aria-label={`Use ${getAvatarLabel(avatar)}`}
+                    className={profile.avatar === avatar ? "is-selected" : ""}
+                    key={avatar}
+                    type="button"
+                    onClick={() => onChange({ ...profile, avatar })}
+                  >
+                    <AvatarMark avatar={avatar} color={profile.color} size="picker" />
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       </fieldset>
@@ -495,6 +661,8 @@ function RoomScreen({
       ),
     [room.players]
   );
+  const showResults =
+    (room.phase === "results" || room.phase === "finished") && Boolean(currentRound?.resolution);
 
   if (!me) {
     return (
@@ -508,7 +676,7 @@ function RoomScreen({
   }
 
   return (
-    <section className="room-layout">
+    <section className={`room-layout room-phase-${room.phase}`}>
       <RoomHeader
         connectionState={connectionState}
         me={me}
@@ -521,15 +689,13 @@ function RoomScreen({
 
       {room.phase === "lobby" ? (
         <LobbyPanel me={me} room={room} onSend={onSend} />
+      ) : showResults ? (
+        <ResultsPanel leaderboard={leaderboard} me={me} room={room} onSend={onSend} />
       ) : currentRound ? (
         <RoundPanel me={me} privateSnapshot={privateSnapshot} room={room} onSend={onSend} />
       ) : null}
 
-      {(room.phase === "results" || room.phase === "finished") && currentRound?.resolution ? (
-        <ResultsPanel leaderboard={leaderboard} me={me} room={room} onSend={onSend} />
-      ) : (
-        <Leaderboard players={leaderboard} />
-      )}
+      {showResults ? null : <Leaderboard players={leaderboard} />}
     </section>
   );
 }
@@ -548,8 +714,8 @@ function RoomHeader({
   onLeave: () => void;
 }) {
   const joinUrl = useMemo(() => {
-    const url = new URL(window.location.href);
-    url.search = `?room=${room.code}`;
+    const url = new URL("/play", window.location.origin);
+    url.searchParams.set("room", room.code);
     return url.toString();
   }, [room.code]);
   const [qrCode, setQrCode] = useState<string>("");
@@ -560,7 +726,7 @@ function RoomHeader({
       margin: 1,
       width: 180,
       color: {
-        dark: "#0f172a",
+        dark: "#171426",
         light: "#ffffff"
       }
     }).then(setQrCode);
@@ -568,7 +734,7 @@ function RoomHeader({
 
   return (
     <header className="room-header">
-      <div>
+      <div className="room-code-block">
         <div className="room-code-label">Room code</div>
         <div className="room-code">{room.code}</div>
       </div>
@@ -613,18 +779,23 @@ function LobbyPanel({
   me: PublicPlayerSnapshot;
   onSend: (command: ClientCommand) => void;
 }) {
+  const readyCount = room.players.filter((player) => player.ready).length;
   const allReady =
     room.players.length >= PLAYER_LIMITS.min && room.players.every((player) => player.ready);
   const canHostStart = me.isHost && allReady;
+  const startHint =
+    room.players.length < PLAYER_LIMITS.min
+      ? `${PLAYER_LIMITS.min - room.players.length} more player needed`
+      : "Waiting for every player to ready up";
 
   return (
-    <section className="phase-panel">
+    <section className="phase-panel lobby-panel">
       <div className="phase-heading">
         <div>
-          <h2>Lobby</h2>
+          <span className="round-label">Lobby</span>
+          <h2>Gather the suspects.</h2>
           <p>
-            {room.players.length}/{room.config.maxPlayers} players joined. Everyone needs to ready
-            up.
+            {room.players.length}/{room.config.maxPlayers} joined. {readyCount} ready.
           </p>
         </div>
         <button
@@ -643,15 +814,18 @@ function LobbyPanel({
       </div>
       <PlayerGrid players={room.players} />
       {me.isHost ? (
-        <button
-          className="primary-button full-width"
-          disabled={!canHostStart}
-          type="button"
-          onClick={() => onSend({ type: "host.game.start" })}
-        >
-          <Play size={18} />
-          Start game
-        </button>
+        <div className="host-start-block">
+          <button
+            className="primary-button full-width"
+            disabled={!canHostStart}
+            type="button"
+            onClick={() => onSend({ type: "host.game.start" })}
+          >
+            <Play size={18} />
+            Start game
+          </button>
+          {!canHostStart ? <span>{startHint}</span> : <span>All set. Start the reveal.</span>}
+        </div>
       ) : null}
     </section>
   );
@@ -670,6 +844,9 @@ function RoundPanel({
 }) {
   const round = room.currentRound;
   const now = useNow(250);
+  const [pendingAccusation, setPendingAccusation] = useState<
+    { roundId: string; playerId: string } | undefined
+  >();
 
   if (!round) {
     return null;
@@ -677,20 +854,40 @@ function RoundPanel({
 
   const startingSpeaker = room.players.find((player) => player.id === round.startingSpeakerId);
   const mySuspicion = round.suspicions.find((suspicion) => suspicion.suspectingPlayerId === me.id);
+  const pendingAccusationId =
+    pendingAccusation?.roundId === round.id ? pendingAccusation.playerId : undefined;
+  const pendingPlayer = pendingAccusation
+    ? room.players.find((player) => player.id === pendingAccusationId)
+    : undefined;
   const remainingMs = Math.max(0, round.endsAt - now);
   const canAct = room.phase === "round" && !round.resolution;
+  const isImpostor = privateSnapshot.role === "impostor";
 
   return (
-    <section className="phase-panel">
+    <section className="phase-panel round-panel">
+      <div className="round-kicker">
+        <span>Round {round.number}</span>
+        <strong>{room.config.mode === "suspicion" ? "Suspicion mode" : "Accusation mode"}</strong>
+      </div>
       <div className="round-status">
-        <div>
-          <span className="round-label">Round {round.number}</span>
+        <div className={isImpostor ? "role-card is-impostor" : "role-card is-word"}>
+          <span>{isImpostor ? "You are the impostor" : "Your secret word"}</span>
           <h2>{privateSnapshot.visibleWord ?? "Waiting for reveal"}</h2>
           <p>
-            Starting speaker: <strong>{startingSpeaker?.nickname ?? "Unknown"}</strong>
+            {isImpostor
+              ? "Blend in, ask careful questions, and avoid a confident accusation."
+              : "Protect the word without making your clues too obvious."}
           </p>
         </div>
-        <TimerDial remainingMs={remainingMs} totalMs={room.config.roundDurationSeconds * 1000} />
+        <div className="round-side">
+          <TimerDial remainingMs={remainingMs} totalMs={room.config.roundDurationSeconds * 1000} />
+          <div className="speaker-chip">
+            <Gamepad2 size={17} />
+            <span>
+              Starting speaker: <strong>{startingSpeaker?.nickname ?? "Unknown"}</strong>
+            </span>
+          </div>
+        </div>
       </div>
 
       <div className="action-grid">
@@ -702,7 +899,7 @@ function RoundPanel({
             description={
               mySuspicion
                 ? "Suspicion locked for this round."
-                : "Add one non-retractable suspicion."
+                : "Mark one player. You cannot change it."
             }
           >
             {room.players
@@ -728,7 +925,7 @@ function RoundPanel({
           disabled={!canAct}
           icon={<Flag size={18} />}
           title="Accusation"
-          description="First valid accusation ends the round immediately."
+          description="Confirm before you call it. A valid accusation ends the round."
         >
           {room.players
             .filter((player) => player.id !== me.id)
@@ -737,16 +934,47 @@ function RoundPanel({
                 disabled={!canAct}
                 key={player.id}
                 player={player}
-                onClick={() =>
-                  onSend({
-                    type: "player.accuse.create",
-                    payload: { accusedPlayerId: player.id }
-                  })
-                }
+                selected={pendingAccusationId === player.id}
+                onClick={() => setPendingAccusation({ roundId: round.id, playerId: player.id })}
               />
             ))}
         </ActionSection>
       </div>
+
+      {pendingPlayer ? (
+        <div className="accuse-confirm" role="dialog" aria-labelledby="accuse-confirm-title">
+          <AvatarMark avatar={pendingPlayer.avatar} color={pendingPlayer.color} size="lg" />
+          <div>
+            <span>Final accusation</span>
+            <strong id="accuse-confirm-title">Accuse {pendingPlayer.nickname}?</strong>
+            <p>This resolves the round immediately.</p>
+          </div>
+          <div className="confirm-actions">
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => setPendingAccusation(undefined)}
+            >
+              <X size={17} />
+              Cancel
+            </button>
+            <button
+              className="danger-button"
+              type="button"
+              onClick={() => {
+                onSend({
+                  type: "player.accuse.create",
+                  payload: { accusedPlayerId: pendingPlayer.id }
+                });
+                setPendingAccusation(undefined);
+              }}
+            >
+              <Flag size={17} />
+              Accuse
+            </button>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -763,7 +991,8 @@ function ResultsPanel({
   onSend: (command: ClientCommand) => void;
 }) {
   const resolution = room.currentRound?.resolution;
-  const imposter = room.players.find((player) => player.id === resolution?.imposterId);
+  const impostor = room.players.find((player) => player.id === resolution?.impostorId);
+  const winner = leaderboard[0];
 
   if (!resolution) {
     return null;
@@ -772,12 +1001,15 @@ function ResultsPanel({
   return (
     <section className="phase-panel results-panel">
       <div className={`result-banner ${resolution.outcome}`}>
-        <span>{resolution.outcome === "imposter-caught" ? "Caught" : "Got away"}</span>
-        <h2>{resolution.summary}</h2>
-        <p>
-          Word: <strong>{resolution.secretWord}</strong>. Imposter:{" "}
-          <strong>{imposter?.nickname ?? "Unknown"}</strong>.
-        </p>
+        <div>
+          <span>{resolution.outcome === "impostor-caught" ? "Caught" : "Got away"}</span>
+          <h2>{resolution.summary}</h2>
+          <p>
+            Word: <strong>{resolution.secretWord}</strong>. Impostor:{" "}
+            <strong>{impostor?.nickname ?? "Unknown"}</strong>.
+          </p>
+        </div>
+        {impostor ? <AvatarMark avatar={impostor.avatar} color={impostor.color} size="xl" /> : null}
       </div>
       <div className="score-deltas">
         {resolution.scoreDeltas.map((delta) => {
@@ -802,7 +1034,11 @@ function ResultsPanel({
         </button>
       ) : null}
       {room.phase === "finished" ? (
-        <p className="final-note">Final winner: {leaderboard[0]?.nickname ?? "No winner"}</p>
+        <div className="final-note">
+          {winner ? <AvatarMark avatar={winner.avatar} color={winner.color} size="lg" /> : null}
+          <span>Final winner</span>
+          <strong>{winner?.nickname ?? "No winner"}</strong>
+        </div>
       ) : null}
     </section>
   );
@@ -812,13 +1048,21 @@ function PlayerGrid({ players }: { players: PublicPlayerSnapshot[] }) {
   return (
     <div className="player-grid">
       {players.map((player) => (
-        <div className="player-card" key={player.id}>
+        <div
+          className={`player-card ${player.ready ? "is-ready" : ""} ${
+            player.connected ? "" : "is-offline"
+          }`}
+          key={player.id}
+        >
           <AvatarMark avatar={player.avatar} color={player.color} />
           <div>
             <strong>{player.nickname}</strong>
             <span>{player.ready ? "Ready" : "Not ready"}</span>
           </div>
-          {player.ready ? <Check className="ready-icon" size={18} /> : null}
+          <div className="player-card-badges">
+            {player.isHost ? <Crown size={16} /> : null}
+            {player.ready ? <Check className="ready-icon" size={18} /> : null}
+          </div>
         </div>
       ))}
     </div>
@@ -828,7 +1072,10 @@ function PlayerGrid({ players }: { players: PublicPlayerSnapshot[] }) {
 function Leaderboard({ players }: { players: PublicPlayerSnapshot[] }) {
   return (
     <section className="leaderboard" aria-label="Leaderboard">
-      <h2>Leaderboard</h2>
+      <h2>
+        <Trophy size={19} />
+        Leaderboard
+      </h2>
       {players.map((player, index) => (
         <div className="leader-row" key={player.id}>
           <span>{index + 1}</span>
@@ -845,7 +1092,7 @@ function ActionSection({
   title,
   description,
   icon,
-  disabled: _disabled,
+  disabled,
   children
 }: {
   title: string;
@@ -855,7 +1102,7 @@ function ActionSection({
   children: ReactNode;
 }) {
   return (
-    <div className="action-section">
+    <div className={disabled ? "action-section is-disabled" : "action-section"}>
       <div className="action-heading">
         <span>{icon}</span>
         <div>
@@ -896,12 +1143,14 @@ function PlayerActionButton({
 function TimerDial({ remainingMs, totalMs }: { remainingMs: number; totalMs: number }) {
   const seconds = Math.ceil(remainingMs / 1000);
   const progress = totalMs > 0 ? remainingMs / totalMs : 0;
+  const urgencyClass = progress <= 0.2 ? "is-danger" : progress <= 0.45 ? "is-warning" : "";
 
   return (
     <div
-      className="timer-dial"
+      className={`timer-dial ${urgencyClass}`}
       style={{ "--progress": `${Math.max(0, Math.min(1, progress)) * 360}deg` } as CSSProperties}
     >
+      <TimerReset size={18} />
       <span>{seconds}</span>
       <small>sec</small>
     </div>

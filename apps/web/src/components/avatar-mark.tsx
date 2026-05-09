@@ -1,25 +1,10 @@
-import type { AvatarId, PlayerColor } from "@imposter/domain";
+import type { AvatarId, PlayerColor } from "@impostor/domain";
 import type { CSSProperties } from "react";
-
-const avatarLabels: Record<AvatarId, string> = {
-  comet: "Co",
-  spark: "Sp",
-  mask: "Ma",
-  moon: "Mo",
-  pulse: "Pu",
-  orbit: "Or",
-  nova: "No",
-  echo: "Ec",
-  riddle: "Ri",
-  cipher: "Ci",
-  mimic: "Mi",
-  glimmer: "Gl"
-};
 
 interface AvatarMarkProps {
   avatar: AvatarId;
   color: PlayerColor;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg" | "xl" | "picker";
 }
 
 export function AvatarMark({ avatar, color, size = "md" }: AvatarMarkProps) {
@@ -28,7 +13,7 @@ export function AvatarMark({ avatar, color, size = "md" }: AvatarMarkProps) {
       className={`avatar-mark avatar-mark-${size}`}
       style={{ "--avatar-color": color } as CSSProperties}
     >
-      {avatarLabels[avatar]}
+      <img alt="" aria-hidden="true" src={`/avatars/${avatar}.svg`} />
     </span>
   );
 }

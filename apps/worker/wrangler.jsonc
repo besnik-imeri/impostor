@@ -1,8 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "imposter-api",
+  "name": "impostor-api",
   "main": "src/index.ts",
-  "compatibility_date": "2026-05-08",
+  "compatibility_date": "2026-05-07",
   "durable_objects": {
     "bindings": [
       {

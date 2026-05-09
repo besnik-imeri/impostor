@@ -9,28 +9,28 @@ function players(): PlayerProfile[] {
     createPlayer({
       id: "p1",
       nickname: "Alex",
-      avatar: "comet",
+      avatar: "boy-1",
       color: "#2563eb",
       now
     }),
     createPlayer({
       id: "p2",
       nickname: "Blair",
-      avatar: "spark",
+      avatar: "girl-1",
       color: "#dc2626",
       now
     }),
     createPlayer({
       id: "p3",
       nickname: "Casey",
-      avatar: "mask",
+      avatar: "boy-2",
       color: "#059669",
       now
     }),
     createPlayer({
       id: "p4",
       nickname: "Devon",
-      avatar: "moon",
+      avatar: "girl-2",
       color: "#d97706",
       now
     })
@@ -51,14 +51,14 @@ describe("scoreRound", () => {
     const result = scoreRound({
       mode: "accusation",
       players: players(),
-      imposterId: "p2",
+      impostorId: "p2",
       secretWord: "Pizza",
       accusation,
       suspicions: [],
       resolvedAt: now
     });
 
-    expect(result.outcome).toBe("imposter-caught");
+    expect(result.outcome).toBe("impostor-caught");
     expect(pointsByPlayer(result.scoreDeltas)).toEqual({
       p1: 2,
       p2: -2,
@@ -67,7 +67,7 @@ describe("scoreRound", () => {
     });
   });
 
-  it("scores a wrong Accusation round as imposter got away", () => {
+  it("scores a wrong Accusation round as impostor got away", () => {
     const accusation: Accusation = {
       accuserId: "p1",
       accusedId: "p3",
@@ -76,14 +76,14 @@ describe("scoreRound", () => {
     const result = scoreRound({
       mode: "accusation",
       players: players(),
-      imposterId: "p2",
+      impostorId: "p2",
       secretWord: "Pizza",
       accusation,
       suspicions: [],
       resolvedAt: now
     });
 
-    expect(result.outcome).toBe("imposter-got-away");
+    expect(result.outcome).toBe("impostor-got-away");
     expect(pointsByPlayer(result.scoreDeltas)).toEqual({
       p1: -2,
       p2: 3,
@@ -91,24 +91,24 @@ describe("scoreRound", () => {
     });
   });
 
-  it("scores timer expiry as imposter got away", () => {
+  it("scores timer expiry as impostor got away", () => {
     const result = scoreRound({
       mode: "accusation",
       players: players(),
-      imposterId: "p2",
+      impostorId: "p2",
       secretWord: "Pizza",
       suspicions: [],
       resolvedAt: now
     });
 
     expect(result.reason).toBe("timer");
-    expect(result.outcome).toBe("imposter-got-away");
+    expect(result.outcome).toBe("impostor-got-away");
     expect(pointsByPlayer(result.scoreDeltas)).toEqual({
       p2: 3
     });
   });
 
-  it("scores Suspicion mode without team bonus for other non-imposters", () => {
+  it("scores Suspicion mode without team bonus for other non-impostors", () => {
     const accusation: Accusation = {
       accuserId: "p1",
       accusedId: "p2",
@@ -134,7 +134,7 @@ describe("scoreRound", () => {
     const result = scoreRound({
       mode: "suspicion",
       players: players(),
-      imposterId: "p2",
+      impostorId: "p2",
       secretWord: "Pizza",
       accusation,
       suspicions,
@@ -148,7 +148,7 @@ describe("scoreRound", () => {
     });
   });
 
-  it("scores Suspicion timer expiry with suspicion marks and imposter getaway", () => {
+  it("scores Suspicion timer expiry with suspicion marks and impostor getaway", () => {
     const suspicions: Suspicion[] = [
       {
         suspectingPlayerId: "p1",
@@ -164,13 +164,13 @@ describe("scoreRound", () => {
     const result = scoreRound({
       mode: "suspicion",
       players: players(),
-      imposterId: "p2",
+      impostorId: "p2",
       secretWord: "Pizza",
       suspicions,
       resolvedAt: now
     });
 
-    expect(result.outcome).toBe("imposter-got-away");
+    expect(result.outcome).toBe("impostor-got-away");
     expect(pointsByPlayer(result.scoreDeltas)).toEqual({
       p1: 1,
       p2: 2,

@@ -19,7 +19,7 @@ function player(id: string, nickname: string, isHost = false) {
   return createPlayer({
     id,
     nickname,
-    avatar: "comet",
+    avatar: "boy-1",
     color: "#2563eb",
     isHost,
     now
@@ -65,12 +65,12 @@ describe("room state", () => {
     expect(canStartGame(state)).toBe(true);
   });
 
-  it("selects one imposter, one word, and a starting speaker when a round starts", () => {
+  it("selects one impostor, one word, and a starting speaker when a round starts", () => {
     const state = startNextRound(readyLobby(), "host", now, createSeededRng(42));
     const round = state.rounds[0];
 
     expect(state.phase).toBe("round");
-    expect(round?.imposterId).toBeTruthy();
+    expect(round?.impostorId).toBeTruthy();
     expect(round?.secretWord).toBeTruthy();
     expect(round?.startingSpeakerId).toBeTruthy();
     expect(state.players.some((candidate) => candidate.id === round?.startingSpeakerId)).toBe(true);
@@ -86,23 +86,23 @@ describe("room state", () => {
 
   it("first valid accusation resolves the round and rejects later accusations", () => {
     let state = startNextRound(readyLobby(), "host", now, createSeededRng(2));
-    const imposterId = state.rounds[0]?.imposterId;
-    expect(imposterId).toBeTruthy();
+    const impostorId = state.rounds[0]?.impostorId;
+    expect(impostorId).toBeTruthy();
 
-    state = createAccusation(state, "p2", imposterId as string, now + 10);
+    state = createAccusation(state, "p2", impostorId as string, now + 10);
 
     expect(state.phase).toBe("results");
-    expect(state.rounds[0]?.resolution?.outcome).toBe("imposter-caught");
+    expect(state.rounds[0]?.resolution?.outcome).toBe("impostor-caught");
     expect(() => createAccusation(state, "p3", "p4", now + 11)).toThrow(/during a round/i);
   });
 
-  it("timer expiry resolves as imposter got away", () => {
+  it("timer expiry resolves as impostor got away", () => {
     let state = startNextRound(readyLobby(), "host", now, createSeededRng(7));
     const endsAt = state.rounds[0]?.endsAt ?? now;
     state = resolveTimerExpiry(state, endsAt);
 
     expect(state.phase).toBe("results");
     expect(state.rounds[0]?.resolution?.reason).toBe("timer");
-    expect(state.rounds[0]?.resolution?.outcome).toBe("imposter-got-away");
+    expect(state.rounds[0]?.resolution?.outcome).toBe("impostor-got-away");
   });
 });
