@@ -1,0 +1,12 @@
+https://impostor.localhost {
+	bind 127.0.0.1 ::1
+	tls internal
+
+	handle /api/* {
+		reverse_proxy 127.0.0.1:3401
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:3400
+	}
+}

@@ -1,0 +1,1963 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Impostor Architecture Map</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #09090b;
+        --bg-soft: #111114;
+        --panel: #17171c;
+        --panel-2: #202027;
+        --text: #f7f7f8;
+        --muted: #a1a1aa;
+        --line: #303039;
+        --strong-line: #484858;
+        --accent: #38bdf8;
+        --accent-2: #fb7185;
+        --accent-3: #a3e635;
+        --accent-4: #facc15;
+        --shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+        --radius: 8px;
+      }
+
+      html[data-theme="light"] {
+        color-scheme: light;
+        --bg: #f8fafc;
+        --bg-soft: #eef2f7;
+        --panel: #ffffff;
+        --panel-2: #f1f5f9;
+        --text: #0f172a;
+        --muted: #64748b;
+        --line: #d9e2ee;
+        --strong-line: #b8c4d4;
+        --accent: #0284c7;
+        --accent-2: #e11d48;
+        --accent-3: #3f8f22;
+        --accent-4: #b7791f;
+        --shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          linear-gradient(180deg, rgba(56, 189, 248, 0.1), transparent 360px),
+          var(--bg);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .shell {
+        display: grid;
+        grid-template-columns: 280px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 22px;
+        border-right: 1px solid var(--line);
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(18px);
+        overflow: auto;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .brand-mark {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border: 1px solid var(--strong-line);
+        border-radius: var(--radius);
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #fff;
+        font-weight: 900;
+        letter-spacing: 0;
+      }
+
+      .brand strong {
+        display: block;
+        font-size: 15px;
+      }
+
+      .brand span:last-child {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .nav {
+        display: grid;
+        gap: 4px;
+        margin: 18px 0;
+      }
+
+      .nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 10px;
+        border-radius: var(--radius);
+        color: var(--muted);
+        text-decoration: none;
+        transition:
+          background 0.18s ease,
+          color 0.18s ease;
+      }
+
+      .nav a:hover,
+      .nav a:focus-visible {
+        background: var(--panel);
+        color: var(--text);
+        outline: none;
+      }
+
+      .nav-icon {
+        width: 9px;
+        height: 9px;
+        border: 1px solid currentColor;
+        border-radius: 50%;
+      }
+
+      .sidebar-tools {
+        display: grid;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .search {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+        color: var(--text);
+      }
+
+      .toggle,
+      .small-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 36px;
+        padding: 8px 11px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+        color: var(--text);
+        cursor: pointer;
+        transition:
+          transform 0.16s ease,
+          border-color 0.16s ease,
+          background 0.16s ease;
+      }
+
+      .toggle:hover,
+      .small-button:hover {
+        transform: translateY(-1px);
+        border-color: var(--strong-line);
+        background: var(--panel-2);
+      }
+
+      main {
+        min-width: 0;
+        padding: 36px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+        gap: 24px;
+        align-items: stretch;
+        margin-bottom: 28px;
+      }
+
+      .hero-copy,
+      .status-card,
+      .section,
+      .component-card,
+      .flow-card,
+      .risk-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: color-mix(in srgb, var(--panel) 94%, transparent);
+        box-shadow: var(--shadow);
+      }
+
+      .hero-copy {
+        padding: 30px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        max-width: 900px;
+        font-size: clamp(40px, 6vw, 76px);
+      }
+
+      h2 {
+        font-size: clamp(24px, 3vw, 36px);
+      }
+
+      h3 {
+        font-size: 18px;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .lead {
+        max-width: 880px;
+        margin-top: 18px;
+        color: var(--muted);
+        font-size: 17px;
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 22px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 9px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--panel-2);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .chip strong {
+        color: var(--text);
+      }
+
+      .status-card {
+        display: grid;
+        gap: 14px;
+        padding: 22px;
+      }
+
+      .metric {
+        display: grid;
+        gap: 3px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .metric:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .metric strong {
+        font-size: 18px;
+      }
+
+      .section {
+        margin: 24px 0;
+        padding: 24px;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        align-items: flex-start;
+        margin-bottom: 20px;
+      }
+
+      .section-header p {
+        max-width: 780px;
+        margin-top: 8px;
+        color: var(--muted);
+      }
+
+      .diagram-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .diagram-frame {
+        position: relative;
+        height: min(660px, 72vh);
+        min-height: 420px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background:
+          linear-gradient(var(--line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--line) 1px, transparent 1px),
+          var(--bg-soft);
+        background-size: 34px 34px;
+        touch-action: none;
+      }
+
+      .diagram-frame svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        cursor: grab;
+      }
+
+      .diagram-frame.is-panning svg {
+        cursor: grabbing;
+      }
+
+      .diagram-node rect {
+        fill: var(--panel);
+        stroke: var(--strong-line);
+        stroke-width: 1.5;
+        rx: 8;
+        transition:
+          fill 0.15s ease,
+          stroke 0.15s ease,
+          transform 0.15s ease;
+      }
+
+      .diagram-node:hover rect,
+      .diagram-node.is-active rect {
+        fill: var(--panel-2);
+        stroke: var(--accent);
+      }
+
+      .diagram-node text {
+        fill: var(--text);
+        font-size: 14px;
+        font-weight: 750;
+        pointer-events: none;
+      }
+
+      .diagram-node .sub {
+        fill: var(--muted);
+        font-size: 11px;
+        font-weight: 550;
+      }
+
+      .edge {
+        stroke: color-mix(in srgb, var(--accent) 72%, var(--muted));
+        stroke-width: 2;
+        fill: none;
+      }
+
+      .edge-label {
+        fill: var(--muted);
+        font-size: 11px;
+        font-weight: 650;
+      }
+
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .component-card,
+      .flow-card,
+      .risk-card {
+        padding: 16px;
+        box-shadow: none;
+        transition:
+          transform 0.16s ease,
+          border-color 0.16s ease,
+          background 0.16s ease;
+      }
+
+      .component-card:hover,
+      .flow-card:hover,
+      .risk-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--strong-line);
+        background: var(--panel-2);
+      }
+
+      .card-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: flex-start;
+      }
+
+      .type-pill,
+      .confidence,
+      .severity {
+        flex: 0 0 auto;
+        padding: 4px 8px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 750;
+        text-transform: uppercase;
+      }
+
+      .confidence.high,
+      .severity.low {
+        color: var(--accent-3);
+      }
+
+      .confidence.medium,
+      .severity.medium {
+        color: var(--accent-4);
+      }
+
+      .severity.high {
+        color: var(--accent-2);
+      }
+
+      .summary {
+        margin: 10px 0 12px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      details {
+        border-top: 1px solid var(--line);
+        padding-top: 10px;
+      }
+
+      summary {
+        cursor: pointer;
+        color: var(--text);
+        font-weight: 750;
+      }
+
+      .kv {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .kv div {
+        display: grid;
+        gap: 4px;
+      }
+
+      .kv strong {
+        color: var(--text);
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      .list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .list li,
+      code {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--bg-soft);
+        color: color-mix(in srgb, var(--text) 92%, var(--accent));
+        font-family:
+          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, ui-monospace, monospace;
+        font-size: 12px;
+      }
+
+      .list li {
+        padding: 4px 7px;
+      }
+
+      code {
+        padding: 2px 5px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      table {
+        width: 100%;
+        min-width: 880px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 11px 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: var(--panel-2);
+        color: var(--text);
+        font-size: 12px;
+        text-transform: uppercase;
+      }
+
+      td {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .flow-steps {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .step {
+        display: grid;
+        grid-template-columns: 32px minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+      }
+
+      .step-num {
+        display: grid;
+        width: 28px;
+        height: 28px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        color: var(--accent);
+        font-weight: 850;
+      }
+
+      .step p {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .findings {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .finding-box {
+        padding: 15px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+      }
+
+      .finding-box h3 {
+        margin-bottom: 8px;
+      }
+
+      .finding-box ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+      }
+
+      .agent-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .task-card {
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+      }
+
+      .task-card h3 {
+        margin-bottom: 8px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .footer-note {
+        margin: 30px 0 8px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 1120px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: relative;
+          height: auto;
+          border-right: 0;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .nav {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .hero,
+        .grid,
+        .grid.two,
+        .findings,
+        .agent-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 680px) {
+        main {
+          padding: 18px;
+        }
+
+        .hero-copy,
+        .section,
+        .status-card {
+          padding: 18px;
+        }
+
+        .nav {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .section-header {
+          display: block;
+        }
+
+        .diagram-frame {
+          min-height: 360px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">IM</span>
+          <span>
+            <strong>Impostor</strong>
+            <span>Architecture map</span>
+          </span>
+        </div>
+        <nav class="nav" aria-label="Architecture sections">
+          <a href="#overview"><span class="nav-icon"></span>Overview</a>
+          <a href="#diagram"><span class="nav-icon"></span>Diagram</a>
+          <a href="#components"><span class="nav-icon"></span>Components</a>
+          <a href="#api"><span class="nav-icon"></span>API</a>
+          <a href="#data"><span class="nav-icon"></span>Data</a>
+          <a href="#flows"><span class="nav-icon"></span>Flows</a>
+          <a href="#findings"><span class="nav-icon"></span>Findings</a>
+          <a href="#agent"><span class="nav-icon"></span>Agent guide</a>
+        </nav>
+        <div class="sidebar-tools">
+          <input
+            id="search"
+            class="search"
+            type="search"
+            placeholder="Filter components, files, risks..."
+            aria-label="Filter architecture map"
+          />
+          <button id="themeToggle" class="toggle" type="button">Toggle theme</button>
+          <button id="expandAll" class="toggle" type="button">Expand component details</button>
+        </div>
+      </aside>
+
+      <main>
+        <section id="overview" class="hero" aria-labelledby="overview-title">
+          <div class="hero-copy">
+            <span class="eyebrow">Generated from repository evidence</span>
+            <h1 id="overview-title">Impostor architecture map</h1>
+            <p class="lead">
+              A mobile-first web party game organized as a TypeScript pnpm monorepo: React/Vite
+              in the browser, a Cloudflare Worker API at the edge, one Durable Object per room, and
+              a shared domain package that owns game rules, snapshots, words, and scoring.
+            </p>
+            <div class="chip-row" aria-label="Detected tech stack">
+              <span class="chip"><strong>React 19</strong> frontend</span>
+              <span class="chip"><strong>Vite 8</strong> build</span>
+              <span class="chip"><strong>Cloudflare</strong> Pages, Workers, Durable Objects</span>
+              <span class="chip"><strong>TypeScript 6</strong> strict</span>
+              <span class="chip"><strong>Vitest</strong> unit tests</span>
+              <span class="chip"><strong>Playwright</strong> e2e</span>
+              <span class="chip"><strong>pnpm 11</strong> workspace</span>
+            </div>
+          </div>
+          <div class="status-card" aria-label="Repository facts">
+            <div class="metric">
+              <span>Primary runtimes</span>
+              <strong>Browser, Cloudflare Worker, Durable Object</strong>
+            </div>
+            <div class="metric">
+              <span>Architectural style</span>
+              <strong>Shared-domain SPA plus stateful room authority</strong>
+            </div>
+            <div class="metric">
+              <span>Persistence</span>
+              <strong>Durable Object SQLite JSON room state</strong>
+            </div>
+            <div class="metric">
+              <span>Deployment</span>
+              <strong>Cloudflare Pages and Worker routes for /api/*</strong>
+            </div>
+          </div>
+        </section>
+
+        <section id="diagram" class="section" aria-labelledby="diagram-title">
+          <div class="section-header">
+            <div>
+              <span class="eyebrow">System diagram</span>
+              <h2 id="diagram-title">Runtime and build boundaries</h2>
+              <p>
+                Drag to pan, use the controls to zoom, and click a node to filter the component
+                cards. Arrows show observed calls, imports, or deployment relationships.
+              </p>
+            </div>
+            <div class="diagram-toolbar" aria-label="Diagram controls">
+              <button class="small-button" id="zoomOut" type="button">Zoom out</button>
+              <button class="small-button" id="zoomReset" type="button">Reset</button>
+              <button class="small-button" id="zoomIn" type="button">Zoom in</button>
+            </div>
+          </div>
+
+          <div class="diagram-frame" id="diagramFrame">
+            <svg viewBox="0 0 1180 680" role="img" aria-labelledby="diagram-svg-title">
+              <title id="diagram-svg-title">Impostor architecture diagram</title>
+              <defs>
+                <marker
+                  id="arrow"
+                  markerWidth="10"
+                  markerHeight="10"
+                  refX="8"
+                  refY="3"
+                  orient="auto"
+                  markerUnits="strokeWidth"
+                >
+                  <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
+                </marker>
+              </defs>
+              <g id="diagramPanZoom">
+                <path class="edge" d="M190 185 C260 185 270 185 340 185" marker-end="url(#arrow)"></path>
+                <text class="edge-label" x="226" y="170">fetch / websocket</text>
+                <path class="edge" d="M500 185 C570 185 585 185 650 185" marker-end="url(#arrow)"></path>
+                <text class="edge-label" x="525" y="170">/api/rooms</text>
+                <path class="edge" d="M810 185 C880 185 890 185 960 185" marker-end="url(#arrow)"></path>
+                <text class="edge-label" x="845" y="170">DO stub fetch</text>
+                <path class="edge" d="M1040 250 C1040 300 1040 318 1040 365" marker-end="url(#arrow)"></path>
+                <text class="edge-label" x="1054" y="315">SQLite JSON</text>
+                <path class="edge" d="M420 260 C420 340 420 368 420 445" marker-end="url(#arrow)"></path>
+                <text class="edge-label" x="438" y="352">imports</text>
+                <path class="edge" d="M730 260 C700 340 650 384 560 445" marker-end="url(#arrow)"></path>
+                <text class="edge-label" x="650" y="348">imports</text>
+                <path class="edge" d="M970 260 C870 350 730 410 560 470" marker-end="url(#arrow)"></path>
+                <text class="edge-label" x="800" y="390">domain rules</text>
+                <path class="edge" d="M745 250 C745 320 748 340 752 412" marker-end="url(#arrow)"></path>
+                <text class="edge-label" x="764" y="332">tokens, CORS</text>
+                <path class="edge" d="M275 560 C390 625 740 630 900 560" marker-end="url(#arrow)"></path>
+                <text class="edge-label" x="520" y="638">build / deploy / CI</text>
+
+                <g class="diagram-node" data-filter="web-app" transform="translate(40 125)">
+                  <rect width="150" height="120"></rect>
+                  <text x="18" y="36">Player browsers</text>
+                  <text class="sub" x="18" y="62">React SPA</text>
+                  <text class="sub" x="18" y="82">/ and /play</text>
+                </g>
+                <g class="diagram-node" data-filter="web-app" transform="translate(340 125)">
+                  <rect width="160" height="120"></rect>
+                  <text x="18" y="36">@impostor/web</text>
+                  <text class="sub" x="18" y="62">Vite + React</text>
+                  <text class="sub" x="18" y="82">Pages static host</text>
+                </g>
+                <g class="diagram-node" data-filter="worker-api" transform="translate(650 125)">
+                  <rect width="160" height="120"></rect>
+                  <text x="18" y="36">@impostor/worker</text>
+                  <text class="sub" x="18" y="62">Fetch router</text>
+                  <text class="sub" x="18" y="82">/api/rooms</text>
+                </g>
+                <g class="diagram-node" data-filter="room-durable-object" transform="translate(960 125)">
+                  <rect width="170" height="120"></rect>
+                  <text x="18" y="36">Room Durable Object</text>
+                  <text class="sub" x="18" y="62">One per room code</text>
+                  <text class="sub" x="18" y="82">WebSockets + alarms</text>
+                </g>
+                <g class="diagram-node" data-filter="durable-object-storage" transform="translate(950 365)">
+                  <rect width="180" height="115"></rect>
+                  <text x="18" y="36">DO SQLite storage</text>
+                  <text class="sub" x="18" y="62">room_state table</text>
+                  <text class="sub" x="18" y="82">RoomState JSON</text>
+                </g>
+                <g class="diagram-node" data-filter="domain-package" transform="translate(320 445)">
+                  <rect width="240" height="120"></rect>
+                  <text x="18" y="36">@impostor/domain</text>
+                  <text class="sub" x="18" y="62">Types, state, scoring</text>
+                  <text class="sub" x="18" y="82">Public/private snapshots</text>
+                </g>
+                <g class="diagram-node" data-filter="worker-token-auth" transform="translate(655 415)">
+                  <rect width="190" height="100"></rect>
+                  <text x="18" y="34">Worker helpers</text>
+                  <text class="sub" x="18" y="58">HMAC tokens</text>
+                  <text class="sub" x="18" y="76">CORS + JSON</text>
+                </g>
+                <g class="diagram-node" data-filter="cloudflare-infrastructure" transform="translate(70 500)">
+                  <rect width="205" height="100"></rect>
+                  <text x="18" y="34">Cloudflare config</text>
+                  <text class="sub" x="18" y="58">Wrangler + Pages</text>
+                  <text class="sub" x="18" y="76">Routes /api/*</text>
+                </g>
+                <g class="diagram-node" data-filter="ci-cd" transform="translate(900 500)">
+                  <rect width="185" height="100"></rect>
+                  <text x="18" y="34">GitHub Actions CI</text>
+                  <text class="sub" x="18" y="58">lint, typecheck</text>
+                  <text class="sub" x="18" y="76">test, build</text>
+                </g>
+              </g>
+            </svg>
+          </div>
+          <div class="legend">
+            <span><i class="dot"></i> Runtime call or API edge</span>
+            <span><i class="dot" style="background: var(--accent-2)"></i> Persistence/security boundary</span>
+            <span><i class="dot" style="background: var(--accent-3)"></i> Shared domain import</span>
+          </div>
+        </section>
+
+        <section id="components" class="section" aria-labelledby="components-title">
+          <div class="section-header">
+            <div>
+              <span class="eyebrow">Component cards</span>
+              <h2 id="components-title">Major modules and ownership boundaries</h2>
+              <p>
+                Cards include purpose, key files, public interfaces, dependencies, runtime
+                concerns, confidence, and evidence paths.
+              </p>
+            </div>
+          </div>
+          <div id="componentGrid" class="grid"></div>
+        </section>
+
+        <section id="api" class="section" aria-labelledby="api-title">
+          <div class="section-header">
+            <div>
+              <span class="eyebrow">HTTP and realtime API</span>
+              <h2 id="api-title">Public endpoints</h2>
+              <p>
+                The public API surface is intentionally small. Most gameplay behavior flows through
+                WebSocket commands after create or join sets a room-scoped HttpOnly session cookie.
+              </p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Method</th>
+                  <th>Path</th>
+                  <th>Handler</th>
+                  <th>Auth</th>
+                  <th>Request</th>
+                  <th>Response</th>
+                  <th>Downstream</th>
+                </tr>
+              </thead>
+              <tbody id="apiRows"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="data" class="section" aria-labelledby="data-title">
+          <div class="section-header">
+            <div>
+              <span class="eyebrow">Data model and persistence</span>
+              <h2 id="data-title">State stores</h2>
+              <p>
+                No standalone database service is present. Durable Object SQLite stores active room
+                state; the browser stores room code/player id while auth uses an HttpOnly cookie; words and avatars are code-owned.
+              </p>
+            </div>
+          </div>
+          <div id="dataStores" class="grid two"></div>
+        </section>
+
+        <section id="flows" class="section" aria-labelledby="flows-title">
+          <div class="section-header">
+            <div>
+              <span class="eyebrow">Data flows</span>
+              <h2 id="flows-title">Important paths through the system</h2>
+              <p>
+                These flows are derived from the React app, Worker, Durable Object, domain package,
+                Wrangler config, and existing architecture/runbook docs.
+              </p>
+            </div>
+          </div>
+          <div id="flowGrid" class="grid two"></div>
+        </section>
+
+        <section id="findings" class="section" aria-labelledby="findings-title">
+          <div class="section-header">
+            <div>
+              <span class="eyebrow">Architectural findings</span>
+              <h2 id="findings-title">Strengths, risks, and gaps</h2>
+              <p>
+                Findings distinguish observed facts from risks and recommended documentation work.
+              </p>
+            </div>
+          </div>
+          <div class="findings">
+            <div class="finding-box">
+              <h3>Strengths</h3>
+              <ul>
+                <li>Shared domain package centralizes game rules, state transitions, and scoring.</li>
+                <li>Durable Object gives each room a single authoritative writer.</li>
+                <li>Public/private snapshot boundary is explicit in domain code.</li>
+                <li>CI runs lint, typecheck, tests, and build on PRs and main pushes.</li>
+              </ul>
+            </div>
+            <div class="finding-box">
+              <h3>Coupling Hotspots</h3>
+              <ul>
+                <li><code>apps/web/src/lib/api.ts</code> and <code>apps/worker/src/protocol.ts</code> duplicate realtime types.</li>
+                <li><code>apps/web/src/app.tsx</code> holds many UI and orchestration concerns.</li>
+                <li>Production routing depends on Cloudflare Pages and Worker route alignment.</li>
+              </ul>
+            </div>
+            <div class="finding-box">
+              <h3>Missing Docs</h3>
+              <ul>
+                <li>Realtime protocol reference.</li>
+                <li>Security notes for room cookies, tokens, CORS, and snapshot privacy.</li>
+                <li>Worker integration test strategy.</li>
+                <li>Operations checklist for Cloudflare secrets, routes, rollback, and token rotation.</li>
+              </ul>
+            </div>
+            <div class="finding-box">
+              <h3>Testing Gaps</h3>
+              <ul>
+                <li>Domain tests are strong for rules and scoring.</li>
+                <li>Visible Worker tests focus on token signing.</li>
+                <li>Direct Durable Object tests for sockets, persistence, CORS, and alarms were not found.</li>
+              </ul>
+            </div>
+            <div class="finding-box">
+              <h3>Configuration Risks</h3>
+              <ul>
+                <li><code>TOKEN_SECRET</code> must be set in production.</li>
+                <li>WebSocket auth now uses a room-scoped HttpOnly cookie.</li>
+                <li><code>VITE_API_BASE_URL</code> is optional but important for split-origin deployments.</li>
+              </ul>
+            </div>
+            <div class="finding-box">
+              <h3>Ownership Boundaries</h3>
+              <ul>
+                <li>Web owns browser UX and local session state.</li>
+                <li>Worker owns public API ingress.</li>
+                <li>Room Durable Object owns authoritative room mutation and private snapshots.</li>
+                <li>Domain owns pure game rules and data contracts.</li>
+              </ul>
+            </div>
+          </div>
+          <div id="riskGrid" class="grid" style="margin-top: 14px"></div>
+        </section>
+
+        <section id="agent" class="section" aria-labelledby="agent-title">
+          <div class="section-header">
+            <div>
+              <span class="eyebrow">AI-agent navigation guide</span>
+              <h2 id="agent-title">Where to look first</h2>
+              <p>
+                Start with repo docs and package manifests, then move to the domain package before
+                touching UI or Worker behavior.
+              </p>
+            </div>
+          </div>
+          <div id="agentGrid" class="agent-grid"></div>
+        </section>
+
+        <p class="footer-note">
+          Generated at 2026-05-28T23:22:43.9050455+02:00. Companion machine-readable file:
+          <code>docs/architecture-map.json</code>.
+        </p>
+      </main>
+    </div>
+
+    <script>
+      const data = {
+        components: [
+          {
+            id: "workspace",
+            name: "Workspace Orchestration",
+            type: "config",
+            summary:
+              "Root pnpm workspace, TypeScript, lint, formatting, and quality-gate coordination.",
+            responsibilities: [
+              "Define workspace packages under apps/* and packages/*.",
+              "Pin Node.js 24 and pnpm 11 expectations.",
+              "Run recursive build, typecheck, test, lint, format, and deploy scripts."
+            ],
+            keyFiles: [
+              "package.json",
+              "pnpm-workspace.yaml",
+              "tsconfig.base.json",
+              "eslint.config.js",
+              ".prettierrc.json"
+            ],
+            interfaces: ["corepack pnpm dev", "corepack pnpm build", "corepack pnpm test"],
+            dependencies: ["Node.js >=24 <25", "pnpm >=11", "TypeScript", "ESLint", "Prettier"],
+            dependents: ["web-app", "worker-api", "domain-package", "ci-cd"],
+            runtime: "Development and CI orchestration",
+            confidence: "high",
+            evidence: ["package.json", "pnpm-workspace.yaml", "tsconfig.base.json"]
+          },
+          {
+            id: "web-app",
+            name: "@impostor/web React SPA",
+            type: "app",
+            summary:
+              "Mobile-first React single-page app for the public landing page and playable room flow at /play.",
+            responsibilities: [
+              "Render host setup, join setup, lobby, private reveal, round actions, results, and leaderboard.",
+              "Maintain theme preference in localStorage and room session token in sessionStorage.",
+              "Call Worker HTTP endpoints and maintain room WebSocket connection."
+            ],
+            keyFiles: [
+              "apps/web/src/main.tsx",
+              "apps/web/src/app.tsx",
+              "apps/web/src/styles/index.css",
+              "apps/web/src/lib/api.ts",
+              "apps/web/src/lib/session.ts",
+              "apps/web/public/_redirects"
+            ],
+            interfaces: ["/", "/play", "/play?room=CODE", "Vite dev server :5173"],
+            dependencies: [
+              "domain-package",
+              "web-api-client",
+              "web-session-storage",
+              "react",
+              "qrcode",
+              "lucide-react"
+            ],
+            dependents: [],
+            runtime: "Browser SPA hosted by Cloudflare Pages or Vite dev server",
+            confidence: "high",
+            evidence: ["apps/web/package.json", "apps/web/src/app.tsx", "apps/web/vite.config.ts"]
+          },
+          {
+            id: "web-api-client",
+            name: "Web API Client and Realtime Protocol Copy",
+            type: "module",
+            summary:
+              "Browser-side HTTP/WebSocket client for room creation, joining, and realtime command/event messages.",
+            responsibilities: [
+              "POST create-room and join-room requests.",
+              "Build WebSocket URLs from same-origin or VITE_API_BASE_URL.",
+              "Expose ClientCommand and ServerEvent types used by the React app."
+            ],
+            keyFiles: ["apps/web/src/lib/api.ts", "apps/web/.env.example"],
+            interfaces: ["createRoom", "joinRoom", "createRoomSocket", "ClientCommand", "ServerEvent"],
+            dependencies: ["domain-package", "Browser fetch API", "Browser WebSocket API"],
+            dependents: ["web-app"],
+            runtime: "Browser",
+            confidence: "high",
+            evidence: ["apps/web/src/lib/api.ts", "apps/web/.env.example"]
+          },
+          {
+            id: "web-session-storage",
+            name: "Browser Session Persistence",
+            type: "module",
+            summary:
+              "Small browser storage adapter for room code and player id. The signed room token is kept in an HttpOnly cookie.",
+            responsibilities: [
+              "Store accepted room sessions in sessionStorage.",
+              "Restore session information during app startup.",
+              "Clear session information when the player leaves a room."
+            ],
+            keyFiles: ["apps/web/src/lib/session.ts", "apps/web/src/app.tsx"],
+            interfaces: ["storeRoomSession", "readStoredRoomSession", "clearStoredRoomSession"],
+            dependencies: ["Browser sessionStorage API"],
+            dependents: ["web-app"],
+            runtime: "Browser",
+            confidence: "high",
+            evidence: ["apps/web/src/lib/session.ts"]
+          },
+          {
+            id: "avatar-assets",
+            name: "Avatar Asset Catalog",
+            type: "library",
+            summary: "App-owned avatar images and typed avatar ids used in player profiles.",
+            responsibilities: [
+              "Serve runtime SVG avatar files from the web public directory.",
+              "Keep canonical avatar ids in shared domain constants and types.",
+              "Render avatars through AvatarMark."
+            ],
+            keyFiles: [
+              "apps/web/public/avatars",
+              "impostor-avatars",
+              "packages/domain/src/constants.ts",
+              "apps/web/src/components/avatar-mark.tsx"
+            ],
+            interfaces: ["/avatars/{avatarId}.svg", "AVATARS", "AvatarId", "AvatarMark"],
+            dependencies: ["domain-package"],
+            dependents: ["web-app"],
+            runtime: "Static assets served by the web host",
+            confidence: "high",
+            evidence: ["apps/web/public/avatars", "packages/domain/src/constants.ts"]
+          },
+          {
+            id: "worker-api",
+            name: "@impostor/worker Public API Router",
+            type: "api",
+            summary:
+              "Cloudflare Worker fetch handler that exposes room HTTP and WebSocket routes under /api/rooms.",
+            responsibilities: [
+              "Handle CORS preflight requests.",
+              "Match public /api/rooms routes.",
+              "Create room codes and player ids.",
+              "Forward room requests to the correct RoomDurableObject."
+            ],
+            keyFiles: [
+              "apps/worker/src/index.ts",
+              "apps/worker/src/http.ts",
+              "apps/worker/src/ids.ts",
+              "apps/worker/src/protocol.ts",
+              "apps/worker/wrangler.jsonc"
+            ],
+            interfaces: ["POST /api/rooms", "POST /api/rooms/:code/join", "GET /api/rooms/:code/socket"],
+            dependencies: [
+              "domain-package",
+              "room-durable-object",
+              "worker-token-auth",
+              "worker-http",
+              "Cloudflare Workers runtime"
+            ],
+            dependents: ["web-api-client", "cloudflare-infrastructure"],
+            runtime: "Cloudflare Worker or wrangler dev on :8787",
+            confidence: "high",
+            evidence: ["apps/worker/src/index.ts", "apps/worker/wrangler.jsonc"]
+          },
+          {
+            id: "room-durable-object",
+            name: "Room Durable Object",
+            type: "service",
+            summary:
+              "Authoritative per-room state owner that applies commands, persists state, broadcasts snapshots, and schedules timers.",
+            responsibilities: [
+              "Create or load room state for a room code.",
+              "Validate room membership tokens on socket connection.",
+              "Apply gameplay commands through shared domain functions.",
+              "Broadcast public snapshots to all sockets and private snapshots per player.",
+              "Resolve timer expiry and delete idle room state."
+            ],
+            keyFiles: [
+              "apps/worker/src/index.ts",
+              "apps/worker/src/protocol.ts",
+              "apps/worker/src/tokens.ts",
+              "apps/worker/wrangler.jsonc"
+            ],
+            interfaces: [
+              "Internal POST /create",
+              "Internal POST /join",
+              "Internal GET /socket",
+              "webSocketMessage",
+              "alarm"
+            ],
+            dependencies: [
+              "domain-package",
+              "worker-token-auth",
+              "durable-object-storage",
+              "Cloudflare Durable Objects"
+            ],
+            dependents: ["worker-api"],
+            runtime: "Cloudflare Durable Object class, one instance named by room code",
+            confidence: "high",
+            evidence: ["apps/worker/src/index.ts", "docs/adr/0001-cloudflare-durable-objects.md"]
+          },
+          {
+            id: "worker-token-auth",
+            name: "Room Token Signing",
+            type: "library",
+            summary:
+              "HMAC-SHA256 room token implementation used to authorize WebSocket room membership.",
+            responsibilities: [
+              "Create base64url room token payloads.",
+              "Sign tokens with TOKEN_SECRET.",
+              "Verify signatures and expiration."
+            ],
+            keyFiles: [
+              "apps/worker/src/tokens.ts",
+              "apps/worker/src/index.ts",
+              "apps/worker/tests/tokens.test.ts",
+              "apps/worker/.dev.vars.example"
+            ],
+            interfaces: ["createRoomToken", "verifyRoomToken", "RoomTokenPayload"],
+            dependencies: ["Web Crypto API", "TOKEN_SECRET"],
+            dependents: ["worker-api", "room-durable-object"],
+            runtime: "Cloudflare Worker runtime",
+            confidence: "high",
+            evidence: ["apps/worker/src/tokens.ts", "apps/worker/tests/tokens.test.ts"]
+          },
+          {
+            id: "worker-http",
+            name: "Worker HTTP Helpers",
+            type: "module",
+            summary: "JSON response, empty response, CORS, and request JSON parsing helpers.",
+            responsibilities: [
+              "Create JSON responses with CORS headers.",
+              "Resolve allowed origins from ALLOWED_ORIGINS or ALLOWED_ORIGIN.",
+              "Parse request JSON."
+            ],
+            keyFiles: ["apps/worker/src/http.ts", "apps/worker/wrangler.jsonc"],
+            interfaces: ["jsonResponse", "emptyResponse", "corsHeaders", "readJson"],
+            dependencies: ["Fetch API Response", "ALLOWED_ORIGINS"],
+            dependents: ["worker-api", "room-durable-object"],
+            runtime: "Cloudflare Worker runtime",
+            confidence: "high",
+            evidence: ["apps/worker/src/http.ts"]
+          },
+          {
+            id: "domain-package",
+            name: "@impostor/domain Shared Game Domain",
+            type: "package",
+            summary:
+              "Shared TypeScript package containing game constants, types, room state transitions, scoring, errors, random helpers, and word categories.",
+            responsibilities: [
+              "Define room, player, round, snapshot, accusation, suspicion, and scoring types.",
+              "Validate room config, player creation, readiness, host actions, suspicions, accusations, timer expiry, and restart.",
+              "Build public snapshots without other players' roles or private words.",
+              "Build private snapshots for the current player.",
+              "Score Accusation and Suspicion mode rounds."
+            ],
+            keyFiles: [
+              "packages/domain/src/index.ts",
+              "packages/domain/src/types.ts",
+              "packages/domain/src/state.ts",
+              "packages/domain/src/scoring.ts",
+              "packages/domain/src/words.ts",
+              "packages/domain/tests/state.test.ts",
+              "packages/domain/tests/scoring.test.ts"
+            ],
+            interfaces: [
+              "RoomState",
+              "createRoomState",
+              "joinRoom",
+              "startNextRound",
+              "createAccusation",
+              "buildPublicSnapshot",
+              "buildPrivateSnapshot",
+              "scoreRound"
+            ],
+            dependencies: ["word-catalog"],
+            dependents: ["web-app", "web-api-client", "worker-api", "room-durable-object"],
+            runtime: "Shared TypeScript in browser build and Cloudflare Worker",
+            confidence: "high",
+            evidence: ["packages/domain/src/state.ts", "packages/domain/src/scoring.ts"]
+          },
+          {
+            id: "word-catalog",
+            name: "Code-Owned Word Catalog",
+            type: "library",
+            summary:
+              "Curated word categories stored in source control and selected by domain logic during round start.",
+            responsibilities: [
+              "Store word categories and labels.",
+              "Provide category lookup by id.",
+              "Keep word content code-owned for MVP."
+            ],
+            keyFiles: ["packages/domain/src/words.ts", "docs/cost-model.md"],
+            interfaces: ["WORD_CATEGORIES", "getCategory", "RoomConfig.categoryId"],
+            dependencies: [],
+            dependents: ["domain-package", "web-app", "room-durable-object"],
+            runtime: "Bundled TypeScript data",
+            confidence: "high",
+            evidence: ["packages/domain/src/words.ts"]
+          },
+          {
+            id: "durable-object-storage",
+            name: "Durable Object SQLite Room Storage",
+            type: "database",
+            summary:
+              "Per-room Durable Object SQLite table storing one JSON RoomState record keyed by room.",
+            responsibilities: [
+              "Create room_state table if needed.",
+              "Persist current RoomState JSON after mutations.",
+              "Load room state after Durable Object restart.",
+              "Delete idle room state after TTL expiration."
+            ],
+            keyFiles: ["apps/worker/src/index.ts", "apps/worker/wrangler.jsonc"],
+            interfaces: ["room_state(id, state, updated_at)", "Wrangler migration tag v1"],
+            dependencies: ["Cloudflare Durable Object SQLite storage"],
+            dependents: ["room-durable-object"],
+            runtime: "Cloudflare Durable Object local SQLite storage",
+            confidence: "high",
+            evidence: ["apps/worker/src/index.ts", "apps/worker/wrangler.jsonc"]
+          },
+          {
+            id: "cloudflare-infrastructure",
+            name: "Cloudflare Deployment Configuration",
+            type: "infrastructure",
+            summary:
+              "Wrangler and Pages configuration for deploying the Worker API and static web app.",
+            responsibilities: [
+              "Configure Worker name, entry, routes, Durable Object binding, migration, and vars.",
+              "Deploy web app dist output to Cloudflare Pages project impostor.",
+              "Route production /api/* paths to the Worker before Pages handles SPA routes."
+            ],
+            keyFiles: [
+              "apps/worker/wrangler.jsonc",
+              "apps/worker/package.json",
+              "apps/web/package.json",
+              "apps/web/public/_redirects",
+              "docs/runbooks/deployment.md"
+            ],
+            interfaces: ["Worker impostor-api", "Pages project impostor", "https://impostorgame.com/api/*"],
+            dependencies: ["Cloudflare Pages", "Cloudflare Workers", "Cloudflare Durable Objects", "Wrangler"],
+            dependents: [],
+            runtime: "Cloudflare edge runtime and Pages hosting",
+            confidence: "high",
+            evidence: ["apps/worker/wrangler.jsonc", "docs/runbooks/deployment.md"]
+          },
+          {
+            id: "ci-cd",
+            name: "GitHub Actions Quality Workflow",
+            type: "infrastructure",
+            summary:
+              "CI workflow installs dependencies and runs lint, typecheck, tests, and build on PRs and pushes to main.",
+            responsibilities: [
+              "Set up Node 24.",
+              "Install dependencies with frozen pnpm lockfile.",
+              "Run lint, typecheck, tests, and build."
+            ],
+            keyFiles: [".github/workflows/ci.yml", "package.json"],
+            interfaces: ["GitHub Actions workflow: CI"],
+            dependencies: ["workspace", "GitHub Actions"],
+            dependents: [],
+            runtime: "GitHub Actions ubuntu-latest",
+            confidence: "high",
+            evidence: [".github/workflows/ci.yml"]
+          }
+        ],
+        endpoints: [
+          {
+            method: "POST",
+            path: "/api/rooms",
+            handler: "createRoom(request, env)",
+            auth: "not_required",
+            request: "CreateRoomRequest with host profile and Partial<RoomConfig>",
+            response: "PublicRoomSnapshot, PrivatePlayerSnapshot plus HttpOnly room session cookie",
+            downstream: ["room-durable-object", "domain-package", "worker-token-auth", "durable-object-storage"]
+          },
+          {
+            method: "POST",
+            path: "/api/rooms/:code/join",
+            handler: "joinExistingRoom(request, env, roomCode)",
+            auth: "not_required",
+            request: "JoinRoomRequest with nickname, avatar, color",
+            response: "PublicRoomSnapshot, PrivatePlayerSnapshot plus HttpOnly room session cookie",
+            downstream: ["room-durable-object", "domain-package", "worker-token-auth", "durable-object-storage"]
+          },
+          {
+            method: "GET",
+            path: "/api/rooms/:code/socket",
+            handler: "forwardToRoom -> RoomDurableObject.handleSocket",
+            auth: "required",
+            request: "WebSocket upgrade with room-scoped HttpOnly session cookie",
+            response: "101 upgrade, then ServerEvent JSON messages",
+            downstream: ["room-durable-object", "worker-token-auth", "domain-package"]
+          }
+        ],
+        stores: [
+          {
+            name: "Durable Object SQLite",
+            tech: "Cloudflare Durable Object SQLite storage",
+            files: ["apps/worker/src/index.ts", "apps/worker/wrangler.jsonc", "packages/domain/src/types.ts"],
+            entities: ["room_state table", "RoomState", "PlayerProfile", "RoundState"],
+            relationships:
+              "One room_state row stores one RoomState JSON object; RoomState owns players and rounds; rounds reference player ids.",
+            migration:
+              "Wrangler Durable Object migration tag v1 plus lazy CREATE TABLE IF NOT EXISTS in ensureSchema()."
+          },
+          {
+            name: "Browser sessionStorage",
+            tech: "Browser sessionStorage",
+            files: ["apps/web/src/lib/session.ts", "apps/web/src/lib/api.ts"],
+            entities: ["StoredRoomSession"],
+            relationships:
+              "Create/join responses set the room token as an HttpOnly cookie; sessionStorage keeps only code and playerId.",
+            migration: "No explicit migration; parse errors clear the session key."
+          },
+          {
+            name: "Word Category Source Data",
+            tech: "TypeScript source constants",
+            files: ["packages/domain/src/words.ts", "packages/domain/src/types.ts"],
+            entities: ["WordCategory", "WORD_CATEGORIES"],
+            relationships: "RoomConfig.categoryId references WordCategory.id.",
+            migration: "Source-controlled edits only; no CMS or database migration."
+          },
+          {
+            name: "Runtime Avatar Assets",
+            tech: "Static SVG files",
+            files: ["apps/web/public/avatars", "packages/domain/src/constants.ts"],
+            entities: ["AvatarId", "AVATARS"],
+            relationships: "PlayerProfile.avatar stores an AvatarId rendered as /avatars/{avatar}.svg.",
+            migration: "Source-controlled static assets."
+          }
+        ],
+        flows: [
+          {
+            id: "create-room-flow",
+            name: "Host Creates A Room",
+            summary:
+              "Host submits profile/config, Worker allocates code and id, Durable Object creates/persists RoomState, sets the session cookie, and browser stores the room code/player id.",
+            steps: [
+              ["web-app", "Submit create-room form on /play."],
+              ["web-api-client", "POST JSON to /api/rooms."],
+              ["worker-api", "Generate room code and player id, forward /create to env.ROOMS."],
+              ["room-durable-object", "Create RoomState, save JSON, schedule alarm, sign token."],
+              ["web-session-storage", "Store session and connect WebSocket."]
+            ],
+            risks: ["TOKEN_SECRET must be configured in production.", "Token is stored in sessionStorage and used in WebSocket URL query."]
+          },
+          {
+            id: "join-room-flow",
+            name: "Player Joins A Room",
+            summary:
+              "Player enters room code and profile, Worker forwards join, Durable Object validates lobby rules and broadcasts updated snapshots.",
+            steps: [
+              ["web-app", "Join form reads code from user or /play?room=CODE."],
+              ["web-api-client", "POST to /api/rooms/:code/join."],
+              ["worker-api", "Uppercase code, create player id, forward /join."],
+              ["room-durable-object", "Validate joinRoom, save, broadcast player.joined and snapshots."]
+            ],
+            risks: ["Room membership is accountless by design.", "Nickname uniqueness is room-scoped."]
+          },
+          {
+            id: "realtime-command-flow",
+            name: "Realtime Gameplay Command Flow",
+            summary:
+              "Browser sends ClientCommand JSON over WebSocket; Durable Object applies domain logic, persists state, and broadcasts events and snapshots.",
+            steps: [
+              ["web-app", "Send ready/start/config/suspect/accuse/reset/cancel/heartbeat commands."],
+              ["room-durable-object", "Parse JSON and dispatch by command.type."],
+              ["domain-package", "Validate and mutate room state."],
+              ["durable-object-storage", "Save mutated RoomState JSON."],
+              ["room-durable-object", "Broadcast room.snapshot and per-player private.snapshot."]
+            ],
+            risks: ["Protocol types are duplicated between web and Worker.", "Worker command paths need direct integration tests."]
+          },
+          {
+            id: "privacy-snapshot-flow",
+            name: "Public And Private Snapshot Boundary",
+            summary:
+              "Domain snapshot builders separate public room data from current-player role/word data; Durable Object sends private snapshots per socket.",
+            steps: [
+              ["domain-package", "buildPublicSnapshot omits active impostor id and secret word."],
+              ["domain-package", "buildPrivateSnapshot returns only this player's role and visible word."],
+              ["room-durable-object", "broadcastSnapshots sends public and private events separately."]
+            ],
+            risks: ["Privacy depends on all paths using domain snapshot builders instead of raw RoomState."]
+          },
+          {
+            id: "timer-and-idle-flow",
+            name: "Timer Expiry And Idle Cleanup",
+            summary:
+              "Durable Object alarms resolve expired rounds or delete idle room state after ROOM_IDLE_TTL_SECONDS.",
+            steps: [
+              ["room-durable-object", "Set alarm to round endsAt or idle deadline."],
+              ["domain-package", "resolveTimerExpiry scores timer outcome."],
+              ["room-durable-object", "Delete room_state when idle TTL elapses."]
+            ],
+            risks: ["Behavior depends on Cloudflare alarms and Durable Object storage semantics."]
+          },
+          {
+            id: "build-deploy-flow",
+            name: "Build And Deploy Flow",
+            summary:
+              "Root scripts build all packages; deploy publishes Worker with Wrangler, then Vite dist to Cloudflare Pages.",
+            steps: [
+              ["workspace", "Run recursive build or deploy scripts."],
+              ["domain-package", "Emit dist and declarations."],
+              ["worker-api", "Typecheck and wrangler deploy."],
+              ["web-app", "Typecheck, vite build, pages deploy dist."],
+              ["cloudflare-infrastructure", "Route /api/* to Worker and serve SPA fallback."]
+            ],
+            risks: ["CI verifies build quality but production deploy appears manual."]
+          }
+        ],
+        risks: [
+          {
+            id: "risk-token-secret-fallback",
+            severity: "high",
+            title: "Production TOKEN_SECRET must be configured",
+            description:
+              "Worker falls back to a local-development secret if TOKEN_SECRET is absent.",
+            evidence: ["apps/worker/src/index.ts", "apps/worker/.dev.vars.example", "docs/runbooks/deployment.md"]
+          },
+          {
+            id: "risk-websocket-token-query",
+            severity: "medium",
+            title: "WebSocket auth depends on room-scoped cookies",
+            description:
+              "Client opens /api/rooms/:code/socket and authenticates with the room-scoped HttpOnly cookie.",
+            evidence: ["apps/web/src/lib/api.ts", "apps/worker/src/index.ts"]
+          },
+          {
+            id: "risk-protocol-duplication",
+            severity: "medium",
+            title: "Realtime protocol types are duplicated",
+            description:
+              "ClientCommand and ServerEvent unions exist separately in the web app and Worker.",
+            evidence: ["apps/web/src/lib/api.ts", "apps/worker/src/protocol.ts"]
+          },
+          {
+            id: "risk-large-web-app-file",
+            severity: "medium",
+            title: "Main React app file is large",
+            description:
+              "apps/web/src/app.tsx contains routing, landing content, game screens, forms, theme, and realtime orchestration.",
+            evidence: ["apps/web/src/app.tsx"]
+          },
+          {
+            id: "risk-worker-integration-test-gap",
+            severity: "medium",
+            title: "Durable Object behavior has limited direct tests",
+            description:
+              "Visible Worker tests focus on token signing; domain and e2e tests cover much of the behavior indirectly.",
+            evidence: ["apps/worker/tests/tokens.test.ts", "apps/web/e2e/app.spec.ts", "packages/domain/tests/state.test.ts"]
+          }
+        ],
+        tasks: [
+          {
+            task: "Add a feature",
+            paths: [
+              "docs/product/game-rules.md",
+              "packages/domain/src/types.ts",
+              "packages/domain/src/state.ts",
+              "packages/domain/src/scoring.ts",
+              "apps/worker/src/protocol.ts",
+              "apps/worker/src/index.ts",
+              "apps/web/src/lib/api.ts",
+              "apps/web/src/app.tsx"
+            ]
+          },
+          {
+            task: "Fix an API bug",
+            paths: [
+              "apps/worker/src/index.ts",
+              "apps/worker/src/protocol.ts",
+              "apps/worker/src/http.ts",
+              "apps/web/src/lib/api.ts",
+              "packages/domain/src/state.ts"
+            ]
+          },
+          {
+            task: "Change a UI component",
+            paths: [
+              "apps/web/src/app.tsx",
+              "apps/web/src/components/avatar-mark.tsx",
+              "apps/web/src/components/segmented-control.tsx",
+              "apps/web/src/styles/index.css",
+              "apps/web/e2e/app.spec.ts"
+            ]
+          },
+          {
+            task: "Update database schema",
+            paths: [
+              "apps/worker/src/index.ts",
+              "apps/worker/wrangler.jsonc",
+              "packages/domain/src/types.ts",
+              "docs/runbooks/deployment.md"
+            ]
+          },
+          {
+            task: "Add a test",
+            paths: [
+              "packages/domain/tests",
+              "apps/worker/tests",
+              "apps/web/e2e/app.spec.ts",
+              "apps/web/vitest.config.ts",
+              "apps/worker/vitest.config.ts",
+              "packages/domain/vitest.config.ts"
+            ]
+          },
+          {
+            task: "Change deployment/configuration",
+            paths: [
+              "apps/worker/wrangler.jsonc",
+              "apps/web/package.json",
+              "apps/web/public/_redirects",
+              "docs/runbooks/deployment.md",
+              "apps/web/.env.example",
+              "apps/worker/.dev.vars.example"
+            ]
+          },
+          {
+            task: "Investigate auth/security",
+            paths: [
+              "apps/worker/src/tokens.ts",
+              "apps/worker/src/index.ts",
+              "apps/worker/src/http.ts",
+              "packages/domain/src/state.ts",
+              "apps/web/src/lib/session.ts",
+              "apps/web/src/lib/api.ts"
+            ]
+          },
+          {
+            task: "Update documentation",
+            paths: [
+              "README.md",
+              "docs/architecture.md",
+              "docs/product/game-rules.md",
+              "docs/runbooks/deployment.md",
+              "docs/adr/0001-cloudflare-durable-objects.md",
+              "docs/architecture-map.json",
+              "docs/architecture-map.html"
+            ]
+          }
+        ]
+      };
+
+      const byId = (id) => document.getElementById(id);
+      const list = (items) =>
+        `<ul class="list">${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+      const escapeHtml = (value) =>
+        String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
+
+      function renderComponents() {
+        byId("componentGrid").innerHTML = data.components
+          .map(
+            (component) => `
+              <article class="component-card searchable" data-id="${component.id}" data-search="${escapeHtml(
+                JSON.stringify(component).toLowerCase()
+              )}">
+                <div class="card-top">
+                  <div>
+                    <h3>${escapeHtml(component.name)}</h3>
+                    <p class="summary">${escapeHtml(component.summary)}</p>
+                  </div>
+                  <span class="type-pill">${escapeHtml(component.type)}</span>
+                </div>
+                <span class="confidence ${component.confidence}">${component.confidence} confidence</span>
+                <details>
+                  <summary>Details</summary>
+                  <div class="kv">
+                    <div><strong>Responsibilities</strong>${list(component.responsibilities)}</div>
+                    <div><strong>Key files</strong>${list(component.keyFiles)}</div>
+                    <div><strong>Public interfaces</strong>${list(component.interfaces)}</div>
+                    <div><strong>Dependencies</strong>${list(component.dependencies)}</div>
+                    <div><strong>Dependents</strong>${list(component.dependents.length ? component.dependents : ["none"])}</div>
+                    <div><strong>Runtime concerns</strong><p class="summary">${escapeHtml(component.runtime)}</p></div>
+                    <div><strong>Evidence</strong>${list(component.evidence)}</div>
+                  </div>
+                </details>
+              </article>`
+          )
+          .join("");
+      }
+
+      function renderApi() {
+        byId("apiRows").innerHTML = data.endpoints
+          .map(
+            (endpoint) => `
+              <tr class="searchable" data-search="${escapeHtml(JSON.stringify(endpoint).toLowerCase())}">
+                <td><code>${endpoint.method}</code></td>
+                <td><code>${escapeHtml(endpoint.path)}</code></td>
+                <td>${escapeHtml(endpoint.handler)}</td>
+                <td>${escapeHtml(endpoint.auth)}</td>
+                <td>${escapeHtml(endpoint.request)}</td>
+                <td>${escapeHtml(endpoint.response)}</td>
+                <td>${list(endpoint.downstream)}</td>
+              </tr>`
+          )
+          .join("");
+      }
+
+      function renderStores() {
+        byId("dataStores").innerHTML = data.stores
+          .map(
+            (store) => `
+              <article class="component-card searchable" data-search="${escapeHtml(JSON.stringify(store).toLowerCase())}">
+                <div class="card-top">
+                  <h3>${escapeHtml(store.name)}</h3>
+                  <span class="type-pill">${escapeHtml(store.tech)}</span>
+                </div>
+                <p class="summary">${escapeHtml(store.relationships)}</p>
+                <details>
+                  <summary>Schema and migration</summary>
+                  <div class="kv">
+                    <div><strong>Entities</strong>${list(store.entities)}</div>
+                    <div><strong>Files</strong>${list(store.files)}</div>
+                    <div><strong>Migration</strong><p class="summary">${escapeHtml(store.migration)}</p></div>
+                  </div>
+                </details>
+              </article>`
+          )
+          .join("");
+      }
+
+      function renderFlows() {
+        byId("flowGrid").innerHTML = data.flows
+          .map(
+            (flow) => `
+              <article class="flow-card searchable" data-search="${escapeHtml(JSON.stringify(flow).toLowerCase())}">
+                <h3>${escapeHtml(flow.name)}</h3>
+                <p class="summary">${escapeHtml(flow.summary)}</p>
+                <div class="flow-steps">
+                  ${flow.steps
+                    .map(
+                      (step, index) => `
+                        <div class="step">
+                          <span class="step-num">${index + 1}</span>
+                          <p><strong>${escapeHtml(step[0])}</strong>: ${escapeHtml(step[1])}</p>
+                        </div>`
+                    )
+                    .join("")}
+                </div>
+                <details>
+                  <summary>Risks</summary>
+                  ${list(flow.risks)}
+                </details>
+              </article>`
+          )
+          .join("");
+      }
+
+      function renderRisks() {
+        byId("riskGrid").innerHTML = data.risks
+          .map(
+            (risk) => `
+              <article class="risk-card searchable" data-search="${escapeHtml(JSON.stringify(risk).toLowerCase())}">
+                <div class="card-top">
+                  <h3>${escapeHtml(risk.title)}</h3>
+                  <span class="severity ${risk.severity}">${escapeHtml(risk.severity)}</span>
+                </div>
+                <p class="summary">${escapeHtml(risk.description)}</p>
+                <details>
+                  <summary>Evidence</summary>
+                  ${list(risk.evidence)}
+                </details>
+              </article>`
+          )
+          .join("");
+      }
+
+      function renderAgentGuide() {
+        byId("agentGrid").innerHTML = data.tasks
+          .map(
+            (task) => `
+              <article class="task-card searchable" data-search="${escapeHtml(JSON.stringify(task).toLowerCase())}">
+                <h3>${escapeHtml(task.task)}</h3>
+                ${list(task.paths)}
+              </article>`
+          )
+          .join("");
+      }
+
+      function wireTheme() {
+        const saved = localStorage.getItem("architecture-map-theme");
+        if (saved === "light" || saved === "dark") document.documentElement.dataset.theme = saved;
+        byId("themeToggle").addEventListener("click", () => {
+          const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+          document.documentElement.dataset.theme = next;
+          localStorage.setItem("architecture-map-theme", next);
+        });
+      }
+
+      function wireSearch() {
+        const input = byId("search");
+        const applyFilter = () => {
+          const query = input.value.trim().toLowerCase();
+          document.querySelectorAll(".searchable").forEach((element) => {
+            const match = !query || element.dataset.search.includes(query);
+            element.classList.toggle("hidden", !match);
+          });
+          document.querySelectorAll(".diagram-node").forEach((node) => {
+            node.classList.toggle("is-active", query && node.dataset.filter.includes(query));
+          });
+        };
+        input.addEventListener("input", applyFilter);
+        document.querySelectorAll(".diagram-node").forEach((node) => {
+          node.addEventListener("click", () => {
+            input.value = node.dataset.filter;
+            applyFilter();
+            byId("components").scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        });
+      }
+
+      function wireExpandAll() {
+        let expanded = false;
+        byId("expandAll").addEventListener("click", () => {
+          expanded = !expanded;
+          document.querySelectorAll("#componentGrid details").forEach((details) => {
+            details.open = expanded;
+          });
+          byId("expandAll").textContent = expanded ? "Collapse component details" : "Expand component details";
+        });
+      }
+
+      function wireDiagram() {
+        const frame = byId("diagramFrame");
+        const group = byId("diagramPanZoom");
+        let scale = 1;
+        let x = 0;
+        let y = 0;
+        let panning = false;
+        let start = { x: 0, y: 0 };
+
+        const update = () => {
+          group.setAttribute("transform", `translate(${x} ${y}) scale(${scale})`);
+        };
+        const zoom = (delta) => {
+          scale = Math.min(2.2, Math.max(0.55, scale + delta));
+          update();
+        };
+
+        byId("zoomIn").addEventListener("click", () => zoom(0.12));
+        byId("zoomOut").addEventListener("click", () => zoom(-0.12));
+        byId("zoomReset").addEventListener("click", () => {
+          scale = 1;
+          x = 0;
+          y = 0;
+          update();
+        });
+
+        frame.addEventListener("pointerdown", (event) => {
+          panning = true;
+          frame.classList.add("is-panning");
+          start = { x: event.clientX - x, y: event.clientY - y };
+          frame.setPointerCapture(event.pointerId);
+        });
+        frame.addEventListener("pointermove", (event) => {
+          if (!panning) return;
+          x = event.clientX - start.x;
+          y = event.clientY - start.y;
+          update();
+        });
+        const stop = () => {
+          panning = false;
+          frame.classList.remove("is-panning");
+        };
+        frame.addEventListener("pointerup", stop);
+        frame.addEventListener("pointercancel", stop);
+        frame.addEventListener(
+          "wheel",
+          (event) => {
+            event.preventDefault();
+            zoom(event.deltaY > 0 ? -0.08 : 0.08);
+          },
+          { passive: false }
+        );
+      }
+
+      renderComponents();
+      renderApi();
+      renderStores();
+      renderFlows();
+      renderRisks();
+      renderAgentGuide();
+      wireTheme();
+      wireSearch();
+      wireExpandAll();
+      wireDiagram();
+    </script>
+  </body>
+</html>

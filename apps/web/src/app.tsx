@@ -17,18 +17,29 @@ import type {
 } from "@impostor/domain";
 import {
   ArrowRight,
+  Bell,
+  BookOpen,
   Check,
   Clipboard,
   Crown,
   Eye,
   Flag,
   Gamepad2,
+  Home,
   KeyRound,
   LogOut,
+  Moon,
   Play,
+  RotateCcw,
+  Settings,
+  Shield,
+  SlidersHorizontal,
   Sparkles,
+  Sun,
   TimerReset,
   Trophy,
+  User,
+  Users,
   Wifi,
   WifiOff,
   X
@@ -37,11 +48,14 @@ import QRCode from "qrcode";
 import {
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
   type CSSProperties,
-  type ReactNode
+  type Dispatch,
+  type ReactNode,
+  type SetStateAction
 } from "react";
 import { AvatarMark } from "./components/avatar-mark";
 import { SegmentedControl } from "./components/segmented-control";
@@ -60,6 +74,8 @@ import {
   type StoredRoomSession
 } from "./lib/session";
 import { getAvatarLabel } from "./lib/avatars";
+import { isValidRoomConfigDraft } from "./lib/room-config";
+import { loadThemePreference, saveThemePreference, type ThemePreference } from "./lib/theme";
 
 type ConnectionState = "idle" | "connecting" | "open" | "closed" | "error";
 type SetupPanel = "host" | "join";
@@ -105,11 +121,21 @@ const defaultProfile: ProfileDraft = {
 
 export function App() {
   const route = getRoute();
+  const [theme, setTheme] = useThemePreference();
+  const toggleTheme = useCallback(
+    () => setTheme((current) => (current === "dark" ? "light" : "dark")),
+    [setTheme]
+  );
 
   return route.screen === "play" ? (
-    <PlayApp forceJoin={route.forceJoin} initialRoomCode={route.initialRoomCode} />
+    <PlayApp
+      forceJoin={route.forceJoin}
+      initialRoomCode={route.initialRoomCode}
+      theme={theme}
+      onToggleTheme={toggleTheme}
+    />
   ) : (
-    <LandingPage />
+    <LandingPage theme={theme} onToggleTheme={toggleTheme} />
   );
 }
 
@@ -143,64 +169,105 @@ function getRoute(): AppRoute {
   };
 }
 
-function LandingPage() {
+function LandingPage({
+  theme,
+  onToggleTheme
+}: {
+  theme: ThemePreference;
+  onToggleTheme: () => void;
+}) {
   return (
     <main className="landing-shell">
       <nav className="landing-nav" aria-label="Primary navigation">
-        <a className="brand-lockup landing-brand" href="/">
-          <span className="brand-mark">IM</span>
-          <span>Impostor</span>
-        </a>
+        <BrandLockup href="/" />
         <div className="landing-nav-links">
           <a href="#how-it-works">How it works</a>
+          <a href="#screens">Screens</a>
           <a href="#modes">Modes</a>
-          <a className="nav-play-link" href="/play">
-            Play
+          <a href="#faq">FAQ</a>
+        </div>
+        <div className="landing-nav-actions">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+          <a className="primary-link nav-play-link" href="/play">
+            Play now
           </a>
         </div>
       </nav>
 
       <section className="landing-hero">
         <div className="landing-copy">
-          <h1>Impostor</h1>
+          <div className="hero-status-line" aria-hidden="true">
+            <span />
+            <strong>Social deduction party game</strong>
+            <span />
+          </div>
+          <h1 className="glitch-title" data-text="Impostor">
+            Impostor
+          </h1>
+          <p className="hero-tagline">
+            <span>Bluff.</span> <span>Detect.</span> <span>Survive.</span>
+          </p>
           <p>
-            A fast social deduction game for the table. Everyone gets the secret word except one
-            player, and the room turns into a friendly hunt for the bluff.
+            A neon social deduction game for the table. Everyone gets the secret word except one
+            player, then the room turns into a fast, suspicious arcade showdown.
           </p>
           <div className="landing-actions">
             <a className="primary-link" href="/play">
+              <Gamepad2 size={19} />
               Start playing
-              <ArrowRight size={19} />
             </a>
             <a className="secondary-link" href="/play?join=1">
+              <KeyRound size={18} />
               Join with code
             </a>
           </div>
+          <div className="hero-stat-strip" aria-label="Game stats">
+            <StatPill icon={<Users size={18} />} label="3-12" detail="players" />
+            <StatPill icon={<Shield size={18} />} label="In-person" detail="fun" />
+            <StatPill icon={<TimerReset size={18} />} label="15-45" detail="minutes" />
+          </div>
         </div>
 
-        <div className="mystery-table" aria-label="Illustrated social deduction table scene">
-          <div className="table-card secret-card">
-            <span>Secret word</span>
-            <strong>?</strong>
+        <div className="hero-cabinet" aria-label="Arcade impostor shield preview">
+          <div className="scan-grid" aria-hidden="true" />
+          <div className="arcade-shield" aria-hidden="true">
+            <div className="shield-half shield-half-blue">
+              <span />
+            </div>
+            <div className="shield-half shield-half-pink">
+              <span />
+            </div>
           </div>
-          <div className="table-card accusation-card">
-            <Flag size={22} />
-            <span>Accuse wisely</span>
+          <div className="hero-lobby-card">
+            <div>
+              <span>Current lobby</span>
+              <strong>Neon Night</strong>
+              <p>
+                Code: <b>X7K9D</b>
+              </p>
+            </div>
+            <div className="mini-qr" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
           </div>
-          <AvatarMark avatar="girl-1" color="#e4475d" size="xl" />
-          <AvatarMark avatar="boy-5" color="#276ef1" size="xl" />
-          <AvatarMark avatar="girl-8" color="#13a47a" size="xl" />
-          <AvatarMark avatar="boy-10" color="#f28c28" size="xl" />
-          <div className="spotlight-ring" />
+          <div className="hero-avatar-ring" aria-hidden="true">
+            <AvatarMark avatar="girl-1" color="#ff2e8b" size="lg" />
+            <AvatarMark avatar="boy-5" color="#16a8ff" size="lg" />
+            <AvatarMark avatar="girl-8" color="#7cf25f" size="lg" />
+            <AvatarMark avatar="boy-10" color="#ffcc24" size="lg" />
+          </div>
         </div>
       </section>
 
       <section className="landing-band" id="how-it-works">
         <div>
-          <h2>Pass the phone, keep the secret.</h2>
+          <span className="section-number">01</span>
+          <h2>Pass the phone. Keep the secret.</h2>
           <p>
-            Create a room, invite the table by QR or code, reveal private roles, then let the app
-            handle timers, accusations, scoring, and the leaderboard.
+            Create a lobby, invite the table by QR or code, reveal private roles, then let the app
+            run the timer, accusations, scoring, and leaderboard.
           </p>
         </div>
         <div className="step-list" aria-label="How Impostor works">
@@ -222,25 +289,275 @@ function LandingPage() {
         </div>
       </section>
 
-      <section className="mode-band" id="modes">
-        <div className="mode-panel">
-          <Flag size={28} />
-          <h2>Accusation</h2>
-          <p>One bold call can end the round immediately. Great for fast, loud tables.</p>
-        </div>
-        <div className="mode-panel is-suspicion">
-          <Eye size={28} />
-          <h2>Suspicion</h2>
+      <section className="screenshot-band" id="screens">
+        <div className="section-heading">
+          <span className="section-number">02</span>
+          <h2>Built like a tiny arcade cabinet for your game night.</h2>
           <p>
-            Each player locks one suspicion before the final accusation. Better for longer reads.
+            The new interface keeps codes, QR invites, actions, score, and player status in chunky
+            neon panels that are easy to read across the table.
           </p>
         </div>
+        <div className="screenshot-showcase" aria-label="Product screenshot placeholders">
+          <div className="desktop-frame">
+            <div className="fake-topbar">
+              <BrandLockup />
+              <span>Lobby code: X7K9D</span>
+            </div>
+            <div className="fake-shell">
+              <div className="fake-sidebar">
+                <span />
+                <span />
+                <span />
+                <span />
+              </div>
+              <div className="fake-panel is-hot">
+                <strong>Host a game</strong>
+                <div />
+                <div />
+              </div>
+              <div className="fake-panel">
+                <strong>Lobby preview</strong>
+                <div className="fake-qr-grid" />
+              </div>
+            </div>
+          </div>
+          <div className="phone-frame">
+            <BrandLockup />
+            <div className="phone-card">
+              <strong>Neon Night</strong>
+              <span>8 / 12 players</span>
+              <div className="phone-avatar-row" aria-hidden="true">
+                <AvatarMark avatar="girl-5" color="#ff2e8b" size="xs" />
+                <AvatarMark avatar="boy-3" color="#16a8ff" size="xs" />
+                <AvatarMark avatar="girl-11" color="#7cf25f" size="xs" />
+                <AvatarMark avatar="boy-8" color="#ffcc24" size="xs" />
+              </div>
+            </div>
+            <a className="primary-link" href="/play">
+              Host game
+            </a>
+            <a className="secondary-link" href="/play?join=1">
+              Join game
+            </a>
+          </div>
+        </div>
       </section>
+
+      <section className="mode-band" id="modes">
+        <div className="section-heading">
+          <span className="section-number">03</span>
+          <h2>Choose your level.</h2>
+          <p>Two playable modes now, one future cabinet slot waiting for the next rule set.</p>
+        </div>
+        <div className="mode-panel-grid">
+          <ModeInfoCard
+            accent="pink"
+            icon={<Flag size={30} />}
+            title="Accusation"
+            text="One bold call can end the round immediately. Great for fast, loud tables."
+          />
+          <ModeInfoCard
+            accent="blue"
+            icon={<Eye size={30} />}
+            title="Suspicion"
+            text="Each player locks one suspicion before the final accusation. Better for longer reads."
+          />
+          <ModeInfoCard
+            accent="yellow"
+            disabled
+            icon={<Shield size={30} />}
+            title="Reverse Psychology"
+            text="Coming soon. The impostor knows the word, and everyone else has to sniff out the twist."
+          />
+        </div>
+      </section>
+
+      <section className="faq-band" id="faq">
+        <div className="section-heading">
+          <span className="section-number">04</span>
+          <h2>FAQ</h2>
+        </div>
+        <div className="faq-grid">
+          <div>
+            <h3>Do players need accounts?</h3>
+            <p>No. Host a room, share the code, and play from each phone.</p>
+          </div>
+          <div>
+            <h3>Can one phone run the game?</h3>
+            <p>Yes, but everyone gets the best experience by joining the shared lobby.</p>
+          </div>
+          <div>
+            <h3>Does Reverse Psychology work today?</h3>
+            <p>Not yet. It appears as a locked future mode so the UI can grow into it cleanly.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer className="landing-footer">
+        <BrandLockup href="/" />
+        <p>One impostor. Many suspects.</p>
+        <a className="primary-link" href="/play">
+          Start playing
+          <ArrowRight size={18} />
+        </a>
+      </footer>
     </main>
   );
 }
 
-function PlayApp({ initialRoomCode, forceJoin }: { initialRoomCode: string; forceJoin: boolean }) {
+function ModeInfoCard({
+  accent,
+  disabled = false,
+  icon,
+  title,
+  text
+}: {
+  accent: "pink" | "blue" | "yellow";
+  disabled?: boolean;
+  icon: ReactNode;
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className={`mode-panel mode-panel-${accent} ${disabled ? "is-disabled" : ""}`}>
+      <div className="mode-panel-icon">{icon}</div>
+      <h3>{title}</h3>
+      <p>{text}</p>
+      {disabled ? <span className="coming-soon">Coming soon</span> : null}
+    </div>
+  );
+}
+
+function StatPill({ icon, label, detail }: { icon: ReactNode; label: string; detail: string }) {
+  return (
+    <span className="stat-pill">
+      {icon}
+      <strong>{label}</strong>
+      <span>{detail}</span>
+    </span>
+  );
+}
+
+function BrandLockup({ href }: { href?: string }) {
+  const content = (
+    <>
+      <span className="brand-mark" aria-hidden="true">
+        IM
+      </span>
+      <span className="brand-word">Impostor</span>
+    </>
+  );
+
+  return href ? (
+    <a className="brand-lockup" href={href}>
+      {content}
+    </a>
+  ) : (
+    <span className="brand-lockup">{content}</span>
+  );
+}
+
+function ThemeToggle({ theme, onToggle }: { theme: ThemePreference; onToggle: () => void }) {
+  const nextTheme = theme === "dark" ? "light" : "dark";
+
+  return (
+    <button
+      aria-label={`Switch to ${nextTheme} theme`}
+      className="icon-button theme-toggle"
+      title={`Switch to ${nextTheme} theme`}
+      type="button"
+      onClick={onToggle}
+    >
+      {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+    </button>
+  );
+}
+
+function AppTopBar({
+  eyebrow,
+  meta,
+  theme,
+  title,
+  onToggleTheme
+}: {
+  eyebrow: string;
+  meta?: string;
+  theme: ThemePreference;
+  title: string;
+  onToggleTheme: () => void;
+}) {
+  return (
+    <header className="app-topbar">
+      <BrandLockup href="/" />
+      <div className="topbar-center">
+        <span>{eyebrow}</span>
+        <strong>{title}</strong>
+      </div>
+      <div className="topbar-actions">
+        {meta ? (
+          <span className="connection-pill topbar-meta">
+            <Users size={15} />
+            {meta}
+          </span>
+        ) : null}
+        <button
+          aria-label="Notifications"
+          className="icon-button"
+          title="Notifications"
+          type="button"
+        >
+          <Bell size={18} />
+        </button>
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+      </div>
+    </header>
+  );
+}
+
+type SidebarKey = "home" | "host" | "join" | "play" | "leaderboard" | "settings";
+
+function AppSidebar({ active }: { active: SidebarKey }) {
+  const items: readonly { key: SidebarKey; icon: ReactNode; label: string }[] = [
+    { key: "home", icon: <Home size={17} />, label: "Home" },
+    { key: "host", icon: <Gamepad2 size={17} />, label: "Host game" },
+    { key: "join", icon: <KeyRound size={17} />, label: "Join game" },
+    { key: "play", icon: <BookOpen size={17} />, label: "How to play" },
+    { key: "leaderboard", icon: <Trophy size={17} />, label: "Leaderboard" },
+    { key: "settings", icon: <Settings size={17} />, label: "Settings" }
+  ];
+
+  return (
+    <aside className="app-sidebar" aria-label="Game navigation">
+      <nav>
+        {items.map((item) => (
+          <a
+            aria-current={active === item.key ? "page" : undefined}
+            className={active === item.key ? "is-active" : ""}
+            href={item.key === "home" ? "/" : "/play"}
+            key={item.key}
+          >
+            {item.icon}
+            <span>{item.label}</span>
+          </a>
+        ))}
+      </nav>
+      <StatPill icon={<Users size={18} />} label="3-12" detail="players" />
+    </aside>
+  );
+}
+
+function PlayApp({
+  initialRoomCode,
+  forceJoin,
+  theme,
+  onToggleTheme
+}: {
+  initialRoomCode: string;
+  forceJoin: boolean;
+  theme: ThemePreference;
+  onToggleTheme: () => void;
+}) {
   const socketRef = useRef<WebSocket | undefined>(undefined);
   const [storedSession, setStoredSession] = useState<StoredRoomSession | undefined>(() =>
     readStoredRoomSession()
@@ -255,7 +572,7 @@ function PlayApp({ initialRoomCode, forceJoin }: { initialRoomCode: string; forc
   const connect = useCallback((session: StoredRoomSession) => {
     socketRef.current?.close();
 
-    const socket = createRoomSocket(session.code, session.token);
+    const socket = createRoomSocket(session.code);
     socketRef.current = socket;
 
     socket.addEventListener("open", () => setConnectionState("open"));
@@ -314,7 +631,6 @@ function PlayApp({ initialRoomCode, forceJoin }: { initialRoomCode: string; forc
     storeRoomSession(session);
     const nextStored = {
       code: session.room.code,
-      token: session.token,
       playerId: session.player.playerId
     };
     setStoredSession(nextStored);
@@ -343,6 +659,8 @@ function PlayApp({ initialRoomCode, forceJoin }: { initialRoomCode: string; forc
           privateSnapshot={privateSnapshot}
           connectionState={connectionState}
           error={error}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
           onSend={send}
           onLeave={leaveRoom}
         />
@@ -352,6 +670,8 @@ function PlayApp({ initialRoomCode, forceJoin }: { initialRoomCode: string; forc
           error={error}
           forceJoin={forceJoin}
           initialRoomCode={initialRoomCode}
+          theme={theme}
+          onToggleTheme={onToggleTheme}
           onCreate={async (input) => acceptSession(await createRoom(input))}
           onJoin={async (code, input) => acceptSession(await joinRoom(code, input))}
           onClearError={() => setError(undefined)}
@@ -366,6 +686,8 @@ function PlayHomeScreen({
   forceJoin,
   connectionState,
   error,
+  theme,
+  onToggleTheme,
   onCreate,
   onJoin,
   onClearError
@@ -374,6 +696,8 @@ function PlayHomeScreen({
   forceJoin: boolean;
   connectionState: ConnectionState;
   error: string | undefined;
+  theme: ThemePreference;
+  onToggleTheme: () => void;
   onCreate: Parameters<typeof CreateRoomForm>[0]["onCreate"];
   onJoin: Parameters<typeof JoinRoomForm>[0]["onJoin"];
   onClearError: () => void;
@@ -383,65 +707,137 @@ function PlayHomeScreen({
   );
 
   return (
-    <section className="play-home">
-      <div className="setup-panel play-setup-panel">
-        <a className="brand-lockup setup-brand" href="/">
-          <span className="brand-mark">IM</span>
-          <span>Impostor</span>
-        </a>
-        <div className="panel-tabs" role="tablist" aria-label="Choose setup flow">
-          <button
-            aria-selected={activePanel === "host"}
-            className={activePanel === "host" ? "is-selected" : ""}
-            type="button"
-            onClick={() => {
-              onClearError();
-              setActivePanel("host");
-            }}
-          >
-            Host
-          </button>
-          <button
-            aria-selected={activePanel === "join"}
-            className={activePanel === "join" ? "is-selected" : ""}
-            type="button"
-            onClick={() => {
-              onClearError();
-              setActivePanel("join");
-            }}
-          >
-            Join
-          </button>
+    <section className="arcade-app-frame play-home">
+      <AppSidebar active={activePanel === "host" ? "host" : "join"} />
+      <div className="app-stage">
+        <AppTopBar
+          eyebrow="Ready room"
+          theme={theme}
+          title={activePanel === "host" ? "Host a game" : "Join a game"}
+          onToggleTheme={onToggleTheme}
+        />
+        <div className="play-dashboard-grid">
+          <div className="setup-panel play-setup-panel">
+            <div className="panel-tabs" role="tablist" aria-label="Choose setup flow">
+              <button
+                aria-selected={activePanel === "host"}
+                className={activePanel === "host" ? "is-selected" : ""}
+                type="button"
+                onClick={() => {
+                  onClearError();
+                  setActivePanel("host");
+                }}
+              >
+                Host
+              </button>
+              <button
+                aria-selected={activePanel === "join"}
+                className={activePanel === "join" ? "is-selected" : ""}
+                type="button"
+                onClick={() => {
+                  onClearError();
+                  setActivePanel("join");
+                }}
+              >
+                Join
+              </button>
+            </div>
+
+            {activePanel === "host" ? (
+              <CreateRoomForm busy={connectionState === "connecting"} onCreate={onCreate} />
+            ) : (
+              <JoinRoomForm
+                busy={connectionState === "connecting"}
+                initialRoomCode={initialRoomCode}
+                onJoin={onJoin}
+              />
+            )}
+
+            {error ? <p className="form-error">{error}</p> : null}
+          </div>
+
+          <aside className="play-aside">
+            <div className="play-aside-copy">
+              <span className="panel-kicker">Current lobby</span>
+              <h1>Neon Night</h1>
+              <p>
+                Pick a face, invite the group, and let the app handle the secret word, timer,
+                scoring, and next round.
+              </p>
+            </div>
+            <div className="lobby-preview-card">
+              <div>
+                <span>Lobby code</span>
+                <strong>X7K9D</strong>
+                <p>Share a QR or code when your room is live.</p>
+              </div>
+              <div className="mini-qr" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+            </div>
+            <div className="quick-action-grid" aria-label="Quick actions">
+              <button
+                className="quick-action-card is-host"
+                type="button"
+                onClick={() => {
+                  onClearError();
+                  setActivePanel("host");
+                }}
+              >
+                <Gamepad2 size={26} />
+                <strong>Host game</strong>
+              </button>
+              <button
+                className="quick-action-card is-join"
+                type="button"
+                onClick={() => {
+                  onClearError();
+                  setActivePanel("join");
+                }}
+              >
+                <KeyRound size={26} />
+                <strong>Join game</strong>
+              </button>
+              <div className="quick-action-card is-profile">
+                <User size={26} />
+                <strong>Profile</strong>
+                <span>Stats & history</span>
+              </div>
+              <div className="quick-action-card is-how">
+                <BookOpen size={26} />
+                <strong>How to play</strong>
+                <span>Rules at a glance</span>
+              </div>
+            </div>
+            <div className="leaderboard-preview">
+              <div className="preview-heading">
+                <strong>Leaderboard</strong>
+                <span>Weekly top players</span>
+              </div>
+              <div className="preview-row">
+                <span>1</span>
+                <AvatarMark avatar="girl-5" color="#7cf25f" size="sm" />
+                <strong>PixelMaster</strong>
+                <b>2,450</b>
+              </div>
+              <div className="preview-row">
+                <span>2</span>
+                <AvatarMark avatar="boy-3" color="#ff2e8b" size="sm" />
+                <strong>DeceptiOn</strong>
+                <b>1,870</b>
+              </div>
+              <div className="preview-row">
+                <span>3</span>
+                <AvatarMark avatar="girl-11" color="#b95cff" size="sm" />
+                <strong>MindGames</strong>
+                <b>1,420</b>
+              </div>
+            </div>
+          </aside>
         </div>
-
-        {activePanel === "host" ? (
-          <CreateRoomForm busy={connectionState === "connecting"} onCreate={onCreate} />
-        ) : (
-          <JoinRoomForm
-            busy={connectionState === "connecting"}
-            initialRoomCode={initialRoomCode}
-            onJoin={onJoin}
-          />
-        )}
-
-        {error ? <p className="form-error">{error}</p> : null}
       </div>
-
-      <aside className="play-aside">
-        <div className="play-aside-copy">
-          <h1>Set the table.</h1>
-          <p>
-            Pick a face, invite the group, and let the app handle the secret word, timer, scoring,
-            and next round.
-          </p>
-        </div>
-        <div className="play-avatar-strip" aria-hidden="true">
-          <AvatarMark avatar="girl-5" color="#e4475d" size="lg" />
-          <AvatarMark avatar="boy-3" color="#276ef1" size="lg" />
-          <AvatarMark avatar="girl-11" color="#13a47a" size="lg" />
-          <AvatarMark avatar="boy-8" color="#f28c28" size="lg" />
-        </div>
-      </aside>
     </section>
   );
 }
@@ -642,6 +1038,8 @@ function RoomScreen({
   privateSnapshot,
   connectionState,
   error,
+  theme,
+  onToggleTheme,
   onSend,
   onLeave
 }: {
@@ -649,6 +1047,8 @@ function RoomScreen({
   privateSnapshot: PrivatePlayerSnapshot;
   connectionState: ConnectionState;
   error: string | undefined;
+  theme: ThemePreference;
+  onToggleTheme: () => void;
   onSend: (command: ClientCommand) => void;
   onLeave: () => void;
 }) {
@@ -663,10 +1063,12 @@ function RoomScreen({
   );
   const showResults =
     (room.phase === "results" || room.phase === "finished") && Boolean(currentRound?.resolution);
+  const [leaderboardOpen, setLeaderboardOpen] = useState(false);
+  const visibleLeaderboardOpen = !showResults && leaderboardOpen;
 
   if (!me) {
     return (
-      <section className="room-layout">
+      <section className="room-layout room-layout-empty">
         <p className="form-error">Your room profile was not found.</p>
         <button className="secondary-button" type="button" onClick={onLeave}>
           Leave
@@ -676,26 +1078,45 @@ function RoomScreen({
   }
 
   return (
-    <section className={`room-layout room-phase-${room.phase}`}>
-      <RoomHeader
-        connectionState={connectionState}
-        me={me}
-        privateSnapshot={privateSnapshot}
-        room={room}
-        onLeave={onLeave}
+    <section className={`arcade-app-frame room-layout room-phase-${room.phase}`}>
+      <AppSidebar
+        active={room.phase === "lobby" ? (me.isHost ? "host" : "join") : showResults ? "leaderboard" : "play"}
       />
+      <div className="app-stage">
+        <AppTopBar
+          eyebrow={`Lobby code: ${room.code}`}
+          meta={`${room.players.length} / ${room.config.maxPlayers}`}
+          theme={theme}
+          title={
+            room.phase === "lobby" ? "Host lobby" : showResults ? "Round results" : "Take action"
+          }
+          onToggleTheme={onToggleTheme}
+        />
+        <div className="room-content">
+          <RoomHeader
+            connectionState={connectionState}
+            me={me}
+            privateSnapshot={privateSnapshot}
+            room={room}
+            leaderboardOpen={visibleLeaderboardOpen}
+            showLeaderboardButton={!showResults}
+            onToggleLeaderboard={() => setLeaderboardOpen((open) => !open)}
+            onLeave={onLeave}
+          />
 
-      {error ? <p className="form-error">{error}</p> : null}
+          {error ? <p className="form-error">{error}</p> : null}
 
-      {room.phase === "lobby" ? (
-        <LobbyPanel me={me} room={room} onSend={onSend} />
-      ) : showResults ? (
-        <ResultsPanel leaderboard={leaderboard} me={me} room={room} onSend={onSend} />
-      ) : currentRound ? (
-        <RoundPanel me={me} privateSnapshot={privateSnapshot} room={room} onSend={onSend} />
-      ) : null}
+          {room.phase === "lobby" ? (
+            <LobbyPanel me={me} room={room} onSend={onSend} />
+          ) : showResults ? (
+            <ResultsPanel leaderboard={leaderboard} me={me} room={room} onSend={onSend} />
+          ) : currentRound ? (
+            <RoundPanel me={me} privateSnapshot={privateSnapshot} room={room} onSend={onSend} />
+          ) : null}
 
-      {showResults ? null : <Leaderboard players={leaderboard} />}
+          {visibleLeaderboardOpen ? <Leaderboard players={leaderboard} /> : null}
+        </div>
+      </div>
     </section>
   );
 }
@@ -705,12 +1126,18 @@ function RoomHeader({
   me,
   privateSnapshot,
   connectionState,
+  leaderboardOpen,
+  showLeaderboardButton,
+  onToggleLeaderboard,
   onLeave
 }: {
   room: PublicRoomSnapshot;
   me: PublicPlayerSnapshot;
   privateSnapshot: PrivatePlayerSnapshot;
   connectionState: ConnectionState;
+  leaderboardOpen: boolean;
+  showLeaderboardButton: boolean;
+  onToggleLeaderboard: () => void;
   onLeave: () => void;
 }) {
   const joinUrl = useMemo(() => {
@@ -740,6 +1167,18 @@ function RoomHeader({
       </div>
       <div className="header-actions">
         <ConnectionPill state={connectionState} />
+        {showLeaderboardButton ? (
+          <button
+            aria-expanded={leaderboardOpen}
+            aria-label={leaderboardOpen ? "Hide leaderboard" : "Show leaderboard"}
+            className="icon-button"
+            title={leaderboardOpen ? "Hide leaderboard" : "Show leaderboard"}
+            type="button"
+            onClick={onToggleLeaderboard}
+          >
+            <Trophy size={18} />
+          </button>
+        ) : null}
         <button
           className="icon-button"
           title="Copy join link"
@@ -783,6 +1222,7 @@ function LobbyPanel({
   const allReady =
     room.players.length >= PLAYER_LIMITS.min && room.players.every((player) => player.ready);
   const canHostStart = me.isHost && allReady;
+  const configKey = roomConfigKey(room.config);
   const startHint =
     room.players.length < PLAYER_LIMITS.min
       ? `${PLAYER_LIMITS.min - room.players.length} more player needed`
@@ -812,6 +1252,21 @@ function LobbyPanel({
           {me.ready ? "Ready" : "Ready up"}
         </button>
       </div>
+      {me.isHost ? (
+        <LobbyConfigPanel
+          initialConfig={room.config}
+          currentPlayers={room.players.length}
+          key={configKey}
+          onApply={(config) =>
+            onSend({
+              type: "host.room.config.update",
+              payload: { config }
+            })
+          }
+        />
+      ) : (
+        <RoomConfigSummary config={room.config} />
+      )}
       <PlayerGrid players={room.players} />
       {me.isHost ? (
         <div className="host-start-block">
@@ -828,6 +1283,99 @@ function LobbyPanel({
         </div>
       ) : null}
     </section>
+  );
+}
+
+function LobbyConfigPanel({
+  initialConfig,
+  currentPlayers,
+  onApply
+}: {
+  initialConfig: RoomConfig;
+  currentPlayers: number;
+  onApply: (config: RoomConfig) => void;
+}) {
+  const [config, setConfig] = useState<RoomConfig>(initialConfig);
+  const dirty = !roomConfigsEqual(config, initialConfig);
+  const valid = isValidRoomConfigDraft(config, currentPlayers);
+
+  return (
+    <form
+      className="lobby-config-panel"
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (!dirty || !valid) {
+          return;
+        }
+
+        onApply(config);
+      }}
+    >
+      <div className="config-panel-heading">
+        <SlidersHorizontal size={18} />
+        <strong>Game settings</strong>
+      </div>
+      <SegmentedControl
+        label="Game mode"
+        options={modeOptions}
+        value={config.mode}
+        onChange={(mode) => setConfig({ ...config, mode })}
+      />
+      <label className="field">
+        <span>Category</span>
+        <select
+          value={config.categoryId}
+          onChange={(event) => setConfig({ ...config, categoryId: event.target.value })}
+        >
+          {WORD_CATEGORIES.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <div className="two-column">
+        <NumberField
+          label="Players"
+          max={PLAYER_LIMITS.max}
+          min={Math.max(PLAYER_LIMITS.min, currentPlayers)}
+          value={config.maxPlayers}
+          onChange={(maxPlayers) => setConfig({ ...config, maxPlayers })}
+        />
+        <NumberField
+          label="Rounds"
+          max={ROUND_LIMITS.maxCount}
+          min={ROUND_LIMITS.minCount}
+          value={config.roundCount}
+          onChange={(roundCount) => setConfig({ ...config, roundCount })}
+        />
+      </div>
+      <NumberField
+        label="Round seconds"
+        max={ROUND_LIMITS.maxDurationSeconds}
+        min={ROUND_LIMITS.minDurationSeconds}
+        step={15}
+        value={config.roundDurationSeconds}
+        onChange={(roundDurationSeconds) => setConfig({ ...config, roundDurationSeconds })}
+      />
+      <button className="secondary-button full-width" disabled={!dirty || !valid} type="submit">
+        <Check size={18} />
+        Apply settings
+      </button>
+    </form>
+  );
+}
+
+function RoomConfigSummary({ config }: { config: RoomConfig }) {
+  const category = WORD_CATEGORIES.find((candidate) => candidate.id === config.categoryId);
+
+  return (
+    <div className="config-summary" aria-label="Game settings">
+      <span>{config.mode === "accusation" ? "Accusation" : "Suspicion"}</span>
+      <span>{category?.label ?? config.categoryId}</span>
+      <span>{config.roundCount} rounds</span>
+      <span>{config.roundDurationSeconds}s timer</span>
+    </div>
   );
 }
 
@@ -862,6 +1410,7 @@ function RoundPanel({
   const remainingMs = Math.max(0, round.endsAt - now);
   const canAct = room.phase === "round" && !round.resolution;
   const isImpostor = privateSnapshot.role === "impostor";
+  const canAccuse = canAct && !isImpostor;
 
   return (
     <section className="phase-panel round-panel">
@@ -922,16 +1471,20 @@ function RoundPanel({
         ) : null}
 
         <ActionSection
-          disabled={!canAct}
+          disabled={!canAccuse}
           icon={<Flag size={18} />}
           title="Accusation"
-          description="Confirm before you call it. A valid accusation ends the round."
+          description={
+            isImpostor
+              ? "The impostor cannot accuse."
+              : "Confirm before you call it. A valid accusation ends the round."
+          }
         >
           {room.players
             .filter((player) => player.id !== me.id)
             .map((player) => (
               <PlayerActionButton
-                disabled={!canAct}
+                disabled={!canAccuse}
                 key={player.id}
                 player={player}
                 selected={pendingAccusationId === player.id}
@@ -941,7 +1494,7 @@ function RoundPanel({
         </ActionSection>
       </div>
 
-      {pendingPlayer ? (
+      {pendingPlayer && canAccuse ? (
         <div className="accuse-confirm" role="dialog" aria-labelledby="accuse-confirm-title">
           <AvatarMark avatar={pendingPlayer.avatar} color={pendingPlayer.color} size="lg" />
           <div>
@@ -993,6 +1546,7 @@ function ResultsPanel({
   const resolution = room.currentRound?.resolution;
   const impostor = room.players.find((player) => player.id === resolution?.impostorId);
   const winner = leaderboard[0];
+  const [resetConfirmationOpen, setResetConfirmationOpen] = useState(false);
 
   if (!resolution) {
     return null;
@@ -1024,14 +1578,55 @@ function ResultsPanel({
       </div>
       <Leaderboard players={leaderboard} />
       {room.phase === "results" && me.isHost ? (
-        <button
-          className="primary-button full-width"
-          type="button"
-          onClick={() => onSend({ type: "host.game.start" })}
-        >
-          <Play size={18} />
-          Next round
-        </button>
+        <>
+          <button
+            className="primary-button full-width"
+            type="button"
+            onClick={() => onSend({ type: "host.game.start" })}
+          >
+            <Play size={18} />
+            Next round
+          </button>
+          <button
+            className="secondary-button full-width"
+            type="button"
+            onClick={() => setResetConfirmationOpen(true)}
+          >
+            <RotateCcw size={18} />
+            Set up another game
+          </button>
+        </>
+      ) : null}
+      {room.phase === "results" && me.isHost && resetConfirmationOpen ? (
+        <div className="accuse-confirm" role="dialog" aria-labelledby="reset-confirm-title">
+          <RotateCcw size={28} />
+          <div>
+            <span>Reset room</span>
+            <strong id="reset-confirm-title">Set up another game?</strong>
+            <p>This skips the remaining rounds and returns everyone to the lobby.</p>
+          </div>
+          <div className="confirm-actions">
+            <button
+              className="secondary-button"
+              type="button"
+              onClick={() => setResetConfirmationOpen(false)}
+            >
+              <X size={17} />
+              Cancel
+            </button>
+            <button
+              className="danger-button"
+              type="button"
+              onClick={() => {
+                onSend({ type: "host.game.reset" });
+                setResetConfirmationOpen(false);
+              }}
+            >
+              <RotateCcw size={17} />
+              Reset game
+            </button>
+          </div>
+        </div>
       ) : null}
       {room.phase === "finished" ? (
         <div className="final-note">
@@ -1039,6 +1634,16 @@ function ResultsPanel({
           <span>Final winner</span>
           <strong>{winner?.nickname ?? "No winner"}</strong>
         </div>
+      ) : null}
+      {room.phase === "finished" && me.isHost ? (
+        <button
+          className="primary-button full-width"
+          type="button"
+          onClick={() => onSend({ type: "host.game.reset" })}
+        >
+          <RotateCcw size={18} />
+          Set up another game
+        </button>
       ) : null}
     </section>
   );
@@ -1172,18 +1777,46 @@ function NumberField({
   step?: number;
   onChange: (value: number) => void;
 }) {
+  const inputLabelId = useId();
+  const updateValue = (nextValue: number) => {
+    if (!Number.isFinite(nextValue)) {
+      return;
+    }
+
+    onChange(Math.min(max, Math.max(min, nextValue)));
+  };
+
   return (
-    <label className="field">
-      <span>{label}</span>
-      <input
-        max={max}
-        min={min}
-        step={step}
-        type="number"
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
-      />
-    </label>
+    <div className="field number-field">
+      <span id={inputLabelId}>{label}</span>
+      <div className="number-stepper">
+        <button
+          aria-label="Decrease value"
+          disabled={value <= min}
+          type="button"
+          onClick={() => updateValue(value - step)}
+        >
+          -
+        </button>
+        <input
+          max={max}
+          min={min}
+          aria-labelledby={inputLabelId}
+          step={step}
+          type="number"
+          value={value}
+          onChange={(event) => updateValue(Number(event.target.value))}
+        />
+        <button
+          aria-label="Increase value"
+          disabled={value >= max}
+          type="button"
+          onClick={() => updateValue(value + step)}
+        >
+          +
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -1196,6 +1829,18 @@ function ConnectionPill({ state }: { state: ConnectionState }) {
       {online ? "Live" : state}
     </span>
   );
+}
+
+function useThemePreference(): [ThemePreference, Dispatch<SetStateAction<ThemePreference>>] {
+  const [theme, setTheme] = useState<ThemePreference>(() => loadThemePreference());
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    saveThemePreference(theme);
+  }, [theme]);
+
+  return [theme, setTheme];
 }
 
 function useNow(intervalMs: number): number {
@@ -1220,4 +1865,24 @@ function sendCommand(socket: WebSocket | undefined, command: ClientCommand): voi
       requestId: command.requestId ?? crypto.randomUUID()
     })
   );
+}
+
+function roomConfigsEqual(left: RoomConfig, right: RoomConfig): boolean {
+  return (
+    left.mode === right.mode &&
+    left.categoryId === right.categoryId &&
+    left.maxPlayers === right.maxPlayers &&
+    left.roundCount === right.roundCount &&
+    left.roundDurationSeconds === right.roundDurationSeconds
+  );
+}
+
+function roomConfigKey(config: RoomConfig): string {
+  return [
+    config.mode,
+    config.categoryId,
+    config.maxPlayers,
+    config.roundCount,
+    config.roundDurationSeconds
+  ].join(":");
 }

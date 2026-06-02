@@ -9,13 +9,15 @@ import {
   createSuspicion,
   joinRoom,
   kickPlayer,
+  restartGame,
   resolveTimerExpiry,
   setPlayerConnected,
   setPlayerReady,
-  startNextRound
+  startNextRound,
+  updateRoomConfig
 } from "@impostor/domain";
-import type { RoomState } from "@impostor/domain";
-import { emptyResponse, jsonResponse, readJson } from "./http";
+import type { PrivatePlayerSnapshot, PublicRoomSnapshot, RoomState } from "@impostor/domain";
+import { corsHeaders, emptyResponse, jsonResponse, readJson } from "./http";
 import { createId, generateRoomCode } from "./ids";
 import type {
   ClientCommand,
@@ -30,7 +32,15 @@ import type {
 import { createRoomToken, verifyRoomToken } from "./tokens";
 
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
+const ROOM_SESSION_COOKIE = "impostor_room_session";
+const ROOM_SESSION_COOKIE_MAX_AGE_SECONDS = TOKEN_TTL_MS / 1000;
 const STORAGE_KEY = "room";
+
+interface DurableRoomSessionResponse {
+  room: PublicRoomSnapshot;
+  player: PrivatePlayerSnapshot;
+  token: string;
+}
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -297,9 +307,18 @@ export class RoomDurableObject {
       );
     }
 
-    const token = readToken(request);
-    const payload = await verifyRoomToken(token, getTokenSecret(this.env));
+    const token = readRoomSessionToken(request);
+    const payload = await verifyRoomToken(token, getTokenSecret(this.env)).catch(() => undefined);
     const room = await this.requireRoom();
+
+    if (!payload) {
+      return jsonResponse(
+        request,
+        this.env,
+        { error: "Room session cookie is invalid." },
+        { status: 403 }
+      );
+    }
 
     if (
       payload.roomCode !== room.code ||
@@ -347,6 +366,12 @@ export class RoomDurableObject {
         return;
       case "host.game.start":
         this.room = startNextRound(room, session.playerId, now, cryptoRandom);
+        return;
+      case "host.game.reset":
+        this.room = restartGame(room, session.playerId, now);
+        return;
+      case "host.room.config.update":
+        this.room = updateRoomConfig(room, session.playerId, command.payload.config, now);
         return;
       case "player.suspect.create":
         this.room = createSuspicion(room, session.playerId, command.payload.targetPlayerId, now);
@@ -492,7 +517,7 @@ async function createRoom(request: Request, env: Env): Promise<Response> {
     );
 
     if (response.status !== 409) {
-      return withCors(response, request, env);
+      return await withRoomSessionCookie(response, request, env);
     }
   }
 
@@ -512,7 +537,7 @@ async function joinExistingRoom(request: Request, env: Env, roomCode: string): P
     })
   );
 
-  return withCors(response, request, env);
+  return await withRoomSessionCookie(response, request, env);
 }
 
 async function forwardToRoom(request: Request, env: Env, roomCode: string): Promise<Response> {
@@ -529,13 +554,10 @@ function withCors(response: Response, request: Request, env: Env): Response {
   }
 
   const headers = new Headers(response.headers);
-  headers.set(
-    "access-control-allow-origin",
-    request.headers.get("origin") ?? env.ALLOWED_ORIGIN ?? "http://localhost:5173"
-  );
-  headers.set("access-control-allow-methods", "GET,POST,OPTIONS");
-  headers.set("access-control-allow-headers", "content-type,authorization");
-  headers.set("vary", "origin");
+  for (const [key, value] of Object.entries(corsHeaders(request, env))) {
+    headers.set(key, String(value));
+  }
+
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -544,20 +566,84 @@ function withCors(response: Response, request: Request, env: Env): Response {
   });
 }
 
-function readToken(request: Request): string {
-  const url = new URL(request.url);
-  const queryToken = url.searchParams.get("token");
-  const authHeader = request.headers.get("authorization");
-  const bearerToken = authHeader?.startsWith("Bearer ")
-    ? authHeader.slice("Bearer ".length)
-    : undefined;
-  const token = queryToken ?? bearerToken;
+async function withRoomSessionCookie(
+  response: Response,
+  request: Request,
+  env: Env
+): Promise<Response> {
+  if (!response.ok) {
+    return withCors(response, request, env);
+  }
 
+  const payload = (await response.json()) as DurableRoomSessionResponse;
+  if (!payload.room?.code || !payload.token) {
+    return jsonResponse(
+      request,
+      env,
+      { error: "Room session response is missing a token." },
+      { status: 500 }
+    );
+  }
+
+  const headers = new Headers(response.headers);
+  for (const [key, value] of Object.entries(corsHeaders(request, env))) {
+    headers.set(key, String(value));
+  }
+  headers.set("content-type", "application/json; charset=utf-8");
+  headers.set("set-cookie", createRoomSessionCookie(payload.room.code, payload.token));
+
+  return new Response(
+    JSON.stringify({
+      room: payload.room,
+      player: payload.player
+    }),
+    {
+      status: response.status,
+      statusText: response.statusText,
+      headers
+    }
+  );
+}
+
+export function createRoomSessionCookie(roomCode: string, token: string): string {
+  const roomPath = `/api/rooms/${encodeURIComponent(roomCode.toUpperCase())}`;
+  return [
+    `${ROOM_SESSION_COOKIE}=${encodeURIComponent(token)}`,
+    `Max-Age=${ROOM_SESSION_COOKIE_MAX_AGE_SECONDS}`,
+    `Path=${roomPath}`,
+    "HttpOnly",
+    "Secure",
+    "SameSite=Lax"
+  ].join("; ");
+}
+
+export function readRoomSessionToken(request: Request): string {
+  const token = parseCookieHeader(request.headers.get("cookie") ?? "").get(ROOM_SESSION_COOKIE);
   if (!token) {
     throw new GameRuleError("TOKEN_REQUIRED", "A room token is required.");
   }
 
   return token;
+}
+
+function parseCookieHeader(header: string): Map<string, string> {
+  const cookies = new Map<string, string>();
+
+  for (const part of header.split(";")) {
+    const [rawName, ...rawValue] = part.trim().split("=");
+    if (!rawName || rawValue.length === 0) {
+      continue;
+    }
+
+    const value = rawValue.join("=");
+    try {
+      cookies.set(rawName, decodeURIComponent(value));
+    } catch {
+      cookies.set(rawName, value);
+    }
+  }
+
+  return cookies;
 }
 
 function getTokenSecret(env: Env): string {

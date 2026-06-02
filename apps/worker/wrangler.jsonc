@@ -3,6 +3,17 @@
   "name": "impostor-api",
   "main": "src/index.ts",
   "compatibility_date": "2026-05-07",
+  "workers_dev": false,
+  "routes": [
+    {
+      "pattern": "impostorgame.com/api/*",
+      "zone_name": "impostorgame.com"
+    },
+    {
+      "pattern": "www.impostorgame.com/api/*",
+      "zone_name": "impostorgame.com"
+    }
+  ],
   "durable_objects": {
     "bindings": [
       {
@@ -18,7 +29,7 @@
     }
   ],
   "vars": {
-    "ALLOWED_ORIGIN": "http://localhost:5173",
+    "ALLOWED_ORIGINS": "https://impostorgame.com,https://www.impostorgame.com",
     "ROOM_IDLE_TTL_SECONDS": "86400"
   }
 }

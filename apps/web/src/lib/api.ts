@@ -24,12 +24,17 @@ export interface JoinRoomInput {
 export interface RoomSessionResponse {
   room: PublicRoomSnapshot;
   player: PrivatePlayerSnapshot;
-  token: string;
 }
 
 export type ClientCommand =
   | { type: "player.ready.set"; requestId?: string; payload: { ready: boolean } }
   | { type: "host.game.start"; requestId?: string; payload?: Record<string, never> }
+  | { type: "host.game.reset"; requestId?: string; payload?: Record<string, never> }
+  | {
+      type: "host.room.config.update";
+      requestId?: string;
+      payload: { config: Partial<RoomConfig> };
+    }
   | { type: "player.suspect.create"; requestId?: string; payload: { targetPlayerId: string } }
   | { type: "player.accuse.create"; requestId?: string; payload: { accusedPlayerId: string } }
   | { type: "host.player.kick"; requestId?: string; payload: { targetPlayerId: string } }
@@ -63,17 +68,17 @@ export async function joinRoom(code: string, input: JoinRoomInput): Promise<Room
   return postJson(`/api/rooms/${code.trim().toUpperCase()}/join`, input);
 }
 
-export function createRoomSocket(code: string, token: string): WebSocket {
+export function createRoomSocket(code: string): WebSocket {
   const base = API_BASE_URL || window.location.origin;
   const url = new URL(`/api/rooms/${code}/socket`, base);
-  url.searchParams.set("token", token);
   url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
-  return new WebSocket(url);
+  return new WebSocket(url.toString());
 }
 
 async function postJson<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "content-type": "application/json"
     },

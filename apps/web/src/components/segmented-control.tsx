@@ -11,10 +11,12 @@ export function SegmentedControl<TValue extends string>({
   options,
   onChange
 }: SegmentedControlProps<TValue>) {
+  const isModePicker = label.toLowerCase() === "game mode";
+
   return (
-    <fieldset className="field-group">
+    <fieldset className={isModePicker ? "field-group mode-field-group" : "field-group"}>
       <legend>{label}</legend>
-      <div className="segmented-control">
+      <div className={isModePicker ? "segmented-control mode-card-group" : "segmented-control"}>
         {options.map((option) => (
           <button
             className={option.value === value ? "is-selected" : ""}
@@ -22,9 +24,28 @@ export function SegmentedControl<TValue extends string>({
             type="button"
             onClick={() => onChange(option.value)}
           >
-            {option.label}
+            {isModePicker ? (
+              <>
+                <span className={`mode-card-icon is-${option.value}`} aria-hidden="true" />
+                <strong>{option.label}</strong>
+                <span>
+                  {option.value === "accusation"
+                    ? "Find the impostor by direct accusation."
+                    : "Gather clues and vote out suspects."}
+                </span>
+              </>
+            ) : (
+              option.label
+            )}
           </button>
         ))}
+        {isModePicker ? (
+          <button aria-disabled="true" className="is-disabled" disabled type="button">
+            <span className="mode-card-icon is-reverse" aria-hidden="true" />
+            <strong>Reverse Psychology</strong>
+            <span>Coming soon. The impostor knows the word.</span>
+          </button>
+        ) : null}
       </div>
     </fieldset>
   );

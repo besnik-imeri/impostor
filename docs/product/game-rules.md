@@ -56,7 +56,7 @@ Private reveal:
 
 ## Accusation Mode
 
-Any valid accusation immediately ends the round.
+Any valid non-impostor accusation immediately ends the round. The impostor cannot accuse in this mode.
 
 Scoring:
 
@@ -70,6 +70,7 @@ Scoring:
 ## Suspicion Mode
 
 Suspicion mode adds one non-retractable suspicion per player during the round. Accusations still resolve the round immediately.
+The impostor may mark another player as suspicious, but the impostor cannot accuse.
 
 Scoring:
 
@@ -88,8 +89,15 @@ Scoring:
 
 When the timer expires, the round resolves immediately as `Impostor got away`. There is no forced accusation phase.
 
-In Suspicion mode, suspicion scoring still applies before the final leaderboard is shown.
+In Suspicion mode, suspicion scoring still applies before the leaderboard is shown.
+
+## Leaderboard
+
+The leaderboard is shown after each resolved round. During lobby and active round play it is tucked behind a player-controlled button.
+
+After any resolved round, the host may return the room to the lobby for a new setup instead of continuing to the next configured round. Existing players stay in the room, ready states reset, and cumulative scores remain visible.
 
 ## End Of Game
 
 After the configured number of rounds, the game is finished. The player with the highest cumulative score wins.
+The host can return the same room to the lobby for another game. Existing players stay in the room, ready states reset, and cumulative scores remain visible.

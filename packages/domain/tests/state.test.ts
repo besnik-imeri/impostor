@@ -7,9 +7,11 @@ import {
   createSeededRng,
   createSuspicion,
   joinRoom,
+  restartGame,
   resolveTimerExpiry,
   setPlayerReady,
-  startNextRound
+  startNextRound,
+  updateRoomConfig
 } from "../src";
 import type { RoomState } from "../src";
 
@@ -84,6 +86,24 @@ describe("room state", () => {
     expect(() => createSuspicion(state, "p2", "p3", now + 2)).toThrow(/already used/i);
   });
 
+  it("allows impostor suspicions in Suspicion mode", () => {
+    let state = startNextRound(readyLobby(), "host", now, createSeededRng(11));
+    const impostorId = state.rounds[0]?.impostorId;
+    const targetId = state.players.find((candidate) => candidate.id !== impostorId)?.id;
+
+    expect(impostorId).toBeTruthy();
+    expect(targetId).toBeTruthy();
+
+    state = createSuspicion(state, impostorId as string, targetId as string, now + 1);
+
+    expect(state.rounds[0]?.suspicions).toEqual([
+      expect.objectContaining({
+        suspectingPlayerId: impostorId,
+        targetPlayerId: targetId
+      })
+    ]);
+  });
+
   it("first valid accusation resolves the round and rejects later accusations", () => {
     let state = startNextRound(readyLobby(), "host", now, createSeededRng(2));
     const impostorId = state.rounds[0]?.impostorId;
@@ -96,6 +116,18 @@ describe("room state", () => {
     expect(() => createAccusation(state, "p3", "p4", now + 11)).toThrow(/during a round/i);
   });
 
+  it("rejects accusations from the impostor", () => {
+    const state = startNextRound(readyLobby(), "host", now, createSeededRng(2));
+    const impostorId = state.rounds[0]?.impostorId;
+    const targetId = state.players.find((candidate) => candidate.id !== impostorId)?.id;
+
+    expect(impostorId).toBeTruthy();
+    expect(targetId).toBeTruthy();
+    expect(() =>
+      createAccusation(state, impostorId as string, targetId as string, now + 10)
+    ).toThrow(/impostor cannot accuse/i);
+  });
+
   it("timer expiry resolves as impostor got away", () => {
     let state = startNextRound(readyLobby(), "host", now, createSeededRng(7));
     const endsAt = state.rounds[0]?.endsAt ?? now;
@@ -104,5 +136,83 @@ describe("room state", () => {
     expect(state.phase).toBe("results");
     expect(state.rounds[0]?.resolution?.reason).toBe("timer");
     expect(state.rounds[0]?.resolution?.outcome).toBe("impostor-got-away");
+  });
+
+  it("lets the host reset from round results with players and scores intact", () => {
+    let state = startNextRound(readyLobby(), "host", now + 1, createSeededRng(7));
+    const endsAt = state.rounds[0]?.endsAt ?? now;
+    state = resolveTimerExpiry(state, endsAt);
+    const scores = new Map(
+      state.players.map((joinedPlayer) => [joinedPlayer.id, joinedPlayer.score])
+    );
+
+    expect(state.phase).toBe("results");
+    expect(() => restartGame(state, "p2", now + 2)).toThrow(/host/i);
+
+    state = restartGame(state, "host", now + 3);
+
+    expect(state.phase).toBe("lobby");
+    expect(state.rounds).toHaveLength(0);
+    expect(state.currentRoundId).toBeUndefined();
+    expect(state.players.every((joinedPlayer) => !joinedPlayer.ready)).toBe(true);
+    expect(state.players.map((joinedPlayer) => [joinedPlayer.id, joinedPlayer.score])).toEqual([
+      ...scores
+    ]);
+  });
+
+  it("returns a finished game to the lobby with players and scores intact", () => {
+    let state = readyLobby();
+    state = updateRoomConfig(state, "host", { roundCount: 1 }, now + 1);
+    for (const joinedPlayer of state.players) {
+      state = setPlayerReady(state, joinedPlayer.id, true, now + 2);
+    }
+
+    state = startNextRound(state, "host", now + 3, createSeededRng(7));
+    const endsAt = state.rounds[0]?.endsAt ?? now;
+    state = resolveTimerExpiry(state, endsAt);
+    const scores = new Map(
+      state.players.map((joinedPlayer) => [joinedPlayer.id, joinedPlayer.score])
+    );
+
+    expect(state.phase).toBe("finished");
+
+    state = restartGame(state, "host", now + 4);
+
+    expect(state.phase).toBe("lobby");
+    expect(state.rounds).toHaveLength(0);
+    expect(state.currentRoundId).toBeUndefined();
+    expect(state.players.every((joinedPlayer) => !joinedPlayer.ready)).toBe(true);
+    expect(state.players.map((joinedPlayer) => [joinedPlayer.id, joinedPlayer.score])).toEqual([
+      ...scores
+    ]);
+  });
+
+  it("lets the host update lobby config and clears ready marks", () => {
+    let state = readyLobby();
+    state = updateRoomConfig(
+      state,
+      "host",
+      {
+        mode: "accusation",
+        categoryId: "sports",
+        maxPlayers: 4,
+        roundCount: 1,
+        roundDurationSeconds: 90
+      },
+      now + 1
+    );
+
+    expect(state.config).toEqual({
+      mode: "accusation",
+      categoryId: "sports",
+      maxPlayers: 4,
+      roundCount: 1,
+      roundDurationSeconds: 90
+    });
+    expect(state.players.every((joinedPlayer) => !joinedPlayer.ready)).toBe(true);
+    expect(() => updateRoomConfig(state, "p2", { roundCount: 2 }, now + 2)).toThrow(/host/i);
+    expect(() => updateRoomConfig(state, "host", { maxPlayers: 3 }, now + 3)).toThrow(
+      /lower than the number/i
+    );
   });
 });

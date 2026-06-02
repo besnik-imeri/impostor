@@ -10,6 +10,7 @@ export interface Env {
   ROOMS: DurableObjectNamespace;
   TOKEN_SECRET?: string;
   ALLOWED_ORIGIN?: string;
+  ALLOWED_ORIGINS?: string;
   ROOM_IDLE_TTL_SECONDS?: string;
 }
 
@@ -47,6 +48,16 @@ export type ClientCommand =
       type: "host.game.start";
       requestId?: string;
       payload?: Record<string, never>;
+    }
+  | {
+      type: "host.game.reset";
+      requestId?: string;
+      payload?: Record<string, never>;
+    }
+  | {
+      type: "host.room.config.update";
+      requestId?: string;
+      payload: { config: Partial<RoomConfig> };
     }
   | {
       type: "player.suspect.create";

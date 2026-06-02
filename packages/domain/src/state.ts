@@ -218,6 +218,64 @@ export function canStartGame(state: RoomState): boolean {
   );
 }
 
+export function updateRoomConfig(
+  state: RoomState,
+  hostPlayerId: string,
+  configInput: Partial<RoomConfig>,
+  now: number
+): RoomState {
+  assertHost(state, hostPlayerId);
+  assertRule(
+    state.phase === "lobby",
+    "CONFIG_LOCKED",
+    "Room settings can only change in the lobby."
+  );
+
+  const config = normalizeRoomConfig({
+    ...state.config,
+    ...configInput
+  });
+
+  assertRule(
+    config.maxPlayers >= state.players.length,
+    "MAX_PLAYERS_TOO_LOW",
+    "Max players cannot be lower than the number already in the room."
+  );
+
+  const configChanged = !roomConfigsEqual(state.config, config);
+
+  return touch(
+    {
+      ...state,
+      config,
+      players: configChanged
+        ? state.players.map((player) => ({ ...player, ready: false }))
+        : state.players
+    },
+    now
+  );
+}
+
+export function restartGame(state: RoomState, hostPlayerId: string, now: number): RoomState {
+  assertHost(state, hostPlayerId);
+  assertRule(
+    state.phase === "results" || state.phase === "finished",
+    "RESTART_LOCKED",
+    "A new game can only be set up after a round ends."
+  );
+  const { currentRoundId: _currentRoundId, ...stateWithoutCurrentRound } = state;
+
+  return touch(
+    {
+      ...stateWithoutCurrentRound,
+      phase: "lobby",
+      players: state.players.map((player) => ({ ...player, ready: false })),
+      rounds: []
+    },
+    now
+  );
+}
+
 export function startNextRound(
   state: RoomState,
   hostPlayerId: string,
@@ -341,6 +399,11 @@ export function createAccusation(
   assertRule(accuserId !== accusedId, "CANNOT_ACCUSE_SELF", "You cannot accuse yourself.");
 
   const round = requireCurrentRound(state);
+  assertRule(
+    accuserId !== round.impostorId,
+    "IMPOSTOR_CANNOT_ACCUSE",
+    "The impostor cannot accuse players."
+  );
   assertRule(!round.resolution, "ROUND_RESOLVED", "This round is already resolved.");
 
   const accusation: Accusation = {
@@ -506,6 +569,16 @@ function touch(state: RoomState, now: number): RoomState {
     updatedAt: now,
     lastActiveAt: now
   };
+}
+
+function roomConfigsEqual(left: RoomConfig, right: RoomConfig): boolean {
+  return (
+    left.mode === right.mode &&
+    left.categoryId === right.categoryId &&
+    left.maxPlayers === right.maxPlayers &&
+    left.roundCount === right.roundCount &&
+    left.roundDurationSeconds === right.roundDurationSeconds
+  );
 }
 
 export function assertKnownCategory(categoryId: string): void {

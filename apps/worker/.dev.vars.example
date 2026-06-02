@@ -1,1 +1,2 @@
 TOKEN_SECRET="replace-with-a-long-random-local-secret"
+ALLOWED_ORIGINS="https://impostor.localhost"

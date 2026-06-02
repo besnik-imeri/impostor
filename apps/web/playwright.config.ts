@@ -4,12 +4,12 @@ export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
   use: {
-    baseURL: "http://127.0.0.1:5173",
+    baseURL: "https://impostor.localhost",
     trace: "retain-on-failure"
   },
   webServer: {
     command: "corepack pnpm --dir ../.. dev",
-    url: "http://127.0.0.1:5173",
+    url: "https://impostor.localhost",
     reuseExistingServer: true,
     timeout: 120_000
   },

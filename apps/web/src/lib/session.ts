@@ -4,35 +4,60 @@ const STORAGE_KEY = "impostor.room-session";
 
 export interface StoredRoomSession {
   code: string;
-  token: string;
   playerId: string;
 }
 
 export function storeRoomSession(session: RoomSessionResponse): void {
-  sessionStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({
+  try {
+    sessionStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
       code: session.room.code,
-      token: session.token,
       playerId: session.player.playerId
-    } satisfies StoredRoomSession)
-  );
+      } satisfies StoredRoomSession)
+    );
+  } catch {
+    // A missing sessionStorage entry should not block the live room connection.
+  }
 }
 
 export function readStoredRoomSession(): StoredRoomSession | undefined {
-  const raw = sessionStorage.getItem(STORAGE_KEY);
+  let raw: string | null;
+  try {
+    raw = sessionStorage.getItem(STORAGE_KEY);
+  } catch {
+    return undefined;
+  }
+
   if (!raw) {
     return undefined;
   }
 
   try {
-    return JSON.parse(raw) as StoredRoomSession;
+    const session = JSON.parse(raw) as Partial<StoredRoomSession>;
+    if (typeof session.code !== "string" || typeof session.playerId !== "string") {
+      sessionStorage.removeItem(STORAGE_KEY);
+      return undefined;
+    }
+
+    return {
+      code: session.code,
+      playerId: session.playerId
+    };
   } catch {
-    sessionStorage.removeItem(STORAGE_KEY);
+    try {
+      sessionStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // Ignore storage cleanup failures.
+    }
     return undefined;
   }
 }
 
 export function clearStoredRoomSession(): void {
-  sessionStorage.removeItem(STORAGE_KEY);
+  try {
+    sessionStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // Ignore storage cleanup failures.
+  }
 }

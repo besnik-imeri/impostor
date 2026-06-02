@@ -33,21 +33,66 @@ docs           Product, architecture, runbook, cost, and ADR docs
 
 ## Local Development
 
+Browser-facing local development runs through the global Caddy reverse proxy:
+
+- Main app: `https://impostor.localhost`
+- API: `https://impostor.localhost/api/*`
+- Web upstream: `http://127.0.0.1:3400`
+- Worker upstream: `http://127.0.0.1:3401`
+
 ```bash
 corepack enable
 pnpm install
 pnpm dev
 ```
 
-The web app runs on `http://127.0.0.1:5173`. The Worker runs on `http://127.0.0.1:8787`, and Vite proxies `/api` requests to it.
+The web app and Worker bind to `127.0.0.1` only. Vite proxies `/api` requests to the
+local Worker upstream, and Caddy is the browser-facing entrypoint.
 
-Use `http://127.0.0.1:5173/` for the landing page and `http://127.0.0.1:5173/play` for the game shell.
+Use `https://impostor.localhost/` for the landing page and
+`https://impostor.localhost/play` for the game shell. The API is available at
+`https://impostor.localhost/api/*`.
 
 For local Worker development, create `apps/worker/.dev.vars`:
 
 ```bash
 TOKEN_SECRET="replace-with-a-long-random-local-secret"
+ALLOWED_ORIGINS="https://impostor.localhost"
 ```
+
+No databases, caches, queues, search services, mail catchers, or object storage
+emulators are used by this repo in local development. Durable Object storage is
+managed internally by Wrangler and is not exposed as a host port.
+
+### Local Caddy Snippet
+
+The repo-local Caddy snippet lives at `ops/caddy/impostor.caddy`. Install or
+symlink it into the global local-dev Caddy project directory:
+
+```powershell
+New-Item -ItemType Directory -Force D:/_tools/caddy/projects
+New-Item -ItemType SymbolicLink -Force D:/_tools/caddy/projects/impostor.caddy -Target (Resolve-Path ops/caddy/impostor.caddy)
+```
+
+If symlinks are not available on your machine, copy the file instead:
+
+```powershell
+Copy-Item -Force ops/caddy/impostor.caddy D:/_tools/caddy/projects/impostor.caddy
+```
+
+Validate and reload the global Caddy config from the Caddy config directory:
+
+```powershell
+caddy validate --config Caddyfile --adapter caddyfile
+caddy reload --config Caddyfile --adapter caddyfile
+```
+
+If `pnpm dev` reports a port conflict, stop the process using `127.0.0.1:3400`
+or `127.0.0.1:3401` and rerun it. Vite uses strict port behavior and exits
+instead of falling back to a random available port.
+
+If Windows reports `No such host is known` for the `.localhost` name, add a
+loopback hosts entry for `impostor.localhost`.
 
 ## Quality Gates
 
@@ -60,6 +105,13 @@ pnpm test:e2e
 ```
 
 ## Deployment
+
+Production is hosted on Cloudflare:
+
+- Web app: `https://impostorgame.com`
+- API route: `https://impostorgame.com/api/*`
+- Pages project: `impostor`
+- Worker: `impostor-api`
 
 See [docs/runbooks/deployment.md](docs/runbooks/deployment.md).
 

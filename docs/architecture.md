@@ -47,6 +47,8 @@ The Worker exposes:
 
 Each active room is owned by one Durable Object instance named by room code. The Durable Object is the only writer for room state.
 
+Create and join responses set a room-scoped HttpOnly session cookie. Browser WebSocket upgrades authenticate with that cookie; room tokens are not returned in the JSON response or sent in WebSocket query strings.
+
 ### `apps/web`
 
 The web app is a mobile-first React SPA. It renders:
@@ -66,6 +68,8 @@ Client commands:
 
 - `player.ready.set`
 - `host.game.start`
+- `host.game.reset`
+- `host.room.config.update`
 - `player.suspect.create`
 - `player.accuse.create`
 - `host.player.kick`
