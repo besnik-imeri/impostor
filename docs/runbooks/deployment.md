@@ -50,6 +50,8 @@ pnpm --filter @impostor/web build
 pnpm --filter @impostor/web deploy
 ```
 
+For Cloudflare Pages Git deployments from the monorepo root, keep the build command as `npm run build`. The root `wrangler.jsonc` sets `pages_build_output_dir` to `apps/web/dist`, which is where the Vite web build writes the production assets.
+
 In Cloudflare Pages, attach the custom domain `impostorgame.com` to the `impostor` Pages project. The `apps/web/public/_redirects` file keeps direct SPA links such as `/play?room=CODE` working.
 
 If the Worker is ever hosted on a different domain than Pages, configure:
