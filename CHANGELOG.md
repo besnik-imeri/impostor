@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Immersive neon arcade landing experience with GSAP scroll motion and a lazily loaded Three.js attract-mode canvas.
+- Design QA report, placeholder asset inventory, and Playwright reference captures covering mobile and desktop game states.
+- Weekly Dependabot checks for npm workspace packages and GitHub Actions.
+- Dependency maintenance documentation, outdated/audit scripts, and a high-severity CI audit gate.
 - Product landing page at `/`, with the playable room flow moved to `/play`.
 - Backward-compatible room routing so legacy `/?room=CODE` links open `/play?room=CODE`.
 - Asset-backed player avatars using the 24 canonical `boy-1` through `boy-12` and `girl-1` through `girl-12` IDs.
@@ -21,8 +25,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Refreshed every direct dependency to the latest compatible stable baseline reviewed on 2026-07-11, including React 19.2.7, Vite 8.1.4, ESLint 10.6.0, Wrangler 4.110.0, and pnpm 11.11.0.
+- Pinned local and CI development to Node.js 24.18.0 LTS and upgraded the GitHub checkout and setup-node actions to v6.
+- Aligned Cloudflare Pages and Worker compatibility dates to 2026-07-10.
+- Added formatting and dependency-audit checks to CI.
 - Standardized product terminology, package names, role values, result states, and documentation on the `Impostor` spelling.
-- Refreshed the game UI around a playful mystery direction, including stronger lobby, reveal, timer, accusation, results, and leaderboard treatments.
+- Reworked the responsive game shell around the neon arcade direction, including mobile status/navigation treatments, desktop sidebars, mode cards, lobby previews, and live-round action panels.
+- Strengthened the lobby, reveal, timer, accusation, results, and leaderboard presentation while preserving the existing multiplayer flows.
 - Updated generated room links and QR codes to use `/play?room=CODE`.
 - Renamed internal workspace packages to the `@impostor/*` scope.
 

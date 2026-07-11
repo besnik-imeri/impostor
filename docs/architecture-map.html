@@ -51,12 +51,16 @@
       body {
         margin: 0;
         min-height: 100vh;
-        background:
-          linear-gradient(180deg, rgba(56, 189, 248, 0.1), transparent 360px),
-          var(--bg);
+        background: linear-gradient(180deg, rgba(56, 189, 248, 0.1), transparent 360px), var(--bg);
         color: var(--text);
         font-family:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
         line-height: 1.5;
       }
 
@@ -357,8 +361,7 @@
         overflow: hidden;
         background:
           linear-gradient(var(--line) 1px, transparent 1px),
-          linear-gradient(90deg, var(--line) 1px, transparent 1px),
-          var(--bg-soft);
+          linear-gradient(90deg, var(--line) 1px, transparent 1px), var(--bg-soft);
         background-size: 34px 34px;
         touch-action: none;
       }
@@ -550,8 +553,7 @@
         border-radius: 6px;
         background: var(--bg-soft);
         color: color-mix(in srgb, var(--text) 92%, var(--accent));
-        font-family:
-          "SFMono-Regular", Consolas, "Liberation Mono", Menlo, ui-monospace, monospace;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, ui-monospace, monospace;
         font-size: 12px;
       }
 
@@ -767,9 +769,9 @@
             <span class="eyebrow">Generated from repository evidence</span>
             <h1 id="overview-title">Impostor architecture map</h1>
             <p class="lead">
-              A mobile-first web party game organized as a TypeScript pnpm monorepo: React/Vite
-              in the browser, a Cloudflare Worker API at the edge, one Durable Object per room, and
-              a shared domain package that owns game rules, snapshots, words, and scoring.
+              A mobile-first web party game organized as a TypeScript pnpm monorepo: React/Vite in
+              the browser, a Cloudflare Worker API at the edge, one Durable Object per room, and a
+              shared domain package that owns game rules, snapshots, words, and scoring.
             </p>
             <div class="chip-row" aria-label="Detected tech stack">
               <span class="chip"><strong>React 19</strong> frontend</span>
@@ -835,23 +837,59 @@
                 </marker>
               </defs>
               <g id="diagramPanZoom">
-                <path class="edge" d="M190 185 C260 185 270 185 340 185" marker-end="url(#arrow)"></path>
+                <path
+                  class="edge"
+                  d="M190 185 C260 185 270 185 340 185"
+                  marker-end="url(#arrow)"
+                ></path>
                 <text class="edge-label" x="226" y="170">fetch / websocket</text>
-                <path class="edge" d="M500 185 C570 185 585 185 650 185" marker-end="url(#arrow)"></path>
+                <path
+                  class="edge"
+                  d="M500 185 C570 185 585 185 650 185"
+                  marker-end="url(#arrow)"
+                ></path>
                 <text class="edge-label" x="525" y="170">/api/rooms</text>
-                <path class="edge" d="M810 185 C880 185 890 185 960 185" marker-end="url(#arrow)"></path>
+                <path
+                  class="edge"
+                  d="M810 185 C880 185 890 185 960 185"
+                  marker-end="url(#arrow)"
+                ></path>
                 <text class="edge-label" x="845" y="170">DO stub fetch</text>
-                <path class="edge" d="M1040 250 C1040 300 1040 318 1040 365" marker-end="url(#arrow)"></path>
+                <path
+                  class="edge"
+                  d="M1040 250 C1040 300 1040 318 1040 365"
+                  marker-end="url(#arrow)"
+                ></path>
                 <text class="edge-label" x="1054" y="315">SQLite JSON</text>
-                <path class="edge" d="M420 260 C420 340 420 368 420 445" marker-end="url(#arrow)"></path>
+                <path
+                  class="edge"
+                  d="M420 260 C420 340 420 368 420 445"
+                  marker-end="url(#arrow)"
+                ></path>
                 <text class="edge-label" x="438" y="352">imports</text>
-                <path class="edge" d="M730 260 C700 340 650 384 560 445" marker-end="url(#arrow)"></path>
+                <path
+                  class="edge"
+                  d="M730 260 C700 340 650 384 560 445"
+                  marker-end="url(#arrow)"
+                ></path>
                 <text class="edge-label" x="650" y="348">imports</text>
-                <path class="edge" d="M970 260 C870 350 730 410 560 470" marker-end="url(#arrow)"></path>
+                <path
+                  class="edge"
+                  d="M970 260 C870 350 730 410 560 470"
+                  marker-end="url(#arrow)"
+                ></path>
                 <text class="edge-label" x="800" y="390">domain rules</text>
-                <path class="edge" d="M745 250 C745 320 748 340 752 412" marker-end="url(#arrow)"></path>
+                <path
+                  class="edge"
+                  d="M745 250 C745 320 748 340 752 412"
+                  marker-end="url(#arrow)"
+                ></path>
                 <text class="edge-label" x="764" y="332">tokens, CORS</text>
-                <path class="edge" d="M275 560 C390 625 740 630 900 560" marker-end="url(#arrow)"></path>
+                <path
+                  class="edge"
+                  d="M275 560 C390 625 740 630 900 560"
+                  marker-end="url(#arrow)"
+                ></path>
                 <text class="edge-label" x="520" y="638">build / deploy / CI</text>
 
                 <g class="diagram-node" data-filter="web-app" transform="translate(40 125)">
@@ -872,13 +910,21 @@
                   <text class="sub" x="18" y="62">Fetch router</text>
                   <text class="sub" x="18" y="82">/api/rooms</text>
                 </g>
-                <g class="diagram-node" data-filter="room-durable-object" transform="translate(960 125)">
+                <g
+                  class="diagram-node"
+                  data-filter="room-durable-object"
+                  transform="translate(960 125)"
+                >
                   <rect width="170" height="120"></rect>
                   <text x="18" y="36">Room Durable Object</text>
                   <text class="sub" x="18" y="62">One per room code</text>
                   <text class="sub" x="18" y="82">WebSockets + alarms</text>
                 </g>
-                <g class="diagram-node" data-filter="durable-object-storage" transform="translate(950 365)">
+                <g
+                  class="diagram-node"
+                  data-filter="durable-object-storage"
+                  transform="translate(950 365)"
+                >
                   <rect width="180" height="115"></rect>
                   <text x="18" y="36">DO SQLite storage</text>
                   <text class="sub" x="18" y="62">room_state table</text>
@@ -890,13 +936,21 @@
                   <text class="sub" x="18" y="62">Types, state, scoring</text>
                   <text class="sub" x="18" y="82">Public/private snapshots</text>
                 </g>
-                <g class="diagram-node" data-filter="worker-token-auth" transform="translate(655 415)">
+                <g
+                  class="diagram-node"
+                  data-filter="worker-token-auth"
+                  transform="translate(655 415)"
+                >
                   <rect width="190" height="100"></rect>
                   <text x="18" y="34">Worker helpers</text>
                   <text class="sub" x="18" y="58">HMAC tokens</text>
                   <text class="sub" x="18" y="76">CORS + JSON</text>
                 </g>
-                <g class="diagram-node" data-filter="cloudflare-infrastructure" transform="translate(70 500)">
+                <g
+                  class="diagram-node"
+                  data-filter="cloudflare-infrastructure"
+                  transform="translate(70 500)"
+                >
                   <rect width="205" height="100"></rect>
                   <text x="18" y="34">Cloudflare config</text>
                   <text class="sub" x="18" y="58">Wrangler + Pages</text>
@@ -913,8 +967,13 @@
           </div>
           <div class="legend">
             <span><i class="dot"></i> Runtime call or API edge</span>
-            <span><i class="dot" style="background: var(--accent-2)"></i> Persistence/security boundary</span>
-            <span><i class="dot" style="background: var(--accent-3)"></i> Shared domain import</span>
+            <span
+              ><i class="dot" style="background: var(--accent-2)"></i> Persistence/security
+              boundary</span
+            >
+            <span
+              ><i class="dot" style="background: var(--accent-3)"></i> Shared domain import</span
+            >
           </div>
         </section>
 
@@ -924,8 +983,8 @@
               <span class="eyebrow">Component cards</span>
               <h2 id="components-title">Major modules and ownership boundaries</h2>
               <p>
-                Cards include purpose, key files, public interfaces, dependencies, runtime
-                concerns, confidence, and evidence paths.
+                Cards include purpose, key files, public interfaces, dependencies, runtime concerns,
+                confidence, and evidence paths.
               </p>
             </div>
           </div>
@@ -968,7 +1027,8 @@
               <h2 id="data-title">State stores</h2>
               <p>
                 No standalone database service is present. Durable Object SQLite stores active room
-                state; the browser stores room code/player id while auth uses an HttpOnly cookie; words and avatars are code-owned.
+                state; the browser stores room code/player id while auth uses an HttpOnly cookie;
+                words and avatars are code-owned.
               </p>
             </div>
           </div>
@@ -1003,7 +1063,9 @@
             <div class="finding-box">
               <h3>Strengths</h3>
               <ul>
-                <li>Shared domain package centralizes game rules, state transitions, and scoring.</li>
+                <li>
+                  Shared domain package centralizes game rules, state transitions, and scoring.
+                </li>
                 <li>Durable Object gives each room a single authoritative writer.</li>
                 <li>Public/private snapshot boundary is explicit in domain code.</li>
                 <li>CI runs lint, typecheck, tests, and build on PRs and main pushes.</li>
@@ -1012,7 +1074,10 @@
             <div class="finding-box">
               <h3>Coupling Hotspots</h3>
               <ul>
-                <li><code>apps/web/src/lib/api.ts</code> and <code>apps/worker/src/protocol.ts</code> duplicate realtime types.</li>
+                <li>
+                  <code>apps/web/src/lib/api.ts</code> and
+                  <code>apps/worker/src/protocol.ts</code> duplicate realtime types.
+                </li>
                 <li><code>apps/web/src/app.tsx</code> holds many UI and orchestration concerns.</li>
                 <li>Production routing depends on Cloudflare Pages and Worker route alignment.</li>
               </ul>
@@ -1023,7 +1088,9 @@
                 <li>Realtime protocol reference.</li>
                 <li>Security notes for room cookies, tokens, CORS, and snapshot privacy.</li>
                 <li>Worker integration test strategy.</li>
-                <li>Operations checklist for Cloudflare secrets, routes, rollback, and token rotation.</li>
+                <li>
+                  Operations checklist for Cloudflare secrets, routes, rollback, and token rotation.
+                </li>
               </ul>
             </div>
             <div class="finding-box">
@@ -1031,7 +1098,10 @@
               <ul>
                 <li>Domain tests are strong for rules and scoring.</li>
                 <li>Visible Worker tests focus on token signing.</li>
-                <li>Direct Durable Object tests for sockets, persistence, CORS, and alarms were not found.</li>
+                <li>
+                  Direct Durable Object tests for sockets, persistence, CORS, and alarms were not
+                  found.
+                </li>
               </ul>
             </div>
             <div class="finding-box">
@@ -1039,7 +1109,10 @@
               <ul>
                 <li><code>TOKEN_SECRET</code> must be set in production.</li>
                 <li>WebSocket auth now uses a room-scoped HttpOnly cookie.</li>
-                <li><code>VITE_API_BASE_URL</code> is optional but important for split-origin deployments.</li>
+                <li>
+                  <code>VITE_API_BASE_URL</code> is optional but important for split-origin
+                  deployments.
+                </li>
               </ul>
             </div>
             <div class="finding-box">
@@ -1070,7 +1143,7 @@
         </section>
 
         <p class="footer-note">
-          Generated at 2026-05-28T23:22:43.9050455+02:00. Companion machine-readable file:
+          Generated at 2026-07-11T11:54:35+02:00. Companion machine-readable file:
           <code>docs/architecture-map.json</code>.
         </p>
       </main>
@@ -1087,7 +1160,7 @@
               "Root pnpm workspace, TypeScript, lint, formatting, and quality-gate coordination.",
             responsibilities: [
               "Define workspace packages under apps/* and packages/*.",
-              "Pin Node.js 24 and pnpm 11 expectations.",
+              "Pin Node.js 24.18.0 LTS and pnpm 11.11.0 expectations.",
               "Run recursive build, typecheck, test, lint, format, and deploy scripts."
             ],
             keyFiles: [
@@ -1098,7 +1171,13 @@
               ".prettierrc.json"
             ],
             interfaces: ["corepack pnpm dev", "corepack pnpm build", "corepack pnpm test"],
-            dependencies: ["Node.js >=24 <25", "pnpm >=11", "TypeScript", "ESLint", "Prettier"],
+            dependencies: [
+              "Node.js 24.18.0 LTS",
+              "pnpm 11.11.0",
+              "TypeScript 6",
+              "ESLint 10",
+              "Prettier 3"
+            ],
             dependents: ["web-app", "worker-api", "domain-package", "ci-cd"],
             runtime: "Development and CI orchestration",
             confidence: "high",
@@ -1118,19 +1197,22 @@
             keyFiles: [
               "apps/web/src/main.tsx",
               "apps/web/src/app.tsx",
+              "apps/web/src/components/landing-experience.tsx",
               "apps/web/src/styles/index.css",
               "apps/web/src/lib/api.ts",
               "apps/web/src/lib/session.ts",
               "apps/web/public/_redirects"
             ],
-            interfaces: ["/", "/play", "/play?room=CODE", "Vite dev server :5173"],
+            interfaces: ["/", "/play", "/play?room=CODE", "Vite dev server :3400"],
             dependencies: [
               "domain-package",
               "web-api-client",
               "web-session-storage",
               "react",
+              "gsap",
               "qrcode",
-              "lucide-react"
+              "lucide-react",
+              "three"
             ],
             dependents: [],
             runtime: "Browser SPA hosted by Cloudflare Pages or Vite dev server",
@@ -1149,7 +1231,13 @@
               "Expose ClientCommand and ServerEvent types used by the React app."
             ],
             keyFiles: ["apps/web/src/lib/api.ts", "apps/web/.env.example"],
-            interfaces: ["createRoom", "joinRoom", "createRoomSocket", "ClientCommand", "ServerEvent"],
+            interfaces: [
+              "createRoom",
+              "joinRoom",
+              "createRoomSocket",
+              "ClientCommand",
+              "ServerEvent"
+            ],
             dependencies: ["domain-package", "Browser fetch API", "Browser WebSocket API"],
             dependents: ["web-app"],
             runtime: "Browser",
@@ -1217,7 +1305,11 @@
               "apps/worker/src/protocol.ts",
               "apps/worker/wrangler.jsonc"
             ],
-            interfaces: ["POST /api/rooms", "POST /api/rooms/:code/join", "GET /api/rooms/:code/socket"],
+            interfaces: [
+              "POST /api/rooms",
+              "POST /api/rooms/:code/join",
+              "GET /api/rooms/:code/socket"
+            ],
             dependencies: [
               "domain-package",
               "room-durable-object",
@@ -1226,7 +1318,7 @@
               "Cloudflare Workers runtime"
             ],
             dependents: ["web-api-client", "cloudflare-infrastructure"],
-            runtime: "Cloudflare Worker or wrangler dev on :8787",
+            runtime: "Cloudflare Worker or wrangler dev on :3401",
             confidence: "high",
             evidence: ["apps/worker/src/index.ts", "apps/worker/wrangler.jsonc"]
           },
@@ -1404,8 +1496,17 @@
               "apps/web/public/_redirects",
               "docs/runbooks/deployment.md"
             ],
-            interfaces: ["Worker impostor-api", "Pages project impostor", "https://impostorgame.com/api/*"],
-            dependencies: ["Cloudflare Pages", "Cloudflare Workers", "Cloudflare Durable Objects", "Wrangler"],
+            interfaces: [
+              "Worker impostor-api",
+              "Pages project impostor",
+              "https://impostorgame.com/api/*"
+            ],
+            dependencies: [
+              "Cloudflare Pages",
+              "Cloudflare Workers",
+              "Cloudflare Durable Objects",
+              "Wrangler"
+            ],
             dependents: [],
             runtime: "Cloudflare edge runtime and Pages hosting",
             confidence: "high",
@@ -1416,15 +1517,16 @@
             name: "GitHub Actions Quality Workflow",
             type: "infrastructure",
             summary:
-              "CI workflow installs dependencies and runs lint, typecheck, tests, and build on PRs and pushes to main.",
+              "CI workflow installs dependencies and runs format, lint, typecheck, tests, build, and dependency audit checks on PRs and pushes to main.",
             responsibilities: [
               "Set up Node 24.",
               "Install dependencies with frozen pnpm lockfile.",
-              "Run lint, typecheck, tests, and build."
+              "Run format, lint, typecheck, tests, build, and dependency audit checks.",
+              "Schedule grouped weekly dependency and GitHub Actions updates with Dependabot."
             ],
-            keyFiles: [".github/workflows/ci.yml", "package.json"],
+            keyFiles: [".github/workflows/ci.yml", ".github/dependabot.yml", "package.json"],
             interfaces: ["GitHub Actions workflow: CI"],
-            dependencies: ["workspace", "GitHub Actions"],
+            dependencies: ["workspace", "GitHub Actions", "Dependabot"],
             dependents: [],
             runtime: "GitHub Actions ubuntu-latest",
             confidence: "high",
@@ -1439,7 +1541,12 @@
             auth: "not_required",
             request: "CreateRoomRequest with host profile and Partial<RoomConfig>",
             response: "PublicRoomSnapshot, PrivatePlayerSnapshot plus HttpOnly room session cookie",
-            downstream: ["room-durable-object", "domain-package", "worker-token-auth", "durable-object-storage"]
+            downstream: [
+              "room-durable-object",
+              "domain-package",
+              "worker-token-auth",
+              "durable-object-storage"
+            ]
           },
           {
             method: "POST",
@@ -1448,7 +1555,12 @@
             auth: "not_required",
             request: "JoinRoomRequest with nickname, avatar, color",
             response: "PublicRoomSnapshot, PrivatePlayerSnapshot plus HttpOnly room session cookie",
-            downstream: ["room-durable-object", "domain-package", "worker-token-auth", "durable-object-storage"]
+            downstream: [
+              "room-durable-object",
+              "domain-package",
+              "worker-token-auth",
+              "durable-object-storage"
+            ]
           },
           {
             method: "GET",
@@ -1464,7 +1576,11 @@
           {
             name: "Durable Object SQLite",
             tech: "Cloudflare Durable Object SQLite storage",
-            files: ["apps/worker/src/index.ts", "apps/worker/wrangler.jsonc", "packages/domain/src/types.ts"],
+            files: [
+              "apps/worker/src/index.ts",
+              "apps/worker/wrangler.jsonc",
+              "packages/domain/src/types.ts"
+            ],
             entities: ["room_state table", "RoomState", "PlayerProfile", "RoundState"],
             relationships:
               "One room_state row stores one RoomState JSON object; RoomState owns players and rounds; rounds reference player ids.",
@@ -1493,7 +1609,8 @@
             tech: "Static SVG files",
             files: ["apps/web/public/avatars", "packages/domain/src/constants.ts"],
             entities: ["AvatarId", "AVATARS"],
-            relationships: "PlayerProfile.avatar stores an AvatarId rendered as /avatars/{avatar}.svg.",
+            relationships:
+              "PlayerProfile.avatar stores an AvatarId rendered as /avatars/{avatar}.svg.",
             migration: "Source-controlled static assets."
           }
         ],
@@ -1510,7 +1627,10 @@
               ["room-durable-object", "Create RoomState, save JSON, schedule alarm, sign token."],
               ["web-session-storage", "Store session and connect WebSocket."]
             ],
-            risks: ["TOKEN_SECRET must be configured in production.", "Token is stored in sessionStorage and used in WebSocket URL query."]
+            risks: [
+              "TOKEN_SECRET must be configured in production.",
+              "Token is stored in sessionStorage and used in WebSocket URL query."
+            ]
           },
           {
             id: "join-room-flow",
@@ -1521,9 +1641,15 @@
               ["web-app", "Join form reads code from user or /play?room=CODE."],
               ["web-api-client", "POST to /api/rooms/:code/join."],
               ["worker-api", "Uppercase code, create player id, forward /join."],
-              ["room-durable-object", "Validate joinRoom, save, broadcast player.joined and snapshots."]
+              [
+                "room-durable-object",
+                "Validate joinRoom, save, broadcast player.joined and snapshots."
+              ]
             ],
-            risks: ["Room membership is accountless by design.", "Nickname uniqueness is room-scoped."]
+            risks: [
+              "Room membership is accountless by design.",
+              "Nickname uniqueness is room-scoped."
+            ]
           },
           {
             id: "realtime-command-flow",
@@ -1531,13 +1657,19 @@
             summary:
               "Browser sends ClientCommand JSON over WebSocket; Durable Object applies domain logic, persists state, and broadcasts events and snapshots.",
             steps: [
-              ["web-app", "Send ready/start/config/suspect/accuse/reset/cancel/heartbeat commands."],
+              [
+                "web-app",
+                "Send ready/start/config/suspect/accuse/reset/cancel/heartbeat commands."
+              ],
               ["room-durable-object", "Parse JSON and dispatch by command.type."],
               ["domain-package", "Validate and mutate room state."],
               ["durable-object-storage", "Save mutated RoomState JSON."],
               ["room-durable-object", "Broadcast room.snapshot and per-player private.snapshot."]
             ],
-            risks: ["Protocol types are duplicated between web and Worker.", "Worker command paths need direct integration tests."]
+            risks: [
+              "Protocol types are duplicated between web and Worker.",
+              "Worker command paths need direct integration tests."
+            ]
           },
           {
             id: "privacy-snapshot-flow",
@@ -1546,10 +1678,18 @@
               "Domain snapshot builders separate public room data from current-player role/word data; Durable Object sends private snapshots per socket.",
             steps: [
               ["domain-package", "buildPublicSnapshot omits active impostor id and secret word."],
-              ["domain-package", "buildPrivateSnapshot returns only this player's role and visible word."],
-              ["room-durable-object", "broadcastSnapshots sends public and private events separately."]
+              [
+                "domain-package",
+                "buildPrivateSnapshot returns only this player's role and visible word."
+              ],
+              [
+                "room-durable-object",
+                "broadcastSnapshots sends public and private events separately."
+              ]
             ],
-            risks: ["Privacy depends on all paths using domain snapshot builders instead of raw RoomState."]
+            risks: [
+              "Privacy depends on all paths using domain snapshot builders instead of raw RoomState."
+            ]
           },
           {
             id: "timer-and-idle-flow",
@@ -1585,7 +1725,11 @@
             title: "Production TOKEN_SECRET must be configured",
             description:
               "Worker falls back to a local-development secret if TOKEN_SECRET is absent.",
-            evidence: ["apps/worker/src/index.ts", "apps/worker/.dev.vars.example", "docs/runbooks/deployment.md"]
+            evidence: [
+              "apps/worker/src/index.ts",
+              "apps/worker/.dev.vars.example",
+              "docs/runbooks/deployment.md"
+            ]
           },
           {
             id: "risk-websocket-token-query",
@@ -1617,7 +1761,11 @@
             title: "Durable Object behavior has limited direct tests",
             description:
               "Visible Worker tests focus on token signing; domain and e2e tests cover much of the behavior indirectly.",
-            evidence: ["apps/worker/tests/tokens.test.ts", "apps/web/e2e/app.spec.ts", "packages/domain/tests/state.test.ts"]
+            evidence: [
+              "apps/worker/tests/tokens.test.ts",
+              "apps/web/e2e/app.spec.ts",
+              "packages/domain/tests/state.test.ts"
+            ]
           }
         ],
         tasks: [
@@ -1890,7 +2038,9 @@
           document.querySelectorAll("#componentGrid details").forEach((details) => {
             details.open = expanded;
           });
-          byId("expandAll").textContent = expanded ? "Collapse component details" : "Expand component details";
+          byId("expandAll").textContent = expanded
+            ? "Collapse component details"
+            : "Expand component details";
         });
       }
 

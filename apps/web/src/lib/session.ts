@@ -12,8 +12,8 @@ export function storeRoomSession(session: RoomSessionResponse): void {
     sessionStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
-      code: session.room.code,
-      playerId: session.player.playerId
+        code: session.room.code,
+        playerId: session.player.playerId
       } satisfies StoredRoomSession)
     );
   } catch {

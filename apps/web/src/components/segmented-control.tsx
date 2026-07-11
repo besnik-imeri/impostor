@@ -1,3 +1,5 @@
+import { Crosshair, Eye, ShieldQuestion } from "lucide-react";
+
 interface SegmentedControlProps<TValue extends string> {
   label: string;
   value: TValue;
@@ -12,6 +14,17 @@ export function SegmentedControl<TValue extends string>({
   onChange
 }: SegmentedControlProps<TValue>) {
   const isModePicker = label.toLowerCase() === "game mode";
+  const modeIcon = (value: string) => {
+    if (value === "accusation") {
+      return <Crosshair size={34} strokeWidth={2.5} />;
+    }
+
+    if (value === "suspicion") {
+      return <Eye size={34} strokeWidth={2.5} />;
+    }
+
+    return <ShieldQuestion size={34} strokeWidth={2.5} />;
+  };
 
   return (
     <fieldset className={isModePicker ? "field-group mode-field-group" : "field-group"}>
@@ -26,7 +39,9 @@ export function SegmentedControl<TValue extends string>({
           >
             {isModePicker ? (
               <>
-                <span className={`mode-card-icon is-${option.value}`} aria-hidden="true" />
+                <span className={`mode-card-icon is-${option.value}`} aria-hidden="true">
+                  {modeIcon(option.value)}
+                </span>
                 <strong>{option.label}</strong>
                 <span>
                   {option.value === "accusation"
@@ -41,7 +56,9 @@ export function SegmentedControl<TValue extends string>({
         ))}
         {isModePicker ? (
           <button aria-disabled="true" className="is-disabled" disabled type="button">
-            <span className="mode-card-icon is-reverse" aria-hidden="true" />
+            <span className="mode-card-icon is-reverse" aria-hidden="true">
+              {modeIcon("reverse")}
+            </span>
             <strong>Reverse Psychology</strong>
             <span>Coming soon. The impostor knows the word.</span>
           </button>

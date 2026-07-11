@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.0.8",
+  "packageManager": "pnpm@11.11.0",
   "engines": {
-    "node": ">=24 <25",
-    "pnpm": ">=11"
+    "node": ">=24.11.0 <25",
+    "pnpm": ">=11.11.0 <12"
   },
   "scripts": {
     "dev": "corepack pnpm --filter @impostor/domain build && corepack pnpm --parallel --filter @impostor/worker --filter @impostor/web dev",
@@ -17,18 +17,20 @@
     "format:check": "prettier --check .",
     "test": "corepack pnpm -r --if-present test",
     "test:e2e": "corepack pnpm --filter @impostor/web test:e2e",
+    "deps:audit": "corepack pnpm audit --audit-level high",
+    "deps:outdated": "corepack pnpm outdated --recursive",
     "deploy": "corepack pnpm --filter @impostor/worker deploy && corepack pnpm --filter @impostor/web deploy"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.0",
-    "@types/node": "^24.0.0",
-    "eslint": "^9.39.0",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.24",
-    "globals": "^16.5.0",
-    "prettier": "^3.6.2",
-    "typescript": "^6.0.0",
-    "typescript-eslint": "^8.46.4",
-    "vitest": "^4.0.0"
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.13.3",
+    "eslint": "^10.6.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.5",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.63.0",
+    "vitest": "^4.1.10"
   }
 }

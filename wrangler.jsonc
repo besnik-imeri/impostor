@@ -2,5 +2,5 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "impostor",
   "pages_build_output_dir": "apps/web/dist",
-  "compatibility_date": "2026-06-08"
+  "compatibility_date": "2026-07-10"
 }

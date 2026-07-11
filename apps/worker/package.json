@@ -14,8 +14,8 @@
     "@impostor/domain": "workspace:*"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260508.0",
-    "vitest": "^4.0.0",
-    "wrangler": "^4.0.0"
+    "@cloudflare/workers-types": "^5.20260710.1",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.110.0"
   }
 }

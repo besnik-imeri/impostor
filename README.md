@@ -27,8 +27,8 @@ docs           Product, architecture, runbook, cost, and ADR docs
 
 ## Requirements
 
-- Node.js 24 LTS
-- pnpm 11 via Corepack
+- Node.js 24.18.0 LTS (the repository supports Node.js 24.11.0 or newer in the 24.x line)
+- pnpm 11.11.0 via Corepack
 - Cloudflare account for deployment
 
 ## Local Development
@@ -97,12 +97,18 @@ loopback hosts entry for `impostor.localhost`.
 ## Quality Gates
 
 ```bash
+pnpm format:check
 pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
+pnpm deps:audit
 pnpm test:e2e
 ```
+
+`pnpm deps:audit` fails on high- or critical-severity advisories. See the
+[dependency maintenance guide](docs/dependency-maintenance.md) for the complete dependency
+inventory, intentional version holds, update procedure, and automation policy.
 
 ## Deployment
 
@@ -119,6 +125,7 @@ See [docs/runbooks/deployment.md](docs/runbooks/deployment.md).
 
 - [Game rules](docs/product/game-rules.md)
 - [Architecture](docs/architecture.md)
+- [Dependency maintenance](docs/dependency-maintenance.md)
 - [Cost model](docs/cost-model.md)
 - [Cloudflare Durable Objects ADR](docs/adr/0001-cloudflare-durable-objects.md)
 - [Changelog](CHANGELOG.md)

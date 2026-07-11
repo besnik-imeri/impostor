@@ -1,9 +1,4 @@
-import {
-  PLAYER_LIMITS,
-  ROUND_LIMITS,
-  WORD_CATEGORIES,
-  type RoomConfig
-} from "@impostor/domain";
+import { PLAYER_LIMITS, ROUND_LIMITS, WORD_CATEGORIES, type RoomConfig } from "@impostor/domain";
 
 export function isValidRoomConfigDraft(config: RoomConfig, currentPlayers: number): boolean {
   return (

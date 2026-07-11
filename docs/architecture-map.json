@@ -1,17 +1,10 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-05-28T23:22:43.9050455+02:00",
+  "generated_at": "2026-07-11T11:54:35+02:00",
   "repository": {
     "name": "impostor",
     "root_summary": "Impostor is a pnpm workspace for a mobile-first, in-person social deduction party game. The repository contains a React/Vite single-page web app, a Cloudflare Worker API with one Durable Object per room, and a shared TypeScript domain package for game rules, state transitions, scoring, words, and public/private snapshots.",
-    "primary_languages": [
-      "TypeScript",
-      "TSX",
-      "CSS",
-      "HTML",
-      "JSON",
-      "Markdown"
-    ],
+    "primary_languages": ["TypeScript", "TSX", "CSS", "HTML", "JSON", "Markdown"],
     "tech_stack": [
       "React 19",
       "Vite 8",
@@ -22,14 +15,12 @@
       "Wrangler 4",
       "Vitest 4",
       "Playwright",
-      "ESLint 9",
+      "ESLint 10",
       "Prettier 3",
       "TypeScript 6",
       "pnpm 11"
     ],
-    "package_managers": [
-      "pnpm"
-    ],
+    "package_managers": ["pnpm"],
     "monorepo": true,
     "architecture_style": "TypeScript monorepo with a browser SPA, same-origin Worker API, room-scoped Durable Object state authority, and shared domain logic.",
     "confidence": "high",
@@ -59,10 +50,7 @@
         "corepack pnpm test:e2e",
         "corepack pnpm deploy"
       ],
-      "evidence": [
-        "package.json",
-        "README.md"
-      ]
+      "evidence": ["package.json", "README.md"]
     },
     {
       "id": "web-main",
@@ -70,11 +58,7 @@
       "type": "app",
       "summary": "The Vite app mounts React StrictMode and renders App from apps/web/src/app.tsx.",
       "path": "apps/web/src/main.tsx",
-      "evidence": [
-        "apps/web/src/main.tsx",
-        "apps/web/index.html",
-        "apps/web/vite.config.ts"
-      ]
+      "evidence": ["apps/web/src/main.tsx", "apps/web/index.html", "apps/web/vite.config.ts"]
     },
     {
       "id": "worker-fetch",
@@ -82,10 +66,7 @@
       "type": "api",
       "summary": "The Worker default export handles public /api/rooms routes and forwards room-specific requests to the RoomDurableObject.",
       "path": "apps/worker/src/index.ts",
-      "evidence": [
-        "apps/worker/src/index.ts",
-        "apps/worker/wrangler.jsonc"
-      ]
+      "evidence": ["apps/worker/src/index.ts", "apps/worker/wrangler.jsonc"]
     },
     {
       "id": "room-durable-object",
@@ -93,11 +74,7 @@
       "type": "service",
       "summary": "Cloudflare Durable Object class owns room state, WebSocket sessions, timer alarms, snapshots, and SQLite persistence.",
       "path": "apps/worker/src/index.ts",
-      "evidence": [
-        "apps/worker/src/index.ts",
-        "apps/worker/wrangler.jsonc",
-        "docs/architecture.md"
-      ]
+      "evidence": ["apps/worker/src/index.ts", "apps/worker/wrangler.jsonc", "docs/architecture.md"]
     },
     {
       "id": "domain-public-api",
@@ -105,10 +82,7 @@
       "type": "package",
       "summary": "The domain package re-exports constants, errors, random helpers, scoring, state transitions, types, and word categories.",
       "path": "packages/domain/src/index.ts",
-      "evidence": [
-        "packages/domain/src/index.ts",
-        "packages/domain/package.json"
-      ]
+      "evidence": ["packages/domain/src/index.ts", "packages/domain/package.json"]
     }
   ],
   "components": [
@@ -131,30 +105,29 @@
         "tsconfig.json",
         "eslint.config.js",
         ".prettierrc.json",
-        ".node-version"
+        ".node-version",
+        ".github/dependabot.yml",
+        "docs/dependency-maintenance.md"
       ],
       "public_interfaces": [
         "corepack pnpm dev",
         "corepack pnpm build",
         "corepack pnpm test",
         "corepack pnpm lint",
+        "corepack pnpm format:check",
+        "corepack pnpm deps:audit",
         "corepack pnpm deploy"
       ],
       "internal_dependencies": [],
       "external_dependencies": [
-        "Node.js >=24 <25",
-        "pnpm >=11",
+        "Node.js 24.18.0 LTS (>=24.11.0 <25)",
+        "pnpm 11.11.0",
         "TypeScript",
         "ESLint",
         "Prettier",
         "Vitest"
       ],
-      "dependents": [
-        "web-app",
-        "worker-api",
-        "domain-package",
-        "ci-cd"
-      ],
+      "dependents": ["web-app", "worker-api", "domain-package", "ci-cd"],
       "runtime": "development and CI orchestration",
       "owner_boundary": "Repository-wide tooling and conventions.",
       "confidence": "high",
@@ -183,6 +156,7 @@
       "key_files": [
         "apps/web/src/main.tsx",
         "apps/web/src/app.tsx",
+        "apps/web/src/components/landing-experience.tsx",
         "apps/web/src/styles/index.css",
         "apps/web/src/lib/api.ts",
         "apps/web/src/lib/session.ts",
@@ -195,7 +169,7 @@
       ],
       "public_interfaces": [
         "Browser routes: /, /play, /play?room=CODE, /play?join=1",
-        "Vite dev server on http://127.0.0.1:5173",
+        "Vite dev server on http://127.0.0.1:3400",
         "Cloudflare Pages static deployment",
         "User-facing room setup and gameplay screens"
       ],
@@ -208,8 +182,10 @@
       "external_dependencies": [
         "react",
         "react-dom",
+        "gsap",
         "lucide-react",
         "qrcode",
+        "three",
         "@vitejs/plugin-react",
         "@tailwindcss/vite",
         "tailwindcss",
@@ -241,11 +217,7 @@
         "Serialize client commands and deserialize server events.",
         "Expose TypeScript types used by the React app."
       ],
-      "key_files": [
-        "apps/web/src/lib/api.ts",
-        "apps/web/src/app.tsx",
-        "apps/web/.env.example"
-      ],
+      "key_files": ["apps/web/src/lib/api.ts", "apps/web/src/app.tsx", "apps/web/.env.example"],
       "public_interfaces": [
         "createRoom(input)",
         "joinRoom(code, input)",
@@ -253,25 +225,17 @@
         "ClientCommand type",
         "ServerEvent type"
       ],
-      "internal_dependencies": [
-        "domain-package"
-      ],
+      "internal_dependencies": ["domain-package"],
       "external_dependencies": [
         "Browser fetch API",
         "Browser WebSocket API",
         "Vite import.meta.env"
       ],
-      "dependents": [
-        "web-app"
-      ],
+      "dependents": ["web-app"],
       "runtime": "Browser",
       "owner_boundary": "Client transport adapter for the Worker API and WebSocket protocol.",
       "confidence": "high",
-      "evidence": [
-        "apps/web/src/lib/api.ts",
-        "apps/web/src/app.tsx",
-        "apps/web/.env.example"
-      ]
+      "evidence": ["apps/web/src/lib/api.ts", "apps/web/src/app.tsx", "apps/web/.env.example"]
     },
     {
       "id": "web-session-storage",
@@ -283,32 +247,20 @@
         "Restore session information during app startup.",
         "Clear session information when the player leaves a room."
       ],
-      "key_files": [
-        "apps/web/src/lib/session.ts",
-        "apps/web/src/app.tsx"
-      ],
+      "key_files": ["apps/web/src/lib/session.ts", "apps/web/src/app.tsx"],
       "public_interfaces": [
         "storeRoomSession(session)",
         "readStoredRoomSession()",
         "clearStoredRoomSession()",
         "sessionStorage key: impostor.room-session"
       ],
-      "internal_dependencies": [
-        "web-api-client"
-      ],
-      "external_dependencies": [
-        "Browser sessionStorage API"
-      ],
-      "dependents": [
-        "web-app"
-      ],
+      "internal_dependencies": ["web-api-client"],
+      "external_dependencies": ["Browser sessionStorage API"],
+      "dependents": ["web-app"],
       "runtime": "Browser",
       "owner_boundary": "Room-scoped client session recovery within the browser tab/session.",
       "confidence": "high",
-      "evidence": [
-        "apps/web/src/lib/session.ts",
-        "apps/web/src/app.tsx"
-      ]
+      "evidence": ["apps/web/src/lib/session.ts", "apps/web/src/app.tsx"]
     },
     {
       "id": "avatar-assets",
@@ -335,13 +287,9 @@
         "AvatarMark component",
         "getAvatarLabel(avatar)"
       ],
-      "internal_dependencies": [
-        "domain-package"
-      ],
+      "internal_dependencies": ["domain-package"],
       "external_dependencies": [],
-      "dependents": [
-        "web-app"
-      ],
+      "dependents": ["web-app"],
       "runtime": "Static assets served by the web host.",
       "owner_boundary": "Visual identity assets for room-scoped player profiles.",
       "confidence": "high",
@@ -391,11 +339,8 @@
         "DurableObjectNamespace",
         "Web Crypto API"
       ],
-      "dependents": [
-        "web-api-client",
-        "cloudflare-infrastructure"
-      ],
-      "runtime": "Cloudflare Worker or wrangler dev on http://127.0.0.1:8787.",
+      "dependents": ["web-api-client", "cloudflare-infrastructure"],
+      "runtime": "Cloudflare Worker or wrangler dev on http://127.0.0.1:3401.",
       "owner_boundary": "Public API ingress and Durable Object dispatch.",
       "confidence": "high",
       "evidence": [
@@ -451,9 +396,7 @@
         "Cloudflare WebSocket hibernation APIs",
         "Cloudflare alarms"
       ],
-      "dependents": [
-        "worker-api"
-      ],
+      "dependents": ["worker-api"],
       "runtime": "Cloudflare Durable Object class RoomDurableObject, one instance named by room code.",
       "owner_boundary": "Only writer for room state and only component allowed to reveal per-player private role data.",
       "confidence": "high",
@@ -488,14 +431,8 @@
         "RoomTokenPayload"
       ],
       "internal_dependencies": [],
-      "external_dependencies": [
-        "Web Crypto API",
-        "TOKEN_SECRET environment secret"
-      ],
-      "dependents": [
-        "worker-api",
-        "room-durable-object"
-      ],
+      "external_dependencies": ["Web Crypto API", "TOKEN_SECRET environment secret"],
+      "dependents": ["worker-api", "room-durable-object"],
       "runtime": "Cloudflare Worker runtime.",
       "owner_boundary": "Room membership token creation and verification.",
       "confidence": "high",
@@ -530,14 +467,8 @@
         "readJson(request)"
       ],
       "internal_dependencies": [],
-      "external_dependencies": [
-        "Fetch API Response",
-        "ALLOWED_ORIGINS environment variable"
-      ],
-      "dependents": [
-        "worker-api",
-        "room-durable-object"
-      ],
+      "external_dependencies": ["Fetch API Response", "ALLOWED_ORIGINS environment variable"],
+      "dependents": ["worker-api", "room-durable-object"],
       "runtime": "Cloudflare Worker runtime.",
       "owner_boundary": "Worker HTTP response and CORS policy helpers.",
       "confidence": "high",
@@ -589,16 +520,9 @@
         "scoreRound",
         "WORD_CATEGORIES"
       ],
-      "internal_dependencies": [
-        "word-catalog"
-      ],
+      "internal_dependencies": ["word-catalog"],
       "external_dependencies": [],
-      "dependents": [
-        "web-app",
-        "web-api-client",
-        "worker-api",
-        "room-durable-object"
-      ],
+      "dependents": ["web-app", "web-api-client", "worker-api", "room-durable-object"],
       "runtime": "Shared TypeScript executed in browser build and Cloudflare Worker.",
       "owner_boundary": "Canonical game rules, state model, privacy snapshots, and scoring. UI and Worker should not reimplement these rules.",
       "confidence": "high",
@@ -629,18 +553,10 @@
         "docs/product/game-rules.md",
         "docs/cost-model.md"
       ],
-      "public_interfaces": [
-        "WORD_CATEGORIES",
-        "getCategory(categoryId)",
-        "RoomConfig.categoryId"
-      ],
+      "public_interfaces": ["WORD_CATEGORIES", "getCategory(categoryId)", "RoomConfig.categoryId"],
       "internal_dependencies": [],
       "external_dependencies": [],
-      "dependents": [
-        "domain-package",
-        "web-app",
-        "room-durable-object"
-      ],
+      "dependents": ["domain-package", "web-app", "room-durable-object"],
       "runtime": "Bundled TypeScript data.",
       "owner_boundary": "MVP content source for secret words.",
       "confidence": "high",
@@ -672,15 +588,9 @@
         "Table room_state(id TEXT PRIMARY KEY, state TEXT NOT NULL, updated_at INTEGER NOT NULL)",
         "Durable Object migration tag v1 with new_sqlite_classes RoomDurableObject"
       ],
-      "internal_dependencies": [
-        "room-durable-object"
-      ],
-      "external_dependencies": [
-        "Cloudflare Durable Object SQLite storage"
-      ],
-      "dependents": [
-        "room-durable-object"
-      ],
+      "internal_dependencies": ["room-durable-object"],
+      "external_dependencies": ["Cloudflare Durable Object SQLite storage"],
+      "dependents": ["room-durable-object"],
       "runtime": "Cloudflare Durable Object local SQLite storage.",
       "owner_boundary": "Short-lived active room recovery only; no long-term history.",
       "confidence": "high",
@@ -718,11 +628,7 @@
         "wrangler deploy",
         "wrangler pages deploy dist --project-name impostor"
       ],
-      "internal_dependencies": [
-        "web-app",
-        "worker-api",
-        "room-durable-object"
-      ],
+      "internal_dependencies": ["web-app", "worker-api", "room-durable-object"],
       "external_dependencies": [
         "Cloudflare Pages",
         "Cloudflare Workers",
@@ -747,16 +653,18 @@
       "id": "ci-cd",
       "name": "GitHub Actions Quality Workflow",
       "type": "infrastructure",
-      "summary": "CI workflow that installs dependencies and runs lint, typecheck, tests, and build on pull requests and pushes to main.",
+      "summary": "CI workflow that installs dependencies and runs formatting, lint, typecheck, tests, build, and dependency audit checks on pull requests and pushes to main.",
       "responsibilities": [
         "Checkout source.",
         "Set up Node 24.",
         "Enable Corepack.",
         "Install dependencies with frozen pnpm lockfile.",
-        "Run lint, typecheck, tests, and build."
+        "Run format, lint, typecheck, tests, build, and dependency audit checks.",
+        "Schedule grouped weekly dependency and GitHub Actions updates with Dependabot."
       ],
       "key_files": [
         ".github/workflows/ci.yml",
+        ".github/dependabot.yml",
         "package.json",
         "pnpm-lock.yaml"
       ],
@@ -765,25 +673,18 @@
         "pull_request trigger",
         "push to main trigger"
       ],
-      "internal_dependencies": [
-        "workspace",
-        "web-app",
-        "worker-api",
-        "domain-package"
-      ],
+      "internal_dependencies": ["workspace", "web-app", "worker-api", "domain-package"],
       "external_dependencies": [
         "GitHub Actions",
-        "actions/checkout@v4",
-        "actions/setup-node@v4"
+        "Dependabot",
+        "actions/checkout@v6",
+        "actions/setup-node@v6"
       ],
       "dependents": [],
       "runtime": "GitHub Actions ubuntu-latest.",
       "owner_boundary": "Repository quality gate automation.",
       "confidence": "high",
-      "evidence": [
-        ".github/workflows/ci.yml",
-        "package.json"
-      ]
+      "evidence": [".github/workflows/ci.yml", "package.json"]
     }
   ],
   "dependencies": [
@@ -807,10 +708,7 @@
       "type": "imports",
       "description": "The app calls createRoom, joinRoom, createRoomSocket, and sends typed realtime commands through the API client.",
       "strength": "strong",
-      "evidence": [
-        "apps/web/src/app.tsx",
-        "apps/web/src/lib/api.ts"
-      ]
+      "evidence": ["apps/web/src/app.tsx", "apps/web/src/lib/api.ts"]
     },
     {
       "from": "web-app",
@@ -818,10 +716,7 @@
       "type": "imports",
       "description": "The app stores, restores, and clears room session tokens through the session module.",
       "strength": "strong",
-      "evidence": [
-        "apps/web/src/app.tsx",
-        "apps/web/src/lib/session.ts"
-      ]
+      "evidence": ["apps/web/src/app.tsx", "apps/web/src/lib/session.ts"]
     },
     {
       "from": "web-api-client",
@@ -829,11 +724,7 @@
       "type": "api_call",
       "description": "Browser fetch calls POST /api/rooms and POST /api/rooms/:code/join, then opens a WebSocket at /api/rooms/:code/socket.",
       "strength": "strong",
-      "evidence": [
-        "apps/web/src/lib/api.ts",
-        "apps/worker/src/index.ts",
-        "docs/architecture.md"
-      ]
+      "evidence": ["apps/web/src/lib/api.ts", "apps/worker/src/index.ts", "docs/architecture.md"]
     },
     {
       "from": "web-api-client",
@@ -853,10 +744,7 @@
       "type": "imports",
       "description": "The Worker imports domain rule errors and room functions to create players, build snapshots, and classify validation errors.",
       "strength": "strong",
-      "evidence": [
-        "apps/worker/src/index.ts",
-        "apps/worker/tsconfig.json"
-      ]
+      "evidence": ["apps/worker/src/index.ts", "apps/worker/tsconfig.json"]
     },
     {
       "from": "worker-api",
@@ -864,10 +752,7 @@
       "type": "runtime_call",
       "description": "The Worker maps room codes to Durable Object ids with env.ROOMS.idFromName and forwards create, join, and socket requests.",
       "strength": "strong",
-      "evidence": [
-        "apps/worker/src/index.ts",
-        "apps/worker/wrangler.jsonc"
-      ]
+      "evidence": ["apps/worker/src/index.ts", "apps/worker/wrangler.jsonc"]
     },
     {
       "from": "room-durable-object",
@@ -887,11 +772,7 @@
       "type": "database_access",
       "description": "The Durable Object creates room_state, saves JSON RoomState rows, loads rows, schedules alarms, and deletes idle records.",
       "strength": "strong",
-      "evidence": [
-        "apps/worker/src/index.ts",
-        "apps/worker/wrangler.jsonc",
-        "docs/architecture.md"
-      ]
+      "evidence": ["apps/worker/src/index.ts", "apps/worker/wrangler.jsonc", "docs/architecture.md"]
     },
     {
       "from": "room-durable-object",
@@ -899,10 +780,7 @@
       "type": "imports",
       "description": "Room creation/join issue signed tokens; socket handling verifies tokens before accepting a WebSocket session.",
       "strength": "strong",
-      "evidence": [
-        "apps/worker/src/index.ts",
-        "apps/worker/src/tokens.ts"
-      ]
+      "evidence": ["apps/worker/src/index.ts", "apps/worker/src/tokens.ts"]
     },
     {
       "from": "worker-api",
@@ -910,10 +788,7 @@
       "type": "imports",
       "description": "The Worker uses shared helpers for JSON responses, CORS, empty preflight responses, and JSON request parsing.",
       "strength": "strong",
-      "evidence": [
-        "apps/worker/src/index.ts",
-        "apps/worker/src/http.ts"
-      ]
+      "evidence": ["apps/worker/src/index.ts", "apps/worker/src/http.ts"]
     },
     {
       "from": "domain-package",
@@ -921,10 +796,7 @@
       "type": "imports",
       "description": "Domain state validation and round start logic read word categories from the code-owned catalog.",
       "strength": "strong",
-      "evidence": [
-        "packages/domain/src/state.ts",
-        "packages/domain/src/words.ts"
-      ]
+      "evidence": ["packages/domain/src/state.ts", "packages/domain/src/words.ts"]
     },
     {
       "from": "cloudflare-infrastructure",
@@ -932,10 +804,7 @@
       "type": "configuration",
       "description": "Wrangler config declares the Worker entry, production API routes, allowed origins, and Durable Object binding.",
       "strength": "strong",
-      "evidence": [
-        "apps/worker/wrangler.jsonc",
-        "docs/runbooks/deployment.md"
-      ]
+      "evidence": ["apps/worker/wrangler.jsonc", "docs/runbooks/deployment.md"]
     },
     {
       "from": "cloudflare-infrastructure",
@@ -953,12 +822,9 @@
       "from": "ci-cd",
       "to": "workspace",
       "type": "build_dependency",
-      "description": "GitHub Actions runs root pnpm install, lint, typecheck, test, and build commands.",
+      "description": "GitHub Actions runs root pnpm install, format, lint, typecheck, test, build, and dependency audit commands.",
       "strength": "strong",
-      "evidence": [
-        ".github/workflows/ci.yml",
-        "package.json"
-      ]
+      "evidence": [".github/workflows/ci.yml", "package.json"]
     }
   ],
   "data_flows": [
@@ -971,28 +837,21 @@
           "order": 1,
           "component": "web-app",
           "action": "Host fills create-room form on /play and submits profile plus partial RoomConfig.",
-          "files": [
-            "apps/web/src/app.tsx"
-          ],
+          "files": ["apps/web/src/app.tsx"],
           "confidence": "high"
         },
         {
           "order": 2,
           "component": "web-api-client",
           "action": "POSTs JSON to /api/rooms.",
-          "files": [
-            "apps/web/src/lib/api.ts"
-          ],
+          "files": ["apps/web/src/lib/api.ts"],
           "confidence": "high"
         },
         {
           "order": 3,
           "component": "worker-api",
           "action": "Generates a room code and host player id, then forwards an internal /create request to env.ROOMS.get(id).fetch.",
-          "files": [
-            "apps/worker/src/index.ts",
-            "apps/worker/src/ids.ts"
-          ],
+          "files": ["apps/worker/src/index.ts", "apps/worker/src/ids.ts"],
           "confidence": "high"
         },
         {
@@ -1018,12 +877,7 @@
           "confidence": "high"
         }
       ],
-      "inputs": [
-        "Host nickname",
-        "AvatarId",
-        "PlayerColor",
-        "Partial RoomConfig"
-      ],
+      "inputs": ["Host nickname", "AvatarId", "PlayerColor", "Partial RoomConfig"],
       "outputs": [
         "PublicRoomSnapshot",
         "PrivatePlayerSnapshot",
@@ -1052,47 +906,32 @@
           "order": 1,
           "component": "web-app",
           "action": "Join form uses an explicit room code, /play?room=CODE, or /play?join=1 setup path.",
-          "files": [
-            "apps/web/src/app.tsx"
-          ],
+          "files": ["apps/web/src/app.tsx"],
           "confidence": "high"
         },
         {
           "order": 2,
           "component": "web-api-client",
           "action": "POSTs nickname/avatar/color to /api/rooms/:code/join.",
-          "files": [
-            "apps/web/src/lib/api.ts"
-          ],
+          "files": ["apps/web/src/lib/api.ts"],
           "confidence": "high"
         },
         {
           "order": 3,
           "component": "worker-api",
           "action": "Uppercases the room code, creates a player id, and forwards an internal /join request to the matching Durable Object.",
-          "files": [
-            "apps/worker/src/index.ts",
-            "apps/worker/src/ids.ts"
-          ],
+          "files": ["apps/worker/src/index.ts", "apps/worker/src/ids.ts"],
           "confidence": "high"
         },
         {
           "order": 4,
           "component": "room-durable-object",
           "action": "Creates player, validates joinRoom domain rules, saves state, broadcasts player.joined and snapshots, and returns token plus snapshots.",
-          "files": [
-            "apps/worker/src/index.ts",
-            "packages/domain/src/state.ts"
-          ],
+          "files": ["apps/worker/src/index.ts", "packages/domain/src/state.ts"],
           "confidence": "high"
         }
       ],
-      "inputs": [
-        "Room code",
-        "Nickname",
-        "AvatarId",
-        "PlayerColor"
-      ],
+      "inputs": ["Room code", "Nickname", "AvatarId", "PlayerColor"],
       "outputs": [
         "PublicRoomSnapshot",
         "PrivatePlayerSnapshot",
@@ -1121,57 +960,39 @@
           "order": 1,
           "component": "web-app",
           "action": "UI interactions send typed ClientCommand messages such as ready, start, config update, suspect, accuse, reset, cancel, and heartbeat.",
-          "files": [
-            "apps/web/src/app.tsx",
-            "apps/web/src/lib/api.ts"
-          ],
+          "files": ["apps/web/src/app.tsx", "apps/web/src/lib/api.ts"],
           "confidence": "high"
         },
         {
           "order": 2,
           "component": "room-durable-object",
           "action": "webSocketMessage parses JSON, reads SocketSession attachment, and dispatches by command.type.",
-          "files": [
-            "apps/worker/src/index.ts",
-            "apps/worker/src/protocol.ts"
-          ],
+          "files": ["apps/worker/src/index.ts", "apps/worker/src/protocol.ts"],
           "confidence": "high"
         },
         {
           "order": 3,
           "component": "domain-package",
           "action": "Domain functions validate and mutate room state for ready, start, config, suspicion, accusation, kick, cancel, reset, and timer rules.",
-          "files": [
-            "packages/domain/src/state.ts",
-            "packages/domain/src/scoring.ts"
-          ],
+          "files": ["packages/domain/src/state.ts", "packages/domain/src/scoring.ts"],
           "confidence": "high"
         },
         {
           "order": 4,
           "component": "durable-object-storage",
           "action": "The Durable Object saves the mutated RoomState JSON and schedules the next alarm.",
-          "files": [
-            "apps/worker/src/index.ts"
-          ],
+          "files": ["apps/worker/src/index.ts"],
           "confidence": "high"
         },
         {
           "order": 5,
           "component": "room-durable-object",
           "action": "Broadcasts phase.changed, round.resolved, game.finished, command.rejected, room.snapshot, and per-socket private.snapshot events.",
-          "files": [
-            "apps/worker/src/index.ts",
-            "apps/worker/src/protocol.ts"
-          ],
+          "files": ["apps/worker/src/index.ts", "apps/worker/src/protocol.ts"],
           "confidence": "high"
         }
       ],
-      "inputs": [
-        "ClientCommand JSON",
-        "SocketSession attachment",
-        "Current RoomState"
-      ],
+      "inputs": ["ClientCommand JSON", "SocketSession attachment", "Current RoomState"],
       "outputs": [
         "Updated RoomState",
         "PublicRoomSnapshot",
@@ -1200,40 +1021,26 @@
           "order": 1,
           "component": "domain-package",
           "action": "buildPublicSnapshot omits impostor id and secret word from active rounds.",
-          "files": [
-            "packages/domain/src/state.ts",
-            "packages/domain/src/types.ts"
-          ],
+          "files": ["packages/domain/src/state.ts", "packages/domain/src/types.ts"],
           "confidence": "high"
         },
         {
           "order": 2,
           "component": "domain-package",
           "action": "buildPrivateSnapshot returns current player's role and visible word, and only reveals secretWord/impostorId after resolution.",
-          "files": [
-            "packages/domain/src/state.ts",
-            "packages/domain/src/types.ts"
-          ],
+          "files": ["packages/domain/src/state.ts", "packages/domain/src/types.ts"],
           "confidence": "high"
         },
         {
           "order": 3,
           "component": "room-durable-object",
           "action": "broadcastSnapshots sends room.snapshot to all sockets and private.snapshot to each socket using its attached playerId.",
-          "files": [
-            "apps/worker/src/index.ts"
-          ],
+          "files": ["apps/worker/src/index.ts"],
           "confidence": "high"
         }
       ],
-      "inputs": [
-        "RoomState",
-        "SocketSession.playerId"
-      ],
-      "outputs": [
-        "PublicRoomSnapshot",
-        "PrivatePlayerSnapshot"
-      ],
+      "inputs": ["RoomState", "SocketSession.playerId"],
+      "outputs": ["PublicRoomSnapshot", "PrivatePlayerSnapshot"],
       "risks": [
         "Privacy depends on all UI/server paths continuing to use domain snapshot builders instead of exposing raw RoomState."
       ],
@@ -1253,42 +1060,26 @@
           "order": 1,
           "component": "room-durable-object",
           "action": "scheduleAlarm sets the alarm to currentRound.endsAt during active unresolved rounds.",
-          "files": [
-            "apps/worker/src/index.ts"
-          ],
+          "files": ["apps/worker/src/index.ts"],
           "confidence": "high"
         },
         {
           "order": 2,
           "component": "domain-package",
           "action": "resolveTimerExpiry validates timer state and scores the round as impostor got away.",
-          "files": [
-            "packages/domain/src/state.ts",
-            "packages/domain/src/scoring.ts"
-          ],
+          "files": ["packages/domain/src/state.ts", "packages/domain/src/scoring.ts"],
           "confidence": "high"
         },
         {
           "order": 3,
           "component": "room-durable-object",
           "action": "alarm deletes room_state when now - lastActiveAt exceeds ROOM_IDLE_TTL_SECONDS.",
-          "files": [
-            "apps/worker/src/index.ts",
-            "apps/worker/wrangler.jsonc"
-          ],
+          "files": ["apps/worker/src/index.ts", "apps/worker/wrangler.jsonc"],
           "confidence": "high"
         }
       ],
-      "inputs": [
-        "Round endsAt timestamp",
-        "RoomState.lastActiveAt",
-        "ROOM_IDLE_TTL_SECONDS"
-      ],
-      "outputs": [
-        "Resolved round",
-        "Updated room snapshots",
-        "Deleted idle room_state row"
-      ],
+      "inputs": ["Round endsAt timestamp", "RoomState.lastActiveAt", "ROOM_IDLE_TTL_SECONDS"],
+      "outputs": ["Resolved round", "Updated room snapshots", "Deleted idle room_state row"],
       "risks": [
         "Timer and idle behavior depend on Cloudflare alarms and Durable Object storage semantics.",
         "Local and production behavior should be verified with Wrangler for alarm edge cases."
@@ -1309,39 +1100,28 @@
           "order": 1,
           "component": "workspace",
           "action": "Root build runs recursive package builds; root deploy deploys Worker first, then web.",
-          "files": [
-            "package.json"
-          ],
+          "files": ["package.json"],
           "confidence": "high"
         },
         {
           "order": 2,
           "component": "domain-package",
           "action": "Domain build emits dist and declarations from src.",
-          "files": [
-            "packages/domain/package.json",
-            "packages/domain/tsconfig.build.json"
-          ],
+          "files": ["packages/domain/package.json", "packages/domain/tsconfig.build.json"],
           "confidence": "high"
         },
         {
           "order": 3,
           "component": "worker-api",
           "action": "Worker build typechecks and deploys with wrangler deploy.",
-          "files": [
-            "apps/worker/package.json",
-            "apps/worker/wrangler.jsonc"
-          ],
+          "files": ["apps/worker/package.json", "apps/worker/wrangler.jsonc"],
           "confidence": "high"
         },
         {
           "order": 4,
           "component": "web-app",
           "action": "Web build typechecks and runs vite build; deploy uploads dist to Cloudflare Pages.",
-          "files": [
-            "apps/web/package.json",
-            "apps/web/vite.config.ts"
-          ],
+          "files": ["apps/web/package.json", "apps/web/vite.config.ts"],
           "confidence": "high"
         },
         {
@@ -1499,10 +1279,7 @@
       "name": "Browser sessionStorage",
       "technology": "Browser sessionStorage",
       "component": "web-session-storage",
-      "schema_or_model_files": [
-        "apps/web/src/lib/session.ts",
-        "apps/web/src/lib/api.ts"
-      ],
+      "schema_or_model_files": ["apps/web/src/lib/session.ts", "apps/web/src/lib/api.ts"],
       "key_entities": [
         {
           "name": "StoredRoomSession",
@@ -1515,20 +1292,14 @@
       "migration_strategy": "No explicit migration; parse errors clear the session key.",
       "retention": "Browser session lifetime.",
       "confidence": "high",
-      "evidence": [
-        "apps/web/src/lib/session.ts",
-        "apps/web/src/app.tsx"
-      ]
+      "evidence": ["apps/web/src/lib/session.ts", "apps/web/src/app.tsx"]
     },
     {
       "id": "code-owned-word-catalog",
       "name": "Word Category Source Data",
       "technology": "TypeScript source constants",
       "component": "word-catalog",
-      "schema_or_model_files": [
-        "packages/domain/src/words.ts",
-        "packages/domain/src/types.ts"
-      ],
+      "schema_or_model_files": ["packages/domain/src/words.ts", "packages/domain/src/types.ts"],
       "key_entities": [
         {
           "name": "WordCategory",
@@ -1602,10 +1373,7 @@
       "id": "cloudflare-workers",
       "name": "Cloudflare Workers",
       "purpose": "Edge runtime for public /api/* routes.",
-      "configuration": [
-        "apps/worker/wrangler.jsonc",
-        "apps/worker/package.json"
-      ],
+      "configuration": ["apps/worker/wrangler.jsonc", "apps/worker/package.json"],
       "confidence": "high",
       "evidence": [
         "apps/worker/wrangler.jsonc",
@@ -1617,10 +1385,7 @@
       "id": "cloudflare-durable-objects",
       "name": "Cloudflare Durable Objects",
       "purpose": "Authoritative per-room state ownership, WebSocket sessions, alarms, and SQLite persistence.",
-      "configuration": [
-        "apps/worker/wrangler.jsonc",
-        "apps/worker/src/index.ts"
-      ],
+      "configuration": ["apps/worker/wrangler.jsonc", "apps/worker/src/index.ts"],
       "confidence": "high",
       "evidence": [
         "apps/worker/wrangler.jsonc",
@@ -1632,26 +1397,17 @@
       "id": "github-actions",
       "name": "GitHub Actions",
       "purpose": "CI quality workflow.",
-      "configuration": [
-        ".github/workflows/ci.yml"
-      ],
+      "configuration": [".github/workflows/ci.yml"],
       "confidence": "high",
-      "evidence": [
-        ".github/workflows/ci.yml"
-      ]
+      "evidence": [".github/workflows/ci.yml"]
     },
     {
       "id": "cloudflare-dns",
       "name": "Cloudflare DNS",
       "purpose": "Documented DNS/domain prerequisite for impostorgame.com.",
-      "configuration": [
-        "docs/runbooks/deployment.md"
-      ],
+      "configuration": ["docs/runbooks/deployment.md"],
       "confidence": "medium",
-      "evidence": [
-        "docs/runbooks/deployment.md",
-        "README.md"
-      ]
+      "evidence": ["docs/runbooks/deployment.md", "README.md"]
     }
   ],
   "configuration": {
@@ -1681,28 +1437,19 @@
         "name": "ALLOWED_ORIGINS",
         "scope": "Worker var",
         "requiredness": "configured_for_production",
-        "evidence": [
-          "apps/worker/wrangler.jsonc",
-          "apps/worker/src/http.ts"
-        ]
+        "evidence": ["apps/worker/wrangler.jsonc", "apps/worker/src/http.ts"]
       },
       {
         "name": "ALLOWED_ORIGIN",
         "scope": "Worker var",
         "requiredness": "used_for_local_dev_or_legacy_single_origin",
-        "evidence": [
-          "apps/worker/package.json",
-          "apps/worker/src/http.ts"
-        ]
+        "evidence": ["apps/worker/package.json", "apps/worker/src/http.ts"]
       },
       {
         "name": "ROOM_IDLE_TTL_SECONDS",
         "scope": "Worker var",
         "requiredness": "optional_with_default_86400",
-        "evidence": [
-          "apps/worker/wrangler.jsonc",
-          "apps/worker/src/index.ts"
-        ]
+        "evidence": ["apps/worker/wrangler.jsonc", "apps/worker/src/index.ts"]
       },
       {
         "name": "VITE_API_BASE_URL",
@@ -1749,115 +1496,82 @@
       {
         "command": "corepack pnpm build",
         "scope": "workspace",
-        "evidence": [
-          "package.json"
-        ]
+        "evidence": ["package.json"]
       },
       {
         "command": "corepack pnpm --filter @impostor/domain build",
         "scope": "domain-package",
-        "evidence": [
-          "packages/domain/package.json",
-          "packages/domain/tsconfig.build.json"
-        ]
+        "evidence": ["packages/domain/package.json", "packages/domain/tsconfig.build.json"]
       },
       {
         "command": "corepack pnpm --filter @impostor/worker build",
         "scope": "worker-api",
-        "evidence": [
-          "apps/worker/package.json"
-        ]
+        "evidence": ["apps/worker/package.json"]
       },
       {
         "command": "corepack pnpm --filter @impostor/web build",
         "scope": "web-app",
-        "evidence": [
-          "apps/web/package.json"
-        ]
+        "evidence": ["apps/web/package.json"]
       }
     ],
     "test_commands": [
       {
         "command": "corepack pnpm test",
         "scope": "workspace",
-        "evidence": [
-          "package.json"
-        ]
+        "evidence": ["package.json"]
       },
       {
         "command": "corepack pnpm --filter @impostor/web test:e2e",
         "scope": "web-app",
-        "evidence": [
-          "package.json",
-          "apps/web/package.json",
-          "apps/web/playwright.config.ts"
-        ]
+        "evidence": ["package.json", "apps/web/package.json", "apps/web/playwright.config.ts"]
       },
       {
         "command": "corepack pnpm --filter @impostor/domain test",
         "scope": "domain-package",
-        "evidence": [
-          "packages/domain/package.json",
-          "packages/domain/vitest.config.ts"
-        ]
+        "evidence": ["packages/domain/package.json", "packages/domain/vitest.config.ts"]
       },
       {
         "command": "corepack pnpm --filter @impostor/worker test",
         "scope": "worker-api",
-        "evidence": [
-          "apps/worker/package.json",
-          "apps/worker/vitest.config.ts"
-        ]
+        "evidence": ["apps/worker/package.json", "apps/worker/vitest.config.ts"]
       },
       {
         "command": "corepack pnpm --filter @impostor/web test",
         "scope": "web-app",
-        "evidence": [
-          "apps/web/package.json",
-          "apps/web/vitest.config.ts"
-        ]
+        "evidence": ["apps/web/package.json", "apps/web/vitest.config.ts"]
       }
     ],
     "lint_commands": [
       {
         "command": "corepack pnpm lint",
         "scope": "workspace",
-        "evidence": [
-          "package.json",
-          "eslint.config.js"
-        ]
+        "evidence": ["package.json", "eslint.config.js"]
       },
       {
         "command": "corepack pnpm format:check",
         "scope": "workspace",
-        "evidence": [
-          "package.json",
-          ".prettierrc.json"
-        ]
+        "evidence": ["package.json", ".prettierrc.json"]
       }
     ],
     "ci_cd": [
       {
         "name": "CI",
         "provider": "GitHub Actions",
-        "triggers": [
-          "pull_request",
-          "push to main"
-        ],
+        "triggers": ["pull_request", "push to main"],
         "steps": [
-          "actions/checkout@v4",
-          "actions/setup-node@v4 with node-version 24",
+          "actions/checkout@v6",
+          "actions/setup-node@v6 with .node-version",
           "corepack enable",
           "corepack pnpm --version",
           "corepack pnpm install --frozen-lockfile",
+          "corepack pnpm format:check",
           "corepack pnpm lint",
           "corepack pnpm typecheck",
           "corepack pnpm test",
-          "corepack pnpm build"
+          "corepack pnpm build",
+          "corepack pnpm deps:audit"
         ],
-        "evidence": [
-          ".github/workflows/ci.yml"
-        ]
+        "evidence": [".github/workflows/ci.yml"]
       }
     ],
     "containers": [],
@@ -1865,18 +1579,12 @@
       {
         "name": "Cloudflare Pages",
         "usage": "Static web app hosting for apps/web/dist.",
-        "evidence": [
-          "apps/web/package.json",
-          "docs/runbooks/deployment.md"
-        ]
+        "evidence": ["apps/web/package.json", "docs/runbooks/deployment.md"]
       },
       {
         "name": "Cloudflare Workers",
         "usage": "Public API route runtime for apps/worker/src/index.ts.",
-        "evidence": [
-          "apps/worker/wrangler.jsonc",
-          "apps/worker/package.json"
-        ]
+        "evidence": ["apps/worker/wrangler.jsonc", "apps/worker/package.json"]
       },
       {
         "name": "Cloudflare Durable Objects",
@@ -1895,10 +1603,7 @@
       "title": "Use Cloudflare Durable Objects for realtime rooms",
       "status": "accepted",
       "summary": "Cloudflare Pages, Workers, and Durable Objects are chosen to keep room state authoritative, room-scoped, low-cost, and close to WebSockets without adding a separate database.",
-      "evidence": [
-        "docs/adr/0001-cloudflare-durable-objects.md",
-        "docs/architecture.md"
-      ]
+      "evidence": ["docs/adr/0001-cloudflare-durable-objects.md", "docs/architecture.md"]
     },
     {
       "id": "shared-domain-rules",
@@ -1917,34 +1622,21 @@
       "title": "Room-scoped profiles and no accounts for MVP",
       "status": "observed",
       "summary": "The product scope and cost model explicitly exclude global accounts and paid authentication.",
-      "evidence": [
-        "README.md",
-        "docs/product/game-rules.md",
-        "docs/cost-model.md"
-      ]
+      "evidence": ["README.md", "docs/product/game-rules.md", "docs/cost-model.md"]
     },
     {
       "id": "code-owned-content",
       "title": "Keep curated word lists in code",
       "status": "observed",
       "summary": "Word categories are stored in packages/domain/src/words.ts and docs state CMS should wait until non-developer editing is needed.",
-      "evidence": [
-        "packages/domain/src/words.ts",
-        "docs/cost-model.md",
-        "docs/architecture.md"
-      ]
+      "evidence": ["packages/domain/src/words.ts", "docs/cost-model.md", "docs/architecture.md"]
     }
   ],
   "constraints": [
     {
       "id": "node-pnpm-version",
-      "description": "Repository expects Node.js 24 and pnpm 11 via Corepack.",
-      "evidence": [
-        "package.json",
-        ".node-version",
-        "README.md",
-        ".github/workflows/ci.yml"
-      ]
+      "description": "Repository pins Node.js 24.18.0 LTS and pnpm 11.11.0 via Corepack.",
+      "evidence": ["package.json", ".node-version", "README.md", ".github/workflows/ci.yml"]
     },
     {
       "id": "cloudflare-specific-runtime",
@@ -1958,11 +1650,7 @@
     {
       "id": "mvp-product-scope",
       "description": "Web app only, in-person play only, room-scoped profiles, no accounts, and no long-term player history.",
-      "evidence": [
-        "README.md",
-        "docs/product/game-rules.md",
-        "docs/architecture.md"
-      ]
+      "evidence": ["README.md", "docs/product/game-rules.md", "docs/architecture.md"]
     },
     {
       "id": "privacy-boundary",
@@ -1994,10 +1682,7 @@
       "category": "security",
       "title": "WebSocket auth depends on room-scoped cookies",
       "description": "The client creates /api/rooms/:code/socket URLs and the Worker authenticates the upgrade from the room-scoped HttpOnly cookie.",
-      "evidence": [
-        "apps/web/src/lib/api.ts",
-        "apps/worker/src/index.ts"
-      ],
+      "evidence": ["apps/web/src/lib/api.ts", "apps/worker/src/index.ts"],
       "recommendation": "Keep the API and app same-origin or same-site, preserve exact CORS origins with credentials, and verify room cookies are set during create/join smoke tests."
     },
     {
@@ -2006,10 +1691,7 @@
       "category": "maintainability",
       "title": "Realtime protocol types are duplicated between web and Worker",
       "description": "ClientCommand and ServerEvent unions exist in both apps/web/src/lib/api.ts and apps/worker/src/protocol.ts. Drift could create runtime protocol bugs that TypeScript cannot catch across packages.",
-      "evidence": [
-        "apps/web/src/lib/api.ts",
-        "apps/worker/src/protocol.ts"
-      ],
+      "evidence": ["apps/web/src/lib/api.ts", "apps/worker/src/protocol.ts"],
       "recommendation": "Move shared protocol request/response/event types into packages/domain or a small packages/protocol workspace package, then import them from both app and Worker."
     },
     {
@@ -2018,9 +1700,7 @@
       "category": "maintainability",
       "title": "Main React app file is a large multi-responsibility module",
       "description": "apps/web/src/app.tsx contains routing, landing content, game shell, forms, lobby, round, results, timers, theme, and WebSocket orchestration in one file, making focused changes harder for humans and AI agents.",
-      "evidence": [
-        "apps/web/src/app.tsx"
-      ],
+      "evidence": ["apps/web/src/app.tsx"],
       "recommendation": "Split by screen/flow after behavior stabilizes: routing/app shell, landing, setup forms, room header, lobby, round actions, results, and hooks for realtime/session/theme."
     },
     {
@@ -2043,10 +1723,7 @@
       "category": "performance",
       "title": "No explicit production observability instrumentation is visible",
       "description": "Docs intentionally defer paid observability/analytics, and no logging, metrics, tracing, or error reporting integration is visible in source.",
-      "evidence": [
-        "docs/cost-model.md",
-        "docs/architecture.md"
-      ],
+      "evidence": ["docs/cost-model.md", "docs/architecture.md"],
       "recommendation": "Document the current minimal observability stance and add privacy-preserving Worker error/log guidance before production traffic grows."
     },
     {
@@ -2077,10 +1754,10 @@
       "Domain package emits declarations in its build config."
     ],
     "linting_formatting_indicators": [
-      "ESLint 9 flat config with TypeScript recommended rules.",
+      "ESLint 10 flat config with TypeScript recommended rules.",
       "React hooks and React refresh lint rules apply to apps/web.",
       "Prettier config sets printWidth 100, double quotes, and no trailing commas.",
-      "CI runs lint, typecheck, test, and build."
+      "CI runs format, lint, typecheck, test, build, and dependency audit checks."
     ],
     "observability_indicators": [
       "No explicit telemetry, tracing, structured logging, or error reporting integration was found.",
@@ -2098,11 +1775,7 @@
     "start_here": [
       {
         "task": "Understand repo purpose and runtime shape",
-        "paths": [
-          "README.md",
-          "docs/architecture.md",
-          "docs/product/game-rules.md"
-        ]
+        "paths": ["README.md", "docs/architecture.md", "docs/product/game-rules.md"]
       },
       {
         "task": "Understand package layout and commands",
@@ -2174,10 +1847,7 @@
           "apps/web/src/components/segmented-control.tsx",
           "apps/web/src/styles/index.css"
         ],
-        "then_check": [
-          "apps/web/e2e/app.spec.ts",
-          "design/reference"
-        ]
+        "then_check": ["apps/web/e2e/app.spec.ts", "design/reference"]
       },
       {
         "task": "Update database schema or persistence",
@@ -2186,10 +1856,7 @@
           "apps/worker/wrangler.jsonc",
           "docs/adr/0001-cloudflare-durable-objects.md"
         ],
-        "then_check": [
-          "packages/domain/src/types.ts",
-          "docs/runbooks/deployment.md"
-        ]
+        "then_check": ["packages/domain/src/types.ts", "docs/runbooks/deployment.md"]
       },
       {
         "task": "Add a test",
@@ -2201,10 +1868,7 @@
           "apps/worker/vitest.config.ts",
           "packages/domain/vitest.config.ts"
         ],
-        "then_check": [
-          "package.json",
-          ".github/workflows/ci.yml"
-        ]
+        "then_check": ["package.json", ".github/workflows/ci.yml"]
       },
       {
         "task": "Change deployment or configuration",
@@ -2214,11 +1878,7 @@
           "apps/web/public/_redirects",
           "docs/runbooks/deployment.md"
         ],
-        "then_check": [
-          "apps/web/.env.example",
-          "apps/worker/.dev.vars.example",
-          "README.md"
-        ]
+        "then_check": ["apps/web/.env.example", "apps/worker/.dev.vars.example", "README.md"]
       },
       {
         "task": "Investigate auth/security",
@@ -2244,10 +1904,7 @@
           "docs/runbooks/deployment.md",
           "docs/adr/0001-cloudflare-durable-objects.md"
         ],
-        "then_check": [
-          "docs/architecture-map.json",
-          "docs/architecture-map.html"
-        ]
+        "then_check": ["docs/architecture-map.json", "docs/architecture-map.html"]
       }
     ]
   },
@@ -2255,18 +1912,12 @@
     {
       "id": "unknown-production-observability",
       "description": "No explicit production observability provider or structured logging strategy was found. Cloudflare dashboard/log usage may exist outside the repo.",
-      "evidence": [
-        "docs/cost-model.md",
-        "docs/architecture.md"
-      ]
+      "evidence": ["docs/cost-model.md", "docs/architecture.md"]
     },
     {
       "id": "unknown-live-cloudflare-state",
       "description": "The repo documents Cloudflare projects, domains, and routes, but this static analysis did not verify live Cloudflare resources.",
-      "evidence": [
-        "docs/runbooks/deployment.md",
-        "apps/worker/wrangler.jsonc"
-      ]
+      "evidence": ["docs/runbooks/deployment.md", "apps/worker/wrangler.jsonc"]
     },
     {
       "id": "unknown-worker-command-integration-coverage",
@@ -2280,11 +1931,7 @@
     {
       "id": "unknown-release-process",
       "description": "A deployment runbook exists, but automated production release or rollback workflows beyond manual Wrangler/Pages commands were not found.",
-      "evidence": [
-        "docs/runbooks/deployment.md",
-        ".github/workflows/ci.yml",
-        "package.json"
-      ]
+      "evidence": ["docs/runbooks/deployment.md", ".github/workflows/ci.yml", "package.json"]
     }
   ],
   "recommended_next_docs": [
@@ -2292,11 +1939,7 @@
       "title": "Realtime protocol reference",
       "why": "ClientCommand and ServerEvent are central and duplicated; a short protocol spec would help humans and agents evolve commands safely.",
       "suggested_path": "docs/protocol.md",
-      "evidence": [
-        "apps/web/src/lib/api.ts",
-        "apps/worker/src/protocol.ts",
-        "docs/architecture.md"
-      ]
+      "evidence": ["apps/web/src/lib/api.ts", "apps/worker/src/protocol.ts", "docs/architecture.md"]
     },
     {
       "title": "Security notes for room tokens and snapshot privacy",
@@ -2323,10 +1966,7 @@
       "title": "Cloudflare operations checklist",
       "why": "The deployment runbook has live checks; an operations checklist could cover secrets, routes, rollback, token rotation, and idle-room cleanup.",
       "suggested_path": "docs/runbooks/operations.md",
-      "evidence": [
-        "docs/runbooks/deployment.md",
-        "apps/worker/wrangler.jsonc"
-      ]
+      "evidence": ["docs/runbooks/deployment.md", "apps/worker/wrangler.jsonc"]
     }
   ]
 }

@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "impostor-api",
   "main": "src/index.ts",
-  "compatibility_date": "2026-05-07",
+  "compatibility_date": "2026-07-10",
   "workers_dev": false,
   "routes": [
     {

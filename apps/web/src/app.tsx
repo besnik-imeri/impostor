@@ -34,7 +34,6 @@ import {
   Settings,
   Shield,
   SlidersHorizontal,
-  Sparkles,
   Sun,
   TimerReset,
   Trophy,
@@ -42,7 +41,8 @@ import {
   Users,
   Wifi,
   WifiOff,
-  X
+  X,
+  Zap
 } from "lucide-react";
 import QRCode from "qrcode";
 import {
@@ -58,6 +58,7 @@ import {
   type SetStateAction
 } from "react";
 import { AvatarMark } from "./components/avatar-mark";
+import { LandingExperience } from "./components/landing-experience";
 import { SegmentedControl } from "./components/segmented-control";
 import {
   createRoom,
@@ -176,255 +177,18 @@ function LandingPage({
   theme: ThemePreference;
   onToggleTheme: () => void;
 }) {
-  return (
-    <main className="landing-shell">
-      <nav className="landing-nav" aria-label="Primary navigation">
-        <BrandLockup href="/" />
-        <div className="landing-nav-links">
-          <a href="#how-it-works">How it works</a>
-          <a href="#screens">Screens</a>
-          <a href="#modes">Modes</a>
-          <a href="#faq">FAQ</a>
-        </div>
-        <div className="landing-nav-actions">
-          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
-          <a className="primary-link nav-play-link" href="/play">
-            Play now
-          </a>
-        </div>
-      </nav>
-
-      <section className="landing-hero">
-        <div className="landing-copy">
-          <div className="hero-status-line" aria-hidden="true">
-            <span />
-            <strong>Social deduction party game</strong>
-            <span />
-          </div>
-          <h1 className="glitch-title" data-text="Impostor">
-            Impostor
-          </h1>
-          <p className="hero-tagline">
-            <span>Bluff.</span> <span>Detect.</span> <span>Survive.</span>
-          </p>
-          <p>
-            A neon social deduction game for the table. Everyone gets the secret word except one
-            player, then the room turns into a fast, suspicious arcade showdown.
-          </p>
-          <div className="landing-actions">
-            <a className="primary-link" href="/play">
-              <Gamepad2 size={19} />
-              Start playing
-            </a>
-            <a className="secondary-link" href="/play?join=1">
-              <KeyRound size={18} />
-              Join with code
-            </a>
-          </div>
-          <div className="hero-stat-strip" aria-label="Game stats">
-            <StatPill icon={<Users size={18} />} label="3-12" detail="players" />
-            <StatPill icon={<Shield size={18} />} label="In-person" detail="fun" />
-            <StatPill icon={<TimerReset size={18} />} label="15-45" detail="minutes" />
-          </div>
-        </div>
-
-        <div className="hero-cabinet" aria-label="Arcade impostor shield preview">
-          <div className="scan-grid" aria-hidden="true" />
-          <div className="arcade-shield" aria-hidden="true">
-            <div className="shield-half shield-half-blue">
-              <span />
-            </div>
-            <div className="shield-half shield-half-pink">
-              <span />
-            </div>
-          </div>
-          <div className="hero-lobby-card">
-            <div>
-              <span>Current lobby</span>
-              <strong>Neon Night</strong>
-              <p>
-                Code: <b>X7K9D</b>
-              </p>
-            </div>
-            <div className="mini-qr" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </div>
-          </div>
-          <div className="hero-avatar-ring" aria-hidden="true">
-            <AvatarMark avatar="girl-1" color="#ff2e8b" size="lg" />
-            <AvatarMark avatar="boy-5" color="#16a8ff" size="lg" />
-            <AvatarMark avatar="girl-8" color="#7cf25f" size="lg" />
-            <AvatarMark avatar="boy-10" color="#ffcc24" size="lg" />
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-band" id="how-it-works">
-        <div>
-          <span className="section-number">01</span>
-          <h2>Pass the phone. Keep the secret.</h2>
-          <p>
-            Create a lobby, invite the table by QR or code, reveal private roles, then let the app
-            run the timer, accusations, scoring, and leaderboard.
-          </p>
-        </div>
-        <div className="step-list" aria-label="How Impostor works">
-          <div>
-            <KeyRound size={22} />
-            <strong>Create</strong>
-            <span>Host a room with a word category and round timer.</span>
-          </div>
-          <div>
-            <Sparkles size={22} />
-            <strong>Reveal</strong>
-            <span>Players see either the secret word or the impostor role.</span>
-          </div>
-          <div>
-            <Trophy size={22} />
-            <strong>Resolve</strong>
-            <span>Accuse, score, and move cleanly into the next round.</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="screenshot-band" id="screens">
-        <div className="section-heading">
-          <span className="section-number">02</span>
-          <h2>Built like a tiny arcade cabinet for your game night.</h2>
-          <p>
-            The new interface keeps codes, QR invites, actions, score, and player status in chunky
-            neon panels that are easy to read across the table.
-          </p>
-        </div>
-        <div className="screenshot-showcase" aria-label="Product screenshot placeholders">
-          <div className="desktop-frame">
-            <div className="fake-topbar">
-              <BrandLockup />
-              <span>Lobby code: X7K9D</span>
-            </div>
-            <div className="fake-shell">
-              <div className="fake-sidebar">
-                <span />
-                <span />
-                <span />
-                <span />
-              </div>
-              <div className="fake-panel is-hot">
-                <strong>Host a game</strong>
-                <div />
-                <div />
-              </div>
-              <div className="fake-panel">
-                <strong>Lobby preview</strong>
-                <div className="fake-qr-grid" />
-              </div>
-            </div>
-          </div>
-          <div className="phone-frame">
-            <BrandLockup />
-            <div className="phone-card">
-              <strong>Neon Night</strong>
-              <span>8 / 12 players</span>
-              <div className="phone-avatar-row" aria-hidden="true">
-                <AvatarMark avatar="girl-5" color="#ff2e8b" size="xs" />
-                <AvatarMark avatar="boy-3" color="#16a8ff" size="xs" />
-                <AvatarMark avatar="girl-11" color="#7cf25f" size="xs" />
-                <AvatarMark avatar="boy-8" color="#ffcc24" size="xs" />
-              </div>
-            </div>
-            <a className="primary-link" href="/play">
-              Host game
-            </a>
-            <a className="secondary-link" href="/play?join=1">
-              Join game
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <section className="mode-band" id="modes">
-        <div className="section-heading">
-          <span className="section-number">03</span>
-          <h2>Choose your level.</h2>
-          <p>Two playable modes now, one future cabinet slot waiting for the next rule set.</p>
-        </div>
-        <div className="mode-panel-grid">
-          <ModeInfoCard
-            accent="pink"
-            icon={<Flag size={30} />}
-            title="Accusation"
-            text="One bold call can end the round immediately. Great for fast, loud tables."
-          />
-          <ModeInfoCard
-            accent="blue"
-            icon={<Eye size={30} />}
-            title="Suspicion"
-            text="Each player locks one suspicion before the final accusation. Better for longer reads."
-          />
-          <ModeInfoCard
-            accent="yellow"
-            disabled
-            icon={<Shield size={30} />}
-            title="Reverse Psychology"
-            text="Coming soon. The impostor knows the word, and everyone else has to sniff out the twist."
-          />
-        </div>
-      </section>
-
-      <section className="faq-band" id="faq">
-        <div className="section-heading">
-          <span className="section-number">04</span>
-          <h2>FAQ</h2>
-        </div>
-        <div className="faq-grid">
-          <div>
-            <h3>Do players need accounts?</h3>
-            <p>No. Host a room, share the code, and play from each phone.</p>
-          </div>
-          <div>
-            <h3>Can one phone run the game?</h3>
-            <p>Yes, but everyone gets the best experience by joining the shared lobby.</p>
-          </div>
-          <div>
-            <h3>Does Reverse Psychology work today?</h3>
-            <p>Not yet. It appears as a locked future mode so the UI can grow into it cleanly.</p>
-          </div>
-        </div>
-      </section>
-
-      <footer className="landing-footer">
-        <BrandLockup href="/" />
-        <p>One impostor. Many suspects.</p>
-        <a className="primary-link" href="/play">
-          Start playing
-          <ArrowRight size={18} />
-        </a>
-      </footer>
-    </main>
-  );
+  return <LandingExperience theme={theme} onToggleTheme={onToggleTheme} />;
 }
 
-function ModeInfoCard({
-  accent,
-  disabled = false,
-  icon,
-  title,
-  text
-}: {
-  accent: "pink" | "blue" | "yellow";
-  disabled?: boolean;
-  icon: ReactNode;
-  title: string;
-  text: string;
-}) {
+function PhoneStatusBar() {
   return (
-    <div className={`mode-panel mode-panel-${accent} ${disabled ? "is-disabled" : ""}`}>
-      <div className="mode-panel-icon">{icon}</div>
-      <h3>{title}</h3>
-      <p>{text}</p>
-      {disabled ? <span className="coming-soon">Coming soon</span> : null}
+    <div className="phone-status-bar" aria-hidden="true">
+      <span>9:41</span>
+      <span className="phone-status-icons">
+        <i />
+        <i />
+        <i />
+      </span>
     </div>
   );
 }
@@ -515,7 +279,8 @@ function AppTopBar({
   );
 }
 
-type SidebarKey = "home" | "host" | "join" | "play" | "leaderboard" | "settings";
+type SidebarKey =
+  "home" | "host" | "join" | "play" | "modes" | "profile" | "leaderboard" | "settings";
 
 function AppSidebar({ active }: { active: SidebarKey }) {
   const items: readonly { key: SidebarKey; icon: ReactNode; label: string }[] = [
@@ -523,6 +288,8 @@ function AppSidebar({ active }: { active: SidebarKey }) {
     { key: "host", icon: <Gamepad2 size={17} />, label: "Host game" },
     { key: "join", icon: <KeyRound size={17} />, label: "Join game" },
     { key: "play", icon: <BookOpen size={17} />, label: "How to play" },
+    { key: "modes", icon: <Shield size={17} />, label: "Game modes" },
+    { key: "profile", icon: <User size={17} />, label: "Profile" },
     { key: "leaderboard", icon: <Trophy size={17} />, label: "Leaderboard" },
     { key: "settings", icon: <Settings size={17} />, label: "Settings" }
   ];
@@ -708,6 +475,7 @@ function PlayHomeScreen({
 
   return (
     <section className="arcade-app-frame play-home">
+      <PhoneStatusBar />
       <AppSidebar active={activePanel === "host" ? "host" : "join"} />
       <div className="app-stage">
         <AppTopBar
@@ -716,8 +484,94 @@ function PlayHomeScreen({
           title={activePanel === "host" ? "Host a game" : "Join a game"}
           onToggleTheme={onToggleTheme}
         />
-        <div className="play-dashboard-grid">
-          <div className="setup-panel play-setup-panel">
+        <div className="play-dashboard-grid host-workspace-grid">
+          <section className="mobile-lobby-summary" aria-label="Mobile lobby summary">
+            <div className="current-lobby-card">
+              <div className="preview-heading">
+                <strong>Current lobby</strong>
+                <span>Host</span>
+              </div>
+              <div className="current-lobby-main">
+                <div>
+                  <h2>Neon Night</h2>
+                  <p>
+                    Code: <b>X7K9D</b>
+                  </p>
+                  <span>8 / 12 players</span>
+                </div>
+                <div className="mini-qr mini-qr-large" aria-hidden="true">
+                  <span />
+                  <span />
+                  <span />
+                </div>
+              </div>
+              <AvatarStack />
+            </div>
+
+            <button className="quick-play-row" type="button" onClick={() => setActivePanel("join")}>
+              <ZapIcon />
+              <span>
+                <strong>Quick play</strong>
+                Jump into a public game
+              </span>
+              <ArrowRight size={18} />
+            </button>
+
+            <div className="quick-action-grid" aria-label="Quick actions">
+              <button
+                className="quick-action-card is-host"
+                type="button"
+                onClick={() => {
+                  onClearError();
+                  setActivePanel("host");
+                }}
+              >
+                <Gamepad2 size={28} />
+                <strong>Host game</strong>
+              </button>
+              <button
+                className="quick-action-card is-join"
+                type="button"
+                onClick={() => {
+                  onClearError();
+                  setActivePanel("join");
+                }}
+              >
+                <KeyRound size={28} />
+                <strong>Join game</strong>
+              </button>
+              <button className="quick-action-card is-modes" type="button">
+                <Shield size={28} />
+                <strong>Game modes</strong>
+              </button>
+              <button className="quick-action-card is-how" type="button">
+                <BookOpen size={28} />
+                <strong>How to play</strong>
+              </button>
+            </div>
+
+            <button className="profile-strip" type="button">
+              <User size={25} />
+              <span>
+                <strong>Profile</strong>
+                View stats & history
+              </span>
+              <ArrowRight size={18} />
+            </button>
+
+            <LeaderboardPreview />
+          </section>
+
+          <div className="setup-panel play-setup-panel host-command-panel">
+            <div className="workspace-heading">
+              <span>{activePanel === "host" ? "Host a game" : "Join a game"}</span>
+              <h1>{activePanel === "host" ? "Host a game" : "Join a game"}</h1>
+              <p>
+                {activePanel === "host"
+                  ? "Create your lobby and invite your friends."
+                  : "Enter a lobby code, pick your table identity, and jump in."}
+              </p>
+            </div>
             <div className="panel-tabs" role="tablist" aria-label="Choose setup flow">
               <button
                 aria-selected={activePanel === "host"}
@@ -756,90 +610,92 @@ function PlayHomeScreen({
             {error ? <p className="form-error">{error}</p> : null}
           </div>
 
-          <aside className="play-aside">
-            <div className="play-aside-copy">
-              <span className="panel-kicker">Current lobby</span>
-              <h1>Neon Night</h1>
-              <p>
-                Pick a face, invite the group, and let the app handle the secret word, timer,
-                scoring, and next round.
-              </p>
+          <aside className="lobby-preview-panel">
+            <div className="preview-heading">
+              <strong>3. Lobby preview</strong>
+              <span>Placeholder</span>
             </div>
-            <div className="lobby-preview-card">
-              <div>
-                <span>Lobby code</span>
-                <strong>X7K9D</strong>
-                <p>Share a QR or code when your room is live.</p>
-              </div>
-              <div className="mini-qr" aria-hidden="true">
+            <div className="preview-code-card">
+              <span>Lobby code</span>
+              <strong>X7K9D</strong>
+              <p>Share this code or scan to join.</p>
+              <div className="mini-qr preview-qr" aria-hidden="true">
                 <span />
                 <span />
                 <span />
               </div>
             </div>
-            <div className="quick-action-grid" aria-label="Quick actions">
-              <button
-                className="quick-action-card is-host"
-                type="button"
-                onClick={() => {
-                  onClearError();
-                  setActivePanel("host");
-                }}
-              >
-                <Gamepad2 size={26} />
-                <strong>Host game</strong>
-              </button>
-              <button
-                className="quick-action-card is-join"
-                type="button"
-                onClick={() => {
-                  onClearError();
-                  setActivePanel("join");
-                }}
-              >
-                <KeyRound size={26} />
-                <strong>Join game</strong>
-              </button>
-              <div className="quick-action-card is-profile">
-                <User size={26} />
-                <strong>Profile</strong>
-                <span>Stats & history</span>
-              </div>
-              <div className="quick-action-card is-how">
-                <BookOpen size={26} />
-                <strong>How to play</strong>
-                <span>Rules at a glance</span>
-              </div>
+            <div className="preview-player-row">
+              <span>8 / 12 players joined</span>
+              <AvatarStack />
             </div>
-            <div className="leaderboard-preview">
-              <div className="preview-heading">
-                <strong>Leaderboard</strong>
-                <span>Weekly top players</span>
-              </div>
-              <div className="preview-row">
-                <span>1</span>
-                <AvatarMark avatar="girl-5" color="#7cf25f" size="sm" />
-                <strong>PixelMaster</strong>
-                <b>2,450</b>
-              </div>
-              <div className="preview-row">
-                <span>2</span>
-                <AvatarMark avatar="boy-3" color="#ff2e8b" size="sm" />
-                <strong>DeceptiOn</strong>
-                <b>1,870</b>
-              </div>
-              <div className="preview-row">
-                <span>3</span>
-                <AvatarMark avatar="girl-11" color="#b95cff" size="sm" />
-                <strong>MindGames</strong>
-                <b>1,420</b>
-              </div>
-            </div>
+            <button
+              aria-label="Create room"
+              className="primary-button full-width lobby-preview-submit"
+              disabled={activePanel !== "host" || connectionState === "connecting"}
+              form="create-room-form"
+              type="submit"
+            >
+              Create lobby
+              <ArrowRight size={18} />
+            </button>
+            <p className="preview-expiry-note">Lobby will be active for 30 minutes.</p>
           </aside>
         </div>
       </div>
     </section>
   );
+}
+
+function AvatarStack() {
+  return (
+    <div className="avatar-stack" aria-hidden="true">
+      <AvatarMark avatar="girl-5" color="#ff5a98" size="xs" />
+      <AvatarMark avatar="boy-3" color="#1db4ff" size="xs" />
+      <AvatarMark avatar="girl-11" color="#71f264" size="xs" />
+      <AvatarMark avatar="boy-8" color="#ffd21f" size="xs" />
+      <AvatarMark avatar="girl-2" color="#ff8b3d" size="xs" />
+      <AvatarMark avatar="boy-10" color="#b95cff" size="xs" />
+      <span>+4</span>
+    </div>
+  );
+}
+
+function LeaderboardPreview() {
+  return (
+    <div className="leaderboard-preview">
+      <div className="preview-heading">
+        <strong>Leaderboard</strong>
+        <span>Weekly top players</span>
+      </div>
+      <div className="preview-row">
+        <span>1</span>
+        <AvatarMark avatar="girl-5" color="#7cf25f" size="sm" />
+        <strong>PixelMaster</strong>
+        <b>2,450</b>
+      </div>
+      <div className="preview-row">
+        <span>2</span>
+        <AvatarMark avatar="boy-3" color="#ff2e8b" size="sm" />
+        <strong>DeceptiOn</strong>
+        <b>1,870</b>
+      </div>
+      <div className="preview-row">
+        <span>3</span>
+        <AvatarMark avatar="girl-11" color="#b95cff" size="sm" />
+        <strong>MindGames</strong>
+        <b>1,420</b>
+      </div>
+      <button className="secondary-button full-width" type="button">
+        View full leaderboard
+        <ArrowRight size={16} />
+      </button>
+    </div>
+  );
+}
+
+function ZapIcon() {
+  return <Zap size={28} strokeWidth={2.5} />;
 }
 
 function CreateRoomForm({
@@ -857,11 +713,17 @@ function CreateRoomForm({
   return (
     <form
       className="form-stack"
+      id="create-room-form"
       onSubmit={(event) => {
         event.preventDefault();
+        if (profile.nickname.trim().length < 2) {
+          return;
+        }
+
         void onCreate({ host: profile, config });
       }}
     >
+      <div className="form-section-label">2. Game settings</div>
       <ProfileFields profile={profile} onChange={setProfile} />
       <SegmentedControl
         label="Game mode"
@@ -911,7 +773,7 @@ function CreateRoomForm({
         }
       />
       <button
-        className="primary-button"
+        className="primary-button host-inline-submit"
         disabled={busy || profile.nickname.trim().length < 2}
         type="submit"
       >
@@ -943,9 +805,14 @@ function JoinRoomForm({
       className="form-stack"
       onSubmit={(event) => {
         event.preventDefault();
+        if (roomCode.length < 4 || profile.nickname.trim().length < 2) {
+          return;
+        }
+
         void onJoin(roomCode, profile);
       }}
     >
+      <div className="form-section-label">Join lobby</div>
       <label className="field">
         <span>Room code</span>
         <input
@@ -991,44 +858,50 @@ function ProfileFields({
           onChange={(event) => onChange({ ...profile, nickname: event.target.value })}
         />
       </label>
-      <fieldset className="field-group">
-        <legend>Avatar</legend>
-        <div className="avatar-groups">
-          {avatarGroups.map((group) => (
-            <div className="avatar-group" key={group.label}>
-              <div className="avatar-group-title">{group.label}</div>
-              <div className="avatar-picker">
-                {group.avatars.map((avatar) => (
-                  <button
-                    aria-label={`Use ${getAvatarLabel(avatar)}`}
-                    className={profile.avatar === avatar ? "is-selected" : ""}
-                    key={avatar}
-                    type="button"
-                    onClick={() => onChange({ ...profile, avatar })}
-                  >
-                    <AvatarMark avatar={avatar} color={profile.color} size="picker" />
-                  </button>
-                ))}
+      <details className="profile-customizer">
+        <summary>
+          <AvatarMark avatar={profile.avatar} color={profile.color} size="sm" />
+          <span>Customize avatar</span>
+        </summary>
+        <fieldset className="field-group">
+          <legend>Avatar</legend>
+          <div className="avatar-groups">
+            {avatarGroups.map((group) => (
+              <div className="avatar-group" key={group.label}>
+                <div className="avatar-group-title">{group.label}</div>
+                <div className="avatar-picker">
+                  {group.avatars.map((avatar) => (
+                    <button
+                      aria-label={`Use ${getAvatarLabel(avatar)}`}
+                      className={profile.avatar === avatar ? "is-selected" : ""}
+                      key={avatar}
+                      type="button"
+                      onClick={() => onChange({ ...profile, avatar })}
+                    >
+                      <AvatarMark avatar={avatar} color={profile.color} size="picker" />
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </fieldset>
-      <fieldset className="field-group">
-        <legend>Color</legend>
-        <div className="color-picker">
-          {PLAYER_COLORS.map((color) => (
-            <button
-              aria-label={`Use ${color} player color`}
-              className={profile.color === color ? "is-selected" : ""}
-              key={color}
-              style={{ "--swatch": color } as CSSProperties}
-              type="button"
-              onClick={() => onChange({ ...profile, color })}
-            />
-          ))}
-        </div>
-      </fieldset>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset className="field-group">
+          <legend>Color</legend>
+          <div className="color-picker">
+            {PLAYER_COLORS.map((color) => (
+              <button
+                aria-label={`Use ${color} player color`}
+                className={profile.color === color ? "is-selected" : ""}
+                key={color}
+                style={{ "--swatch": color } as CSSProperties}
+                type="button"
+                onClick={() => onChange({ ...profile, color })}
+              />
+            ))}
+          </div>
+        </fieldset>
+      </details>
     </>
   );
 }
@@ -1080,7 +953,15 @@ function RoomScreen({
   return (
     <section className={`arcade-app-frame room-layout room-phase-${room.phase}`}>
       <AppSidebar
-        active={room.phase === "lobby" ? (me.isHost ? "host" : "join") : showResults ? "leaderboard" : "play"}
+        active={
+          room.phase === "lobby"
+            ? me.isHost
+              ? "host"
+              : "join"
+            : showResults
+              ? "leaderboard"
+              : "play"
+        }
       />
       <div className="app-stage">
         <AppTopBar
@@ -1413,20 +1294,60 @@ function RoundPanel({
   const canAccuse = canAct && !isImpostor;
 
   return (
-    <section className="phase-panel round-panel">
-      <div className="round-kicker">
-        <span>Round {round.number}</span>
-        <strong>{room.config.mode === "suspicion" ? "Suspicion mode" : "Accusation mode"}</strong>
-      </div>
-      <div className="round-status">
+    <section className="round-panel live-game-board">
+      <div className="how-play-panel">
+        <div className="phase-heading">
+          <div>
+            <span className="round-label">How to play</span>
+            <h2>How to play</h2>
+            <p>A game of deception, deduction, and persuasion.</p>
+          </div>
+        </div>
+        <div className="instruction-grid">
+          <InstructionCard
+            icon={<BookOpen size={36} />}
+            title="1. The word"
+            text={
+              isImpostor
+                ? "Everyone else knows the secret word. You only know that you are the impostor."
+                : `Your secret word is ${privateSnapshot.visibleWord ?? "being revealed"}.`
+            }
+          />
+          <InstructionCard
+            icon={<Users size={36} />}
+            title="2. Discuss & deceive"
+            text="Talk, ask questions, and try to figure out who does not know."
+          />
+          <InstructionCard
+            icon={<Zap size={36} />}
+            title="3. Take action"
+            text="Accuse, suspect, or clear players. Earn points when your read is right."
+          />
+        </div>
         <div className={isImpostor ? "role-card is-impostor" : "role-card is-word"}>
-          <span>{isImpostor ? "You are the impostor" : "Your secret word"}</span>
-          <h2>{privateSnapshot.visibleWord ?? "Waiting for reveal"}</h2>
-          <p>
-            {isImpostor
-              ? "Blend in, ask careful questions, and avoid a confident accusation."
-              : "Protect the word without making your clues too obvious."}
-          </p>
+          <Shield size={30} />
+          <div>
+            <span>{isImpostor ? "Impostor note" : "Player note"}</span>
+            <p>
+              {isImpostor
+                ? "One player is the impostor and does NOT know the word. Blend in. Mislead. Survive."
+                : "You know the word. Help the group without making your clues too obvious."}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <aside className="round-score-panel">
+        <div className="round-score-header">
+          <span>
+            Round {round.number} / {room.config.roundCount}
+          </span>
+          <strong>
+            {Math.ceil(remainingMs / 1000)
+              .toString()
+              .padStart(2, "0")}{" "}
+            sec
+          </strong>
         </div>
         <div className="round-side">
           <TimerDial remainingMs={remainingMs} totalMs={room.config.roundDurationSeconds * 1000} />
@@ -1437,98 +1358,153 @@ function RoundPanel({
             </span>
           </div>
         </div>
-      </div>
+        <Leaderboard players={room.players} />
+      </aside>
 
-      <div className="action-grid">
-        {room.config.mode === "suspicion" ? (
-          <ActionSection
+      <aside className="take-action-panel">
+        <div className="preview-heading">
+          <strong>Take action</strong>
+          <span>What will you do?</span>
+        </div>
+        <div className="action-button-stack">
+          <button
+            className="take-action-button is-accuse"
+            disabled={!canAccuse}
+            type="button"
+            onClick={() => {
+              const firstTarget = room.players.find((player) => player.id !== me.id);
+              if (firstTarget) {
+                setPendingAccusation({ roundId: round.id, playerId: firstTarget.id });
+              }
+            }}
+          >
+            <Flag size={24} />
+            <span>
+              <strong>Accuse</strong>
+              Eliminate a player
+            </span>
+          </button>
+          <button
+            className="take-action-button is-suspect"
             disabled={!canAct || Boolean(mySuspicion)}
-            icon={<Eye size={18} />}
-            title="Suspicion"
+            type="button"
+          >
+            <Eye size={24} />
+            <span>
+              <strong>Suspect</strong>
+              Mark as suspicious
+            </span>
+          </button>
+          <button className="take-action-button is-clear" disabled={!canAct} type="button">
+            <Shield size={24} />
+            <span>
+              <strong>Clear</strong>
+              Defend a player
+            </span>
+          </button>
+        </div>
+
+        <div className="action-grid live-target-grid">
+          {room.config.mode === "suspicion" ? (
+            <ActionSection
+              disabled={!canAct || Boolean(mySuspicion)}
+              icon={<Eye size={18} />}
+              title="Suspicion"
+              description={
+                mySuspicion
+                  ? "Suspicion locked for this round."
+                  : "Mark one player. You cannot change it."
+              }
+            >
+              {room.players
+                .filter((player) => player.id !== me.id)
+                .map((player) => (
+                  <PlayerActionButton
+                    disabled={!canAct || Boolean(mySuspicion)}
+                    key={player.id}
+                    player={player}
+                    selected={mySuspicion?.targetPlayerId === player.id}
+                    onClick={() =>
+                      onSend({
+                        type: "player.suspect.create",
+                        payload: { targetPlayerId: player.id }
+                      })
+                    }
+                  />
+                ))}
+            </ActionSection>
+          ) : null}
+
+          <ActionSection
+            disabled={!canAccuse}
+            icon={<Flag size={18} />}
+            title="Accusation"
             description={
-              mySuspicion
-                ? "Suspicion locked for this round."
-                : "Mark one player. You cannot change it."
+              isImpostor
+                ? "The impostor cannot accuse."
+                : "Pick a player, then confirm the accusation."
             }
           >
             {room.players
               .filter((player) => player.id !== me.id)
               .map((player) => (
                 <PlayerActionButton
-                  disabled={!canAct || Boolean(mySuspicion)}
+                  disabled={!canAccuse}
                   key={player.id}
                   player={player}
-                  selected={mySuspicion?.targetPlayerId === player.id}
-                  onClick={() =>
-                    onSend({
-                      type: "player.suspect.create",
-                      payload: { targetPlayerId: player.id }
-                    })
-                  }
+                  selected={pendingAccusationId === player.id}
+                  onClick={() => setPendingAccusation({ roundId: round.id, playerId: player.id })}
                 />
               ))}
           </ActionSection>
-        ) : null}
-
-        <ActionSection
-          disabled={!canAccuse}
-          icon={<Flag size={18} />}
-          title="Accusation"
-          description={
-            isImpostor
-              ? "The impostor cannot accuse."
-              : "Confirm before you call it. A valid accusation ends the round."
-          }
-        >
-          {room.players
-            .filter((player) => player.id !== me.id)
-            .map((player) => (
-              <PlayerActionButton
-                disabled={!canAccuse}
-                key={player.id}
-                player={player}
-                selected={pendingAccusationId === player.id}
-                onClick={() => setPendingAccusation({ roundId: round.id, playerId: player.id })}
-              />
-            ))}
-        </ActionSection>
-      </div>
-
-      {pendingPlayer && canAccuse ? (
-        <div className="accuse-confirm" role="dialog" aria-labelledby="accuse-confirm-title">
-          <AvatarMark avatar={pendingPlayer.avatar} color={pendingPlayer.color} size="lg" />
-          <div>
-            <span>Final accusation</span>
-            <strong id="accuse-confirm-title">Accuse {pendingPlayer.nickname}?</strong>
-            <p>This resolves the round immediately.</p>
-          </div>
-          <div className="confirm-actions">
-            <button
-              className="secondary-button"
-              type="button"
-              onClick={() => setPendingAccusation(undefined)}
-            >
-              <X size={17} />
-              Cancel
-            </button>
-            <button
-              className="danger-button"
-              type="button"
-              onClick={() => {
-                onSend({
-                  type: "player.accuse.create",
-                  payload: { accusedPlayerId: pendingPlayer.id }
-                });
-                setPendingAccusation(undefined);
-              }}
-            >
-              <Flag size={17} />
-              Accuse
-            </button>
-          </div>
         </div>
-      ) : null}
+
+        {pendingPlayer && canAccuse ? (
+          <div className="accuse-confirm" role="dialog" aria-labelledby="accuse-confirm-title">
+            <AvatarMark avatar={pendingPlayer.avatar} color={pendingPlayer.color} size="lg" />
+            <div>
+              <span>Final accusation</span>
+              <strong id="accuse-confirm-title">Accuse {pendingPlayer.nickname}?</strong>
+              <p>This resolves the round immediately.</p>
+            </div>
+            <div className="confirm-actions">
+              <button
+                className="secondary-button"
+                type="button"
+                onClick={() => setPendingAccusation(undefined)}
+              >
+                <X size={17} />
+                Cancel
+              </button>
+              <button
+                className="danger-button"
+                type="button"
+                onClick={() => {
+                  onSend({
+                    type: "player.accuse.create",
+                    payload: { accusedPlayerId: pendingPlayer.id }
+                  });
+                  setPendingAccusation(undefined);
+                }}
+              >
+                <Flag size={17} />
+                Accuse
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </aside>
     </section>
+  );
+}
+
+function InstructionCard({ icon, title, text }: { icon: ReactNode; title: string; text: string }) {
+  return (
+    <div className="instruction-card">
+      <span>{icon}</span>
+      <strong>{title}</strong>
+      <p>{text}</p>
+    </div>
   );
 }
 

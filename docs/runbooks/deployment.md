@@ -5,8 +5,8 @@
 - Cloudflare account.
 - `impostorgame.com` added to Cloudflare DNS.
 - `impostorgame.com` connected to the Cloudflare Pages project.
-- Node.js 24 LTS.
-- pnpm 11.
+- Node.js 24.18.0 LTS (minimum supported version: 24.11.0).
+- pnpm 11.11.0 via Corepack.
 - Wrangler authenticated with `pnpm exec wrangler login`.
 
 ## Production
@@ -42,6 +42,7 @@ pnpm --filter @impostor/worker deploy
 ```
 
 Wrangler creates the Durable Object class and applies the SQLite migration from `apps/worker/wrangler.jsonc`.
+The Worker and Pages configurations use Cloudflare compatibility date `2026-07-10`.
 
 ## Web Deploy
 
