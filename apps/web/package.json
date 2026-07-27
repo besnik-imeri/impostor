@@ -15,10 +15,10 @@
   "dependencies": {
     "@impostor/domain": "workspace:*",
     "gsap": "^3.15.0",
-    "lucide-react": "^1.24.0",
+    "lucide-react": "^1.27.0",
     "qrcode": "^1.5.4",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "three": "^0.185.1"
   },
   "devDependencies": {
