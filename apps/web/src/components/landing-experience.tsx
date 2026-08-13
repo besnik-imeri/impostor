@@ -1,518 +1,411 @@
-import type { AvatarId, PlayerColor } from "@impostor/domain";
 import {
-  ArrowDown,
+  Alien,
   ArrowRight,
   Check,
-  Crosshair,
+  ChevronDown,
+  Clock,
+  Coins,
+  Crown,
   Eye,
-  Flag,
-  Gamepad2,
-  KeyRound,
-  Moon,
+  Gamepad,
+  Globe,
+  Message,
   Play,
-  Shield,
-  Sun,
-  TimerReset,
-  Trophy,
+  Skull,
+  Target,
   Users,
   Zap
-} from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import type { BufferGeometry, Material, Object3D } from "three";
-import type { ThemePreference } from "../lib/theme";
-import { AvatarMark } from "./avatar-mark";
+} from "pixelarticons/react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject
+} from "react";
+import { BrandWordmark } from "./brand-wordmark";
 
-interface LandingExperienceProps {
-  theme: ThemePreference;
-  onToggleTheme: () => void;
+interface ArcadeCharacter {
+  id: string;
+  name: string;
+  src: string;
+  accent: string;
 }
 
-type StepId = "room" | "word" | "hunt";
 type ModeId = "accusation" | "suspicion";
 
-interface GameStep {
-  id: StepId;
-  title: string;
-  command: string;
-  text: string;
-  icon: ReactNode;
-}
+const characters = [
+  arcadeCharacter("pixel-panda", "PixelPanda", "#24e5ff"),
+  arcadeCharacter("neon-ninja", "NeonNinja", "#ff3f9f"),
+  arcadeCharacter("8-bit-bunny", "8BitBunny", "#ffdd3f"),
+  arcadeCharacter("retro-rex", "RetroRex", "#67ff72"),
+  arcadeCharacter("glitch-cat", "GlitchCat", "#a56cff"),
+  arcadeCharacter("arcade-owl", "ArcadeOwl", "#168cff"),
+  arcadeCharacter("astro-koala", "AstroKoala", "#ff6fc0"),
+  arcadeCharacter("cyber-fox", "CyberFox", "#36f4e2"),
+  arcadeCharacter("foggy-frog", "FoggyFrog", "#8aff6a"),
+  arcadeCharacter("master-monkey", "MasterMonkey", "#ffb84f"),
+  arcadeCharacter("punky-penguin", "PunkyPenguin", "#4fb2ff"),
+  arcadeCharacter("robo-shark", "RoboShark", "#ff6a74"),
+  arcadeCharacter("turbo-monkey", "TurboMonkey", "#e489ff")
+] as const;
 
-interface DemoPlayer {
-  name: string;
-  avatar: AvatarId;
-  color: PlayerColor;
-  status: string;
-  score: string;
-  heat: number;
-}
+const heroCrew = [characters[7], characters[2], characters[1], characters[3], characters[4]];
+const lobbyCrew = characters.slice(0, 6);
 
-const gameSteps = [
-  {
-    id: "room",
-    title: "Create a room",
-    command: "Insert coin",
-    text: "Host from one phone, throw the code on screen, and let everyone pick a table identity.",
-    icon: <Gamepad2 size={24} />
-  },
-  {
-    id: "word",
-    title: "Reveal the word",
-    command: "Private screen",
-    text: "Players see the secret word. The impostor sees only the role and has to improvise.",
-    icon: <Shield size={24} />
-  },
-  {
-    id: "hunt",
-    title: "Find the impostor",
-    command: "Final read",
-    text: "Talk, bait, accuse, and score points when your read is brave enough to be right.",
-    icon: <Flag size={24} />
-  }
-] satisfies readonly [GameStep, ...GameStep[]];
-
-const demoPlayers = [
-  {
-    name: "Mika",
-    avatar: "girl-3",
-    color: "#ff2d87",
-    status: "Host",
-    score: "+4",
-    heat: 42
-  },
-  {
-    name: "Blair",
-    avatar: "boy-7",
-    color: "#02a9ff",
-    status: "Ready",
-    score: "+2",
-    heat: 66
-  },
-  {
-    name: "Casey",
-    avatar: "girl-10",
-    color: "#ffd21e",
-    status: "Too calm",
-    score: "+1",
-    heat: 88
-  },
-  {
-    name: "Noor",
-    avatar: "boy-2",
-    color: "#22f28d",
-    status: "Watching",
-    score: "0",
-    heat: 54
-  }
-] satisfies readonly [DemoPlayer, ...DemoPlayer[]];
-
-const modeCopy: Record<ModeId, { title: string; text: string; icon: ReactNode; action: string }> = {
+const modeDetails: Record<
+  ModeId,
+  { title: string; description: string; bestFor: string; icon: ReactNode; accent: string }
+> = {
   accusation: {
     title: "Accusation",
-    text: "One decisive call can end the round. Fast, loud, dramatic, and perfect for fearless groups.",
-    icon: <Crosshair size={25} />,
-    action: "Accuse Casey"
+    description: "Vote fast. Convince others. Call out the impostor before they decode the word.",
+    bestFor: "Loud groups",
+    icon: <Target aria-hidden="true" />,
+    accent: "#24e5ff"
   },
   suspicion: {
     title: "Suspicion",
-    text: "Everyone locks in a read before the table explodes. More clues, more second guessing.",
-    icon: <Eye size={25} />,
-    action: "Mark suspicion"
+    description: "No instant vote. Track clues, compare stories, and expose the liar by consensus.",
+    bestFor: "Sharp minds",
+    icon: <Eye aria-hidden="true" />,
+    accent: "#ff3f9f"
   }
 };
 
-export function LandingExperience({ theme, onToggleTheme }: LandingExperienceProps) {
+export function LandingExperience() {
   const rootRef = useRef<HTMLElement | null>(null);
-  const [activeStep, setActiveStep] = useState(0);
-  const [activeMode, setActiveMode] = useState<ModeId>("accusation");
-  const [activePlayer, setActivePlayer] = useState(2);
-  const [attractModeRunning, setAttractModeRunning] = useState(true);
-  const selectedStep = gameSteps[activeStep] ?? gameSteps[0];
-  const selectedMode = modeCopy[activeMode];
-  const selectedPlayer = demoPlayers[activePlayer] ?? demoPlayers[0];
+  const [selectedPlayer, setSelectedPlayer] = useState<number | null>(null);
+  const [selectedMode, setSelectedMode] = useState<ModeId>("accusation");
 
-  useEffect(() => {
-    const root = rootRef.current;
-
-    if (!root) {
-      return;
-    }
-
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (reducedMotion) {
-      root.querySelectorAll<HTMLElement>(".gsap-reveal").forEach((element) => {
-        element.style.opacity = "1";
-        element.style.transform = "none";
-      });
-      return;
-    }
-
-    let cancelled = false;
-    let revertContext: (() => void) | undefined;
-
-    const startMotion = async () => {
-      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
-        import("gsap"),
-        import("gsap/ScrollTrigger")
-      ]);
-
-      if (cancelled) {
-        return;
-      }
-
-      gsap.registerPlugin(ScrollTrigger);
-
-      const context = gsap.context(() => {
-        gsap.set(".gsap-reveal", { opacity: 0, y: 28 });
-        gsap.to(".hero-reveal", {
-          opacity: 1,
-          y: 0,
-          duration: 0.82,
-          ease: "power3.out",
-          stagger: 0.08
-        });
-        gsap.to(".cabinet-lamp", {
-          opacity: 0.42,
-          duration: 0.72,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-          stagger: {
-            each: 0.06,
-            from: "edges"
-          }
-        });
-        gsap.to(".arcade-token", {
-          y: -10,
-          rotate: 5,
-          duration: 1.8,
-          ease: "sine.inOut",
-          repeat: -1,
-          yoyo: true,
-          stagger: 0.16
-        });
-        gsap.to(".ticker-track", {
-          xPercent: -50,
-          duration: 22,
-          ease: "none",
-          repeat: -1
-        });
-        gsap.utils.toArray<HTMLElement>(".experience-section .gsap-reveal").forEach((element) => {
-          gsap.to(element, {
-            opacity: 1,
-            y: 0,
-            duration: 0.7,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: element,
-              start: "top 84%"
-            }
-          });
-        });
-        gsap.to(".parallax-prize", {
-          yPercent: -24,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".experience-hero",
-            start: "top top",
-            end: "bottom top",
-            scrub: 0.7
-          }
-        });
-      }, root);
-
-      revertContext = () => context.revert();
-    };
-
-    void startMotion();
-
-    return () => {
-      cancelled = true;
-      revertContext?.();
-    };
-  }, []);
+  useArcadeMotion(rootRef);
 
   return (
-    <main className="experience-shell" ref={rootRef}>
-      <header className="experience-nav" aria-label="Primary navigation">
-        <a className="experience-brand" href="/" aria-label="Impostor home">
-          Impostor
+    <main className="arcade-landing" id="top" ref={rootRef}>
+      <a className="arcade-skip-link" href="#how-it-works">
+        Skip to how it works
+      </a>
+      <ArcadeStarfield />
+      <div className="arcade-noise" aria-hidden="true" />
+
+      <header className="arcade-nav" aria-label="Primary navigation">
+        <a className="arcade-nav__brand" href="#top" aria-label="Impostor home">
+          <BrandWordmark alt="" className="arcade-nav__wordmark" priority />
         </a>
-        <nav className="experience-nav-links" aria-label="Landing sections">
+        <nav className="arcade-nav__links" aria-label="Landing sections">
           <a href="#how-it-works">How it works</a>
           <a href="#modes">Modes</a>
           <a href="#lobby">Lobby</a>
-          <a href="#play">Play</a>
-        </nav>
-        <div className="experience-nav-actions">
-          <button
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-            className="experience-icon-button"
-            title={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-            type="button"
-            onClick={onToggleTheme}
-          >
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-          <a className="experience-mini-cta" href="/play?join=1">
-            <KeyRound size={17} />
-            Join
+          <a className="is-active" href="#play">
+            Play
           </a>
-        </div>
+        </nav>
+        <a className="arcade-nav__console" href="/play" aria-label="Open the game console">
+          <Alien aria-hidden="true" />
+        </a>
       </header>
 
-      <section className="experience-hero" aria-labelledby="experience-title">
-        <ArcadeAttractCanvas active={attractModeRunning} />
-        <div className="experience-hero-grid">
-          <div className="experience-hero-copy">
-            <h1 className="hero-reveal" id="experience-title" data-text="Impostor">
-              Impostor
-            </h1>
-            <p className="experience-tagline hero-reveal">
-              <span>Bluff.</span> <span>Detect.</span> <span>Survive.</span>
-            </p>
-            <p className="experience-lede hero-reveal">
-              One word. One liar. Everyone watching. A social deception party game built for quick
-              rooms, loud reads, and theatrical betrayals.
-            </p>
-            <div className="experience-actions hero-reveal">
-              <a aria-label="Start playing" className="experience-primary-link" href="/play">
-                <Gamepad2 size={22} />
-                Host game
-              </a>
-              <a className="experience-secondary-link" href="/play?join=1">
-                <KeyRound size={21} />
-                Join game
-              </a>
-            </div>
-            <div className="experience-stat-row hero-reveal" aria-label="Game stats">
-              <StatToken icon={<Users size={19} />} value="3-12" label="players" />
-              <StatToken icon={<TimerReset size={19} />} value="15-45" label="minutes" />
-              <StatToken icon={<Zap size={19} />} value="0" label="accounts" />
-            </div>
-          </div>
-
-          <div className="experience-stage hero-reveal" aria-label="Interactive arcade preview">
-            <ArcadeCabinet
-              activePlayer={activePlayer}
-              attractModeRunning={attractModeRunning}
-              onToggleAttractMode={() => setAttractModeRunning((current) => !current)}
+      <section className="arcade-hero" aria-labelledby="arcade-title">
+        <div className="arcade-cabinet arcade-hero-reveal">
+          <picture>
+            <source
+              media="(max-width: 720px)"
+              srcSet="/arcade/cabinet-1200.webp 1200w, /arcade/cabinet-1800.webp 1800w"
             />
-            <button
-              className="hero-player-chip parallax-prize"
-              type="button"
-              onClick={() => setActivePlayer((current) => (current + 1) % demoPlayers.length)}
-            >
-              <AvatarMark avatar={selectedPlayer.avatar} color={selectedPlayer.color} size="sm" />
+            <img
+              alt=""
+              className="arcade-cabinet__frame"
+              decoding="async"
+              fetchPriority="high"
+              height="2400"
+              src="/arcade/cabinet.webp"
+              srcSet="/arcade/cabinet-1200.webp 1200w, /arcade/cabinet-1800.webp 1800w, /arcade/cabinet.webp 2400w"
+              width="2400"
+            />
+          </picture>
+
+          <div className="arcade-floating-coins" aria-hidden="true">
+            <span>
+              <Coins />
+            </span>
+            <span>
+              <Coins />
+            </span>
+            <span>
+              <Coins />
+            </span>
+            <span>
+              <Coins />
+            </span>
+            <span>
+              <Coins />
+            </span>
+          </div>
+
+          <div className="arcade-cabinet__marquee">
+            <h1 id="arcade-title">
+              <BrandWordmark className="arcade-wordmark" priority />
+            </h1>
+            <p className="arcade-tagline">
+              <Alien aria-hidden="true" />
+              Bluff. Detect. Survive.
+              <Skull aria-hidden="true" />
+            </p>
+          </div>
+
+          <div className="arcade-cabinet__screen arcade-scanlines">
+            <div className="arcade-hero-crew" aria-label="The arcade character crew">
+              {heroCrew.map((character, index) => (
+                <CharacterImage
+                  character={character}
+                  className={index === 2 ? "is-impostor" : undefined}
+                  key={character.id}
+                  priority
+                />
+              ))}
+            </div>
+            <div className="arcade-hero-stats" aria-label="Game details">
+              <ArcadeStat icon={<Users aria-hidden="true" />} label="players" value="3–12" />
+              <ArcadeStat icon={<Clock aria-hidden="true" />} label="minutes" value="15–45" />
+            </div>
+            <p className="arcade-hero-copy">One word. One liar. Everyone watching.</p>
+          </div>
+
+          <div className="arcade-cabinet__deck" id="play">
+            <a className="arcade-button arcade-button--pink" href="/play">
+              <Gamepad aria-hidden="true" />
+              Host game
+              <ArrowRight aria-hidden="true" />
+            </a>
+            <span className="arcade-versus" aria-hidden="true">
+              VS
+            </span>
+            <a className="arcade-button arcade-button--cyan" href="/play?join=1">
+              <Play aria-hidden="true" />
+              Join game
+              <ArrowRight aria-hidden="true" />
+            </a>
+          </div>
+
+          <div className="arcade-cabinet__ticker" aria-label="Arcade high score">
+            <Crown aria-hidden="true" />
+            <span>TOP LIAR</span>
+            <strong>PIXELCHEAT</strong>
+            <b>12345 PTS</b>
+            <Alien aria-hidden="true" />
+          </div>
+
+          <a className="arcade-downlink" href="#how-it-works" aria-label="Continue to how it works">
+            <ChevronDown aria-hidden="true" />
+          </a>
+        </div>
+      </section>
+
+      <section className="arcade-section arcade-how" id="how-it-works" aria-labelledby="how-title">
+        <ArcadeHeading id="how-title">How it works</ArcadeHeading>
+        <div className="arcade-steps">
+          <article
+            className="arcade-step arcade-reveal"
+            style={{ "--accent": "#24e5ff" } as CSSProperties}
+          >
+            <span className="arcade-step__number">01</span>
+            <h3>Create a room</h3>
+            <div className="arcade-step__visual arcade-step__visual--cabinet">
+              <CharacterImage character={characters[0]} className="arcade-step__side-character" />
+              <img
+                alt=""
+                className="arcade-step__mini-cabinet"
+                height="1200"
+                loading="lazy"
+                src="/arcade/cabinet-1200.webp"
+                width="1200"
+              />
               <span>
-                <strong>{selectedPlayer.name}</strong>
-                Suspicion {selectedPlayer.heat}%
+                ROOM
+                <br />
+                B421
               </span>
-              <ArrowRight size={17} />
+              <CharacterImage character={characters[1]} className="arcade-step__side-character" />
+            </div>
+            <p>
+              Host a lobby, share the six-character code, and bring everyone into the same room.
+            </p>
+          </article>
+
+          <article
+            className="arcade-step arcade-reveal"
+            style={{ "--accent": "#ffdd3f" } as CSSProperties}
+          >
+            <span className="arcade-step__number">02</span>
+            <h3>Reveal the word</h3>
+            <div className="arcade-step__visual arcade-step__visual--word">
+              <img
+                alt=""
+                className="arcade-step__word-cabinet"
+                height="1200"
+                loading="lazy"
+                src="/arcade/cabinet-1200.webp"
+                width="1200"
+              />
+              <Eye aria-hidden="true" />
+              <strong>PIZZA</strong>
+            </div>
+            <p>Most players get the secret word. One player gets only a role and has to bluff.</p>
+          </article>
+
+          <article
+            className="arcade-step arcade-reveal"
+            style={{ "--accent": "#67ff72" } as CSSProperties}
+          >
+            <span className="arcade-step__number">03</span>
+            <h3>Find the impostor</h3>
+            <div className="arcade-step__visual arcade-step__visual--crew">
+              {characters.slice(1, 5).map((character) => (
+                <CharacterImage character={character} key={character.id} />
+              ))}
+              <Message className="arcade-speech" aria-hidden="true" />
+            </div>
+            <p>
+              Talk, bait, accuse, and make the final read before the liar learns enough to blend in.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="arcade-section arcade-lobby" id="lobby" aria-labelledby="lobby-title">
+        <ArcadeHeading id="lobby-title">Live lobby</ArcadeHeading>
+        <div className="arcade-player-grid arcade-reveal" aria-label="Demo lobby players">
+          {lobbyCrew.map((character, index) => (
+            <button
+              aria-pressed={selectedPlayer === index}
+              className={selectedPlayer === index ? "arcade-player is-selected" : "arcade-player"}
+              key={character.id}
+              onClick={() => setSelectedPlayer(index)}
+              style={{ "--accent": character.accent } as CSSProperties}
+              type="button"
+            >
+              <span className="arcade-player__slot">{index + 1}</span>
+              <CharacterImage character={character} />
+              <strong>{character.name}</strong>
+              <span className="arcade-player__ready">
+                <Check aria-hidden="true" /> Ready
+              </span>
             </button>
-            <div className="arcade-token token-one" aria-hidden="true">
-              +2
-            </div>
-            <div className="arcade-token token-two" aria-hidden="true">
-              ?
-            </div>
-            <div className="arcade-token token-three" aria-hidden="true">
-              x
-            </div>
-          </div>
+          ))}
         </div>
-
-        <a className="hero-next-strip hero-reveal" href="#how-it-works">
-          <span>How it works</span>
-          <ArrowDown size={18} />
-        </a>
+        <div className="arcade-room-status arcade-reveal" aria-live="polite">
+          <span>
+            <Globe aria-hidden="true" /> Room preview: B421QZ
+          </span>
+          <i aria-hidden="true" />
+          <strong>6 / 12 players ready</strong>
+          <i aria-hidden="true" />
+          <span>
+            {selectedPlayer === null
+              ? "Choose a player card"
+              : `${lobbyCrew[selectedPlayer]?.name} selected`}
+          </span>
+        </div>
       </section>
 
-      <section className="experience-section how-section" id="how-it-works">
-        <div className="experience-section-heading gsap-reveal">
-          <span>How it works</span>
-          <h2>Three moves. Infinite suspicion.</h2>
-          <p>
-            The UI stays out of the conversation until the table needs a reveal, a timer, or one
-            beautifully reckless accusation.
-          </p>
-        </div>
-        <div className="how-layout">
-          <div className="step-console gsap-reveal" role="tablist" aria-label="How it works steps">
-            {gameSteps.map((step, index) => (
+      <section className="arcade-section arcade-modes" id="modes" aria-labelledby="modes-title">
+        <ArcadeHeading id="modes-title">Game modes</ArcadeHeading>
+        <div className="arcade-mode-grid arcade-reveal" aria-label="Supported game modes">
+          {(Object.keys(modeDetails) as ModeId[]).map((modeId) => {
+            const mode = modeDetails[modeId];
+            return (
               <button
-                aria-selected={activeStep === index}
-                className={activeStep === index ? "step-button is-active" : "step-button"}
-                key={step.id}
-                role="tab"
+                aria-pressed={selectedMode === modeId}
+                className={selectedMode === modeId ? "arcade-mode is-selected" : "arcade-mode"}
+                key={modeId}
+                onClick={() => setSelectedMode(modeId)}
+                style={{ "--accent": mode.accent } as CSSProperties}
                 type="button"
-                onClick={() => setActiveStep(index)}
-                onMouseEnter={() => setActiveStep(index)}
               >
-                <span className="step-button-icon">{step.icon}</span>
-                <span>
-                  <strong>{step.title}</strong>
-                  <small>{step.command}</small>
+                <span className="arcade-mode__icon">{mode.icon}</span>
+                <span className="arcade-mode__copy">
+                  <strong>{mode.title}</strong>
+                  <span>{mode.description}</span>
+                  <small>Best for: {mode.bestFor}</small>
+                </span>
+                <span className="arcade-mode__lineup" aria-hidden="true">
+                  {characters
+                    .slice(modeId === "accusation" ? 3 : 7, modeId === "accusation" ? 8 : 12)
+                    .map((character) => (
+                      <CharacterImage character={character} key={character.id} />
+                    ))}
                 </span>
               </button>
-            ))}
-          </div>
-          <div className={`step-screen is-${selectedStep.id} gsap-reveal`} role="tabpanel">
-            <div className="step-screen-header">
-              <span>{selectedStep.command}</span>
-              <strong>{selectedStep.title}</strong>
-            </div>
-            <div className="scanner-lanes" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-              <span />
-            </div>
-            <p>{selectedStep.text}</p>
-            <div className="word-reveal">
-              <span>Secret word</span>
-              <strong>{selectedStep.id === "word" ? "IMPOSTOR" : "Arcade"}</strong>
-            </div>
-          </div>
+            );
+          })}
         </div>
+        <p className="arcade-mode-status arcade-reveal" role="status">
+          Cartridge selected: <strong>{modeDetails[selectedMode].title}</strong>
+        </p>
       </section>
 
-      <section className="experience-section lobby-section" id="lobby">
-        <div className="experience-section-heading gsap-reveal">
-          <span>Live lobby</span>
-          <h2>A party console in everyone’s pocket.</h2>
-          <p>
-            The host gets a big-screen rhythm. Players get fast identity picks, private reveals, and
-            a score trail that feels like an arcade cabinet warming up.
-          </p>
-        </div>
-        <div className="lobby-layout">
-          <div className="lobby-monitor gsap-reveal">
-            <div className="lobby-monitor-top">
-              <span>Room X7K9D</span>
-              <strong>8 / 12 ready</strong>
-            </div>
-            <div className="lobby-ticker" aria-hidden="true">
-              <div className="ticker-track">
-                <span>Casey dodged the question</span>
-                <span>Mika started the timer</span>
-                <span>Blair suspects Noor</span>
-                <span>Word reveal armed</span>
-                <span>Casey dodged the question</span>
-                <span>Mika started the timer</span>
-                <span>Blair suspects Noor</span>
-                <span>Word reveal armed</span>
-              </div>
-            </div>
-            <div className="player-board">
-              {demoPlayers.map((player, index) => (
-                <button
-                  className={
-                    activePlayer === index ? "demo-player-card is-active" : "demo-player-card"
-                  }
-                  key={player.name}
-                  type="button"
-                  onClick={() => setActivePlayer(index)}
-                >
-                  <AvatarMark avatar={player.avatar} color={player.color} size="md" />
-                  <span>
-                    <strong>{player.name}</strong>
-                    {player.status}
-                  </span>
-                  <b>{player.score}</b>
-                </button>
-              ))}
-            </div>
-          </div>
-          <aside className="suspicion-meter gsap-reveal" aria-label="Selected player signal">
-            <AvatarMark avatar={selectedPlayer.avatar} color={selectedPlayer.color} size="xl" />
-            <span>Spotlight</span>
-            <h3>{selectedPlayer.name}</h3>
-            <div className="meter-track" aria-label={`${selectedPlayer.heat}% suspicion`}>
-              <span style={{ width: `${selectedPlayer.heat}%` }} />
-            </div>
-            <p>{selectedPlayer.status}. Keep talking, because the table is already watching.</p>
-          </aside>
-        </div>
-      </section>
-
-      <section className="experience-section modes-section" id="modes">
-        <div className="experience-section-heading gsap-reveal">
-          <span>Game modes</span>
-          <h2>Choose the kind of chaos.</h2>
-          <p>
-            Keep the round sharp with direct accusations, or let everyone build a suspicion trail
-            before the final read.
-          </p>
-        </div>
-        <div className="mode-layout">
-          <div className="mode-switcher gsap-reveal" role="tablist" aria-label="Game modes">
-            {(["accusation", "suspicion"] as const).map((mode) => (
-              <button
-                aria-selected={activeMode === mode}
-                className={activeMode === mode ? "mode-button is-active" : "mode-button"}
-                key={mode}
-                role="tab"
-                type="button"
-                onClick={() => setActiveMode(mode)}
-              >
-                {modeCopy[mode].icon}
-                <span>
-                  <strong>{modeCopy[mode].title}</strong>
-                  {modeCopy[mode].text}
-                </span>
-              </button>
-            ))}
-          </div>
-          <div className={`mode-playfield gsap-reveal is-${activeMode}`} role="tabpanel">
-            <div className="mode-playfield-header">
-              <span>{selectedMode.title}</span>
-              <strong>{selectedMode.action}</strong>
-            </div>
-            <div className="target-grid">
-              {demoPlayers.map((player, index) => (
-                <button
-                  className={index === activePlayer ? "target-button is-targeted" : "target-button"}
-                  key={player.name}
-                  type="button"
-                  onClick={() => setActivePlayer(index)}
-                >
-                  <AvatarMark avatar={player.avatar} color={player.color} size="sm" />
-                  <span>{player.name}</span>
-                  {index === activePlayer ? <Check size={16} /> : null}
-                </button>
-              ))}
-            </div>
-            <p>{selectedMode.text}</p>
+      <section className="arcade-ready" aria-labelledby="ready-title">
+        <CharacterImage
+          character={characters[1]}
+          className="arcade-ready__character arcade-reveal"
+        />
+        <div className="arcade-ready__copy arcade-reveal">
+          <h2 id="ready-title">
+            <Zap aria-hidden="true" /> Ready to play? <Zap aria-hidden="true" />
+          </h2>
+          <p>Start the room. Share the code. Find the liar.</p>
+          <div className="arcade-ready__actions">
+            <a className="arcade-button arcade-button--pink" href="/play">
+              Host game <ArrowRight aria-hidden="true" />
+            </a>
+            <a className="arcade-button arcade-button--cyan" href="/play?join=1">
+              Join game <ArrowRight aria-hidden="true" />
+            </a>
           </div>
         </div>
-      </section>
-
-      <section className="experience-final" id="play">
-        <div className="experience-final-copy gsap-reveal">
-          <Trophy size={30} />
-          <h2>Ready to play?</h2>
-          <p>Start a room, hand everyone a code, and let the table find its liar.</p>
-        </div>
-        <div className="experience-final-actions gsap-reveal">
-          <a className="experience-primary-link" href="/play">
-            <Play size={22} />
-            Host game
-          </a>
-          <a className="experience-secondary-link" href="/play?join=1">
-            <KeyRound size={21} />
-            Join game
-          </a>
-        </div>
+        <img
+          alt=""
+          className="arcade-ready__cabinet arcade-reveal"
+          height="1200"
+          loading="lazy"
+          src="/arcade/cabinet-1200.webp"
+          width="1200"
+        />
       </section>
     </main>
   );
 }
 
-function StatToken({ icon, value, label }: { icon: ReactNode; value: string; label: string }) {
+function arcadeCharacter(id: string, name: string, accent: string): ArcadeCharacter {
+  return { id, name, accent, src: `/arcade/characters/${id}.webp` };
+}
+
+function CharacterImage({
+  character,
+  className,
+  priority = false
+}: {
+  character: ArcadeCharacter;
+  className?: string | undefined;
+  priority?: boolean;
+}) {
   return (
-    <span className="experience-stat-token">
+    <img
+      alt=""
+      className={className}
+      decoding="async"
+      height="512"
+      loading={priority ? "eager" : "lazy"}
+      src={character.src}
+      width="512"
+    />
+  );
+}
+
+function ArcadeStat({ icon, value, label }: { icon: ReactNode; value: string; label: string }) {
+  return (
+    <span className="arcade-stat">
       {icon}
       <strong>{value}</strong>
       <span>{label}</span>
@@ -520,189 +413,116 @@ function StatToken({ icon, value, label }: { icon: ReactNode; value: string; lab
   );
 }
 
-function ArcadeCabinet({
-  activePlayer,
-  attractModeRunning,
-  onToggleAttractMode
-}: {
-  activePlayer: number;
-  attractModeRunning: boolean;
-  onToggleAttractMode: () => void;
-}) {
-  const player = demoPlayers[activePlayer] ?? demoPlayers[0];
-
+function ArcadeHeading({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <div
-      className={
-        attractModeRunning ? "arcade-cabinet-experience is-running" : "arcade-cabinet-experience"
-      }
-    >
-      <div className="cabinet-marquee" aria-hidden="true">
-        {Array.from({ length: 12 }, (_, index) => (
-          <span className="cabinet-lamp" key={index} />
-        ))}
-      </div>
-      <div className="cabinet-screen">
-        <div className="screen-grid" aria-hidden="true" />
-        <div className="screen-title">
-          <span>Round 03</span>
-          <strong>Find the impostor</strong>
-        </div>
-        <div className="screen-suspect">
-          <AvatarMark avatar={player.avatar} color={player.color} size="xl" />
-          <div>
-            <span>Current read</span>
-            <strong>{player.name}</strong>
-            <p>Suspicion {player.heat}%</p>
-          </div>
-        </div>
-        <div className="screen-actions" aria-hidden="true">
-          <span>Accuse</span>
-          <span>Suspect</span>
-          <span>Clear</span>
-        </div>
-      </div>
-      <div className="cabinet-controls">
-        <button className="cabinet-play-toggle" type="button" onClick={onToggleAttractMode}>
-          {attractModeRunning ? <TimerReset size={18} /> : <Play size={18} />}
-          {attractModeRunning ? "Attract on" : "Attract paused"}
-        </button>
-        <span className="joystick-stick" aria-hidden="true" />
-        <span className="cabinet-button is-pink" aria-hidden="true" />
-        <span className="cabinet-button is-cyan" aria-hidden="true" />
-        <span className="cabinet-button is-yellow" aria-hidden="true" />
-      </div>
+    <div className="arcade-heading arcade-reveal">
+      <span aria-hidden="true" />
+      <i aria-hidden="true" />
+      <h2 id={id}>{children}</h2>
+      <i aria-hidden="true" />
+      <span aria-hidden="true" />
     </div>
   );
 }
 
-function ArcadeAttractCanvas({ active }: { active: boolean }) {
-  const mountRef = useRef<HTMLDivElement | null>(null);
-  const activeRef = useRef(active);
-
+function useArcadeMotion(rootRef: RefObject<HTMLElement | null>) {
   useEffect(() => {
-    activeRef.current = active;
-  }, [active]);
+    const root = rootRef.current;
+    if (!root) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion) return;
+
+    let cancelled = false;
+    let cleanup: (() => void) | undefined;
+
+    const start = async () => {
+      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger")
+      ]);
+      if (cancelled) return;
+
+      gsap.registerPlugin(ScrollTrigger);
+      const context = gsap.context(() => {
+        gsap.fromTo(
+          ".arcade-hero-reveal",
+          { opacity: 0, y: 24, scale: 0.985 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "power3.out" }
+        );
+        gsap.utils.toArray<HTMLElement>(".arcade-reveal").forEach((element) => {
+          gsap.fromTo(
+            element,
+            { opacity: 0, y: 24 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.65,
+              ease: "power3.out",
+              scrollTrigger: { trigger: element, start: "top 88%", once: true }
+            }
+          );
+        });
+        gsap.to(".arcade-hero-crew img", {
+          y: -5,
+          duration: 1.35,
+          ease: "steps(3)",
+          repeat: -1,
+          yoyo: true,
+          stagger: 0.1
+        });
+      }, root);
+      cleanup = () => context.revert();
+    };
+
+    void start().catch(() => undefined);
+    return () => {
+      cancelled = true;
+      cleanup?.();
+    };
+  }, [rootRef]);
+}
+
+function ArcadeStarfield() {
+  const mountRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const mount = mountRef.current;
-
-    if (!mount) {
-      return;
-    }
+    if (!mount) return;
 
     let cancelled = false;
-    let cleanupScene: (() => void) | undefined;
+    let cleanup: (() => void) | undefined;
 
-    const startScene = async () => {
+    const start = async () => {
       const THREE = await import("three");
+      if (cancelled) return;
 
-      if (cancelled) {
-        return;
-      }
-
-      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-      camera.position.set(0, 0.7, 7.2);
-
-      const renderer = new THREE.WebGLRenderer({
-        alpha: true,
-        antialias: true,
-        powerPreference: "high-performance",
-        preserveDrawingBuffer: true
-      });
+      const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+      camera.position.z = 8;
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.setClearColor(0x000000, 0);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
       renderer.domElement.setAttribute("aria-hidden", "true");
-      renderer.domElement.dataset.testid = "arcade-attract-canvas";
       mount.appendChild(renderer.domElement);
 
-      const geometries: BufferGeometry[] = [];
-      const materials: Material[] = [];
-      const registerGeometry = <TGeometry extends BufferGeometry>(geometry: TGeometry) => {
-        geometries.push(geometry);
-        return geometry;
-      };
-      const registerMaterial = <TMaterial extends Material>(material: TMaterial) => {
-        materials.push(material);
-        return material;
-      };
-
-      const cyan = registerMaterial(
-        new THREE.MeshBasicMaterial({ color: 0x02a9ff, transparent: true, opacity: 0.76 })
-      );
-      const pink = registerMaterial(
-        new THREE.MeshBasicMaterial({ color: 0xff2d87, transparent: true, opacity: 0.78 })
-      );
-      const yellow = registerMaterial(
-        new THREE.MeshBasicMaterial({ color: 0xffd21e, transparent: true, opacity: 0.72 })
-      );
-      const mint = registerMaterial(
-        new THREE.MeshBasicMaterial({ color: 0x22f28d, transparent: true, opacity: 0.64 })
-      );
-      const darkGlass = registerMaterial(
-        new THREE.MeshBasicMaterial({ color: 0x08081e, transparent: true, opacity: 0.48 })
-      );
-
-      const world = new THREE.Group();
-      scene.add(world);
-
-      const cabinet = new THREE.Group();
-      const frameGeometry = registerGeometry(new THREE.BoxGeometry(2.95, 3.35, 0.16));
-      const screenGeometry = registerGeometry(new THREE.BoxGeometry(2.34, 1.54, 0.2));
-      const deckGeometry = registerGeometry(new THREE.BoxGeometry(2.72, 0.46, 0.22));
-      const frame = new THREE.Mesh(frameGeometry, darkGlass);
-      const screen = new THREE.Mesh(screenGeometry, cyan);
-      const deck = new THREE.Mesh(deckGeometry, pink);
-      frame.position.z = -0.05;
-      screen.position.set(0, 0.35, 0.12);
-      deck.position.set(0, -1.36, 0.2);
-      cabinet.add(frame, screen, deck);
-
-      const ringGeometry = registerGeometry(new THREE.TorusGeometry(0.82, 0.018, 8, 96));
-      const ringOne = new THREE.Mesh(ringGeometry, pink);
-      const ringTwo = new THREE.Mesh(ringGeometry, yellow);
-      ringOne.position.set(0, 0.35, 0.28);
-      ringTwo.position.set(0, 0.35, 0.3);
-      ringTwo.scale.setScalar(0.68);
-      cabinet.add(ringOne, ringTwo);
-      world.add(cabinet);
-
-      const tokenGeometry = registerGeometry(new THREE.CylinderGeometry(0.17, 0.17, 0.052, 6));
-      const tokenMaterials = [cyan, pink, yellow, mint];
-      const tokens = new THREE.Group();
-      for (let index = 0; index < 34; index += 1) {
-        const token = new THREE.Mesh(tokenGeometry, tokenMaterials[index % tokenMaterials.length]);
-        const lane = index % 4;
-        const depth = -2.8 + (index % 9) * 0.66;
-        const side = lane < 2 ? -1 : 1;
-        token.position.set(side * (2.2 + lane * 0.54), -1.15 + ((index * 37) % 120) / 100, depth);
-        token.rotation.set(index * 0.19, index * 0.27, index * 0.11);
-        tokens.add(token);
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(720 * 3);
+      for (let index = 0; index < positions.length; index += 3) {
+        positions[index] = (seededCoordinate(index, 12.9898) - 0.5) * 22;
+        positions[index + 1] = (seededCoordinate(index, 78.233) - 0.5) * 18;
+        positions[index + 2] = (seededCoordinate(index, 37.719) - 0.5) * 10;
       }
-      world.add(tokens);
-
-      const grid = new THREE.GridHelper(10, 18, 0x02a9ff, 0xff2d87);
-      grid.position.y = -1.85;
-      grid.position.z = -0.8;
-      world.add(grid);
-
-      const ambientLineGeometry = registerGeometry(new THREE.BoxGeometry(0.032, 0.032, 5.8));
-      for (let index = 0; index < 8; index += 1) {
-        const line = new THREE.Mesh(ambientLineGeometry, index % 2 === 0 ? cyan : pink);
-        line.position.set(-4.4 + index * 1.25, 1.72 - (index % 3) * 0.34, -1.4);
-        line.rotation.z = index % 2 === 0 ? 0.3 : -0.24;
-        world.add(line);
-      }
-
-      const pointer = { x: 0, y: 0 };
-      const handlePointerMove = (event: PointerEvent) => {
-        const bounds = mount.getBoundingClientRect();
-        pointer.x = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
-        pointer.y = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
-      };
-      mount.addEventListener("pointermove", handlePointerMove);
+      geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      const material = new THREE.PointsMaterial({
+        color: 0xdce8ff,
+        size: 0.035,
+        transparent: true,
+        opacity: 0.72,
+        sizeAttenuation: true
+      });
+      const stars = new THREE.Points(geometry, material);
+      scene.add(stars);
 
       const resize = () => {
         const width = Math.max(1, mount.clientWidth);
@@ -714,54 +534,37 @@ function ArcadeAttractCanvas({ active }: { active: boolean }) {
       resize();
       window.addEventListener("resize", resize);
 
-      const startedAt = performance.now();
-      let frameId = 0;
-      let disposed = false;
-
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let frame = 0;
       const render = () => {
-        const elapsed = (performance.now() - startedAt) / 1000;
-
-        if (activeRef.current && !reducedMotion) {
-          world.rotation.y += (pointer.x * 0.18 - world.rotation.y) * 0.035;
-          world.rotation.x += (-pointer.y * 0.08 - world.rotation.x) * 0.035;
-          cabinet.rotation.z = Math.sin(elapsed * 0.7) * 0.018;
-          ringOne.rotation.z = elapsed * 0.74;
-          ringTwo.rotation.z = -elapsed * 1.04;
-          tokens.children.forEach((child: Object3D, index: number) => {
-            child.rotation.y += 0.008 + index * 0.0002;
-            child.position.y += Math.sin(elapsed * 1.35 + index) * 0.0008;
-          });
-          grid.position.z = -0.8 + ((elapsed * 0.28) % 0.55);
-        }
-
+        stars.rotation.y += 0.00016;
+        stars.rotation.x += 0.00003;
         renderer.render(scene, camera);
-
-        if (!disposed && !reducedMotion) {
-          frameId = window.requestAnimationFrame(render);
-        }
+        if (!reducedMotion) frame = window.requestAnimationFrame(render);
       };
-
       render();
 
-      cleanupScene = () => {
-        disposed = true;
-        window.cancelAnimationFrame(frameId);
+      cleanup = () => {
+        window.cancelAnimationFrame(frame);
         window.removeEventListener("resize", resize);
-        mount.removeEventListener("pointermove", handlePointerMove);
+        geometry.dispose();
+        material.dispose();
         renderer.dispose();
-        geometries.forEach((geometry) => geometry.dispose());
-        materials.forEach((material) => material.dispose());
         renderer.domElement.remove();
       };
     };
 
-    void startScene();
-
+    void start().catch(() => undefined);
     return () => {
       cancelled = true;
-      cleanupScene?.();
+      cleanup?.();
     };
   }, []);
 
-  return <div className="arcade-webgl-backdrop" ref={mountRef} />;
+  return <div className="arcade-starfield" ref={mountRef} />;
+}
+
+function seededCoordinate(index: number, multiplier: number) {
+  const value = Math.sin((index + 1) * multiplier) * 43758.5453;
+  return value - Math.floor(value);
 }

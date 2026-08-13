@@ -16,34 +16,43 @@ import type {
   RoomConfig
 } from "@impostor/domain";
 import {
-  ArrowRight,
-  Bell,
-  BookOpen,
   Check,
   Clipboard,
   Crown,
-  Eye,
   Flag,
   Gamepad2,
-  Home,
-  KeyRound,
   LogOut,
   Moon,
   Play,
   RotateCcw,
-  Settings,
   Shield,
   SlidersHorizontal,
   Sun,
   TimerReset,
   Trophy,
-  User,
-  Users,
-  Wifi,
   WifiOff,
-  X,
-  Zap
+  X
 } from "lucide-react";
+import {
+  ArrowLeft as PixelArrowLeft,
+  ArrowRight as PixelArrowRight,
+  BookOpen as PixelBookOpen,
+  Check as PixelCheck,
+  Clipboard as PixelClipboard,
+  Eye as PixelEye,
+  Flag as PixelFlag,
+  Gamepad as PixelGamepad,
+  Home as PixelHome,
+  Lock as PixelLock,
+  Logout as PixelLogout,
+  ScanBarcode as PixelScanBarcode,
+  Shield as PixelShield,
+  Trophy as PixelTrophy,
+  User as PixelUser,
+  Users as PixelUsers,
+  Wifi as PixelWifi,
+  Zap as PixelZap
+} from "pixelarticons/react";
 import QRCode from "qrcode";
 import {
   useCallback,
@@ -58,6 +67,7 @@ import {
   type SetStateAction
 } from "react";
 import { AvatarMark } from "./components/avatar-mark";
+import { BrandWordmark } from "./components/brand-wordmark";
 import { LandingExperience } from "./components/landing-experience";
 import { SegmentedControl } from "./components/segmented-control";
 import {
@@ -100,18 +110,14 @@ const modeOptions: readonly { label: string; value: GameMode }[] = [
 
 const avatarGroups: readonly { label: string; avatars: readonly AvatarId[] }[] = [
   {
-    label: "Boy avatars",
-    avatars: AVATARS.filter((avatar) => avatar.startsWith("boy-"))
-  },
-  {
-    label: "Girl avatars",
-    avatars: AVATARS.filter((avatar) => avatar.startsWith("girl-"))
+    label: "Arcade characters",
+    avatars: AVATARS
   }
 ];
 
-const fallbackAvatar = AVATARS[0] ?? "boy-1";
+const fallbackAvatar = AVATARS[0] ?? "pixel-panda";
 const fallbackColor = PLAYER_COLORS[0] ?? "#276ef1";
-const secondAvatar = AVATARS.find((avatar) => avatar.startsWith("girl-")) ?? fallbackAvatar;
+const secondAvatar = AVATARS[1] ?? "neon-ninja";
 const secondColor = PLAYER_COLORS[1] ?? fallbackColor;
 
 const defaultProfile: ProfileDraft = {
@@ -136,7 +142,7 @@ export function App() {
       onToggleTheme={toggleTheme}
     />
   ) : (
-    <LandingPage theme={theme} onToggleTheme={toggleTheme} />
+    <LandingPage />
   );
 }
 
@@ -170,14 +176,8 @@ function getRoute(): AppRoute {
   };
 }
 
-function LandingPage({
-  theme,
-  onToggleTheme
-}: {
-  theme: ThemePreference;
-  onToggleTheme: () => void;
-}) {
-  return <LandingExperience theme={theme} onToggleTheme={onToggleTheme} />;
+function LandingPage() {
+  return <LandingExperience />;
 }
 
 function PhoneStatusBar() {
@@ -204,17 +204,10 @@ function StatPill({ icon, label, detail }: { icon: ReactNode; label: string; det
 }
 
 function BrandLockup({ href }: { href?: string }) {
-  const content = (
-    <>
-      <span className="brand-mark" aria-hidden="true">
-        IM
-      </span>
-      <span className="brand-word">Impostor</span>
-    </>
-  );
+  const content = <BrandWordmark alt={href ? "" : "Impostor"} />;
 
   return href ? (
-    <a className="brand-lockup" href={href}>
+    <a aria-label="Impostor home" className="brand-lockup" href={href}>
       {content}
     </a>
   ) : (
@@ -239,16 +232,26 @@ function ThemeToggle({ theme, onToggle }: { theme: ThemePreference; onToggle: ()
 }
 
 function AppTopBar({
+  connectionState,
+  copied = false,
   eyebrow,
+  me,
   meta,
   theme,
   title,
+  onCopyRoomLink,
+  onLeave,
   onToggleTheme
 }: {
+  connectionState?: ConnectionState;
+  copied?: boolean;
   eyebrow: string;
+  me?: PublicPlayerSnapshot;
   meta?: string;
   theme: ThemePreference;
   title: string;
+  onCopyRoomLink?: () => void;
+  onLeave?: () => void;
   onToggleTheme: () => void;
 }) {
   return (
@@ -259,39 +262,85 @@ function AppTopBar({
         <strong>{title}</strong>
       </div>
       <div className="topbar-actions">
+        {connectionState ? <ConnectionPill state={connectionState} /> : null}
         {meta ? (
           <span className="connection-pill topbar-meta">
-            <Users size={15} />
+            <PixelUsers aria-hidden="true" height={16} width={16} />
             {meta}
           </span>
         ) : null}
-        <button
-          aria-label="Notifications"
-          className="icon-button"
-          title="Notifications"
-          type="button"
-        >
-          <Bell size={18} />
-        </button>
+        {onCopyRoomLink ? (
+          <button
+            aria-label={copied ? "Join link copied" : "Copy join link"}
+            className="icon-button topbar-copy-button"
+            title={copied ? "Join link copied" : "Copy join link"}
+            type="button"
+            onClick={onCopyRoomLink}
+          >
+            {copied ? (
+              <PixelCheck aria-hidden="true" height={18} width={18} />
+            ) : (
+              <PixelClipboard aria-hidden="true" height={18} width={18} />
+            )}
+          </button>
+        ) : null}
+        {me ? (
+          <span className="topbar-player" title={me.nickname}>
+            <AvatarMark avatar={me.avatar} color={me.color} size="xs" />
+            <span>{me.nickname}</span>
+          </span>
+        ) : null}
+        {onLeave ? (
+          <button
+            aria-label="Leave room"
+            className="topbar-leave-button"
+            type="button"
+            onClick={onLeave}
+          >
+            <PixelLogout aria-hidden="true" height={17} width={17} />
+            <span>Leave</span>
+          </button>
+        ) : null}
         <ThemeToggle theme={theme} onToggle={onToggleTheme} />
       </div>
     </header>
   );
 }
 
-type SidebarKey =
-  "home" | "host" | "join" | "play" | "modes" | "profile" | "leaderboard" | "settings";
+type SidebarKey = "home" | "host" | "join" | "play" | "modes";
 
 function AppSidebar({ active }: { active: SidebarKey }) {
-  const items: readonly { key: SidebarKey; icon: ReactNode; label: string }[] = [
-    { key: "home", icon: <Home size={17} />, label: "Home" },
-    { key: "host", icon: <Gamepad2 size={17} />, label: "Host game" },
-    { key: "join", icon: <KeyRound size={17} />, label: "Join game" },
-    { key: "play", icon: <BookOpen size={17} />, label: "How to play" },
-    { key: "modes", icon: <Shield size={17} />, label: "Game modes" },
-    { key: "profile", icon: <User size={17} />, label: "Profile" },
-    { key: "leaderboard", icon: <Trophy size={17} />, label: "Leaderboard" },
-    { key: "settings", icon: <Settings size={17} />, label: "Settings" }
+  const items: readonly { key: SidebarKey; href: string; icon: ReactNode; label: string }[] = [
+    {
+      key: "home",
+      href: "/",
+      icon: <PixelHome aria-hidden="true" height={17} width={17} />,
+      label: "Home"
+    },
+    {
+      key: "host",
+      href: "/play",
+      icon: <PixelGamepad aria-hidden="true" height={17} width={17} />,
+      label: "Host game"
+    },
+    {
+      key: "join",
+      href: "/play?join=1",
+      icon: <PixelLock aria-hidden="true" height={17} width={17} />,
+      label: "Join game"
+    },
+    {
+      key: "play",
+      href: "/#how-it-works",
+      icon: <PixelBookOpen aria-hidden="true" height={17} width={17} />,
+      label: "How to play"
+    },
+    {
+      key: "modes",
+      href: "/#modes",
+      icon: <PixelShield aria-hidden="true" height={17} width={17} />,
+      label: "Game modes"
+    }
   ];
 
   return (
@@ -301,7 +350,7 @@ function AppSidebar({ active }: { active: SidebarKey }) {
           <a
             aria-current={active === item.key ? "page" : undefined}
             className={active === item.key ? "is-active" : ""}
-            href={item.key === "home" ? "/" : "/play"}
+            href={item.href}
             key={item.key}
           >
             {item.icon}
@@ -309,7 +358,11 @@ function AppSidebar({ active }: { active: SidebarKey }) {
           </a>
         ))}
       </nav>
-      <StatPill icon={<Users size={18} />} label="3-12" detail="players" />
+      <StatPill
+        icon={<PixelUsers aria-hidden="true" height={18} width={18} />}
+        label="3-12"
+        detail="players"
+      />
     </aside>
   );
 }
@@ -418,6 +471,36 @@ function PlayApp({
     window.history.replaceState(null, "", "/play");
   }, []);
 
+  const handleCreate = useCallback(
+    async (input: Parameters<typeof createRoom>[0]) => {
+      setConnectionState("connecting");
+      setError(undefined);
+
+      try {
+        acceptSession(await createRoom(input));
+      } catch (requestError) {
+        setConnectionState("error");
+        setError(getRequestErrorMessage(requestError, "Could not create the room. Try again."));
+      }
+    },
+    [acceptSession]
+  );
+
+  const handleJoin = useCallback(
+    async (code: string, input: ProfileDraft) => {
+      setConnectionState("connecting");
+      setError(undefined);
+
+      try {
+        acceptSession(await joinRoom(code, input));
+      } catch (requestError) {
+        setConnectionState("error");
+        setError(getRequestErrorMessage(requestError, "Could not join the room. Check the code."));
+      }
+    },
+    [acceptSession]
+  );
+
   return (
     <main className="app-shell">
       {room && privateSnapshot ? (
@@ -439,9 +522,12 @@ function PlayApp({
           initialRoomCode={initialRoomCode}
           theme={theme}
           onToggleTheme={onToggleTheme}
-          onCreate={async (input) => acceptSession(await createRoom(input))}
-          onJoin={async (code, input) => acceptSession(await joinRoom(code, input))}
-          onClearError={() => setError(undefined)}
+          onCreate={handleCreate}
+          onJoin={handleJoin}
+          onClearError={() => {
+            setError(undefined);
+            setConnectionState((current) => (current === "error" ? "idle" : current));
+          }}
         />
       )}
     </main>
@@ -472,97 +558,131 @@ function PlayHomeScreen({
   const [activePanel, setActivePanel] = useState<SetupPanel>(
     initialRoomCode || forceJoin ? "join" : "host"
   );
+  const [mobileSetupOpen, setMobileSetupOpen] = useState(Boolean(initialRoomCode || forceJoin));
+  const mobileSetupBackRef = useRef<HTMLButtonElement>(null);
+  const mobileSetupFallbackRef = useRef<HTMLButtonElement>(null);
+  const mobileSetupTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const previousMobileSetupOpenRef = useRef(mobileSetupOpen);
+
+  const openSetup = (panel: SetupPanel, trigger?: HTMLButtonElement) => {
+    onClearError();
+    if (trigger) {
+      mobileSetupTriggerRef.current = trigger;
+    }
+    setActivePanel(panel);
+    setMobileSetupOpen(true);
+  };
+
+  useEffect(() => {
+    const wasOpen = previousMobileSetupOpenRef.current;
+    previousMobileSetupOpenRef.current = mobileSetupOpen;
+
+    if (!window.matchMedia("(max-width: 979px)").matches) {
+      return;
+    }
+
+    if (mobileSetupOpen) {
+      mobileSetupBackRef.current?.focus();
+    } else if (wasOpen) {
+      (mobileSetupTriggerRef.current ?? mobileSetupFallbackRef.current)?.focus();
+    }
+  }, [mobileSetupOpen]);
 
   return (
-    <section className="arcade-app-frame play-home">
+    <section
+      className={`arcade-app-frame play-arcade-frame play-home ${
+        mobileSetupOpen ? "is-mobile-setup-open" : ""
+      }`}
+    >
       <PhoneStatusBar />
+      <AppTopBar
+        eyebrow="Ready room"
+        theme={theme}
+        title={activePanel === "host" ? "Host a game" : "Join a game"}
+        onToggleTheme={onToggleTheme}
+      />
       <AppSidebar active={activePanel === "host" ? "host" : "join"} />
       <div className="app-stage">
-        <AppTopBar
-          eyebrow="Ready room"
-          theme={theme}
-          title={activePanel === "host" ? "Host a game" : "Join a game"}
-          onToggleTheme={onToggleTheme}
-        />
         <div className="play-dashboard-grid host-workspace-grid">
           <section className="mobile-lobby-summary" aria-label="Mobile lobby summary">
             <div className="current-lobby-card">
               <div className="preview-heading">
-                <strong>Current lobby</strong>
-                <span>Host</span>
+                <strong>Your next lobby</strong>
+                <span>Private rooms</span>
               </div>
-              <div className="current-lobby-main">
+              <div className="current-lobby-main honest-empty-state">
+                <PixelScanBarcode aria-hidden="true" height={46} width={46} />
                 <div>
-                  <h2>Neon Night</h2>
-                  <p>
-                    Code: <b>X7K9D</b>
-                  </p>
-                  <span>8 / 12 players</span>
-                </div>
-                <div className="mini-qr mini-qr-large" aria-hidden="true">
-                  <span />
-                  <span />
-                  <span />
+                  <h2>No active lobby</h2>
+                  <p>Create or join a private room to start playing.</p>
+                  <span>A real room code appears after creation.</span>
                 </div>
               </div>
-              <AvatarStack />
             </div>
 
-            <button className="quick-play-row" type="button" onClick={() => setActivePanel("join")}>
-              <ZapIcon />
+            <button className="quick-play-row is-unavailable" disabled type="button">
+              <PixelZap aria-hidden="true" height={28} width={28} />
               <span>
-                <strong>Quick play</strong>
-                Jump into a public game
+                <strong>Public matchmaking</strong>
+                Not available in the MVP
               </span>
-              <ArrowRight size={18} />
+              <span className="availability-chip">Later</span>
             </button>
 
             <div className="quick-action-grid" aria-label="Quick actions">
               <button
                 className="quick-action-card is-host"
+                ref={mobileSetupFallbackRef}
                 type="button"
-                onClick={() => {
-                  onClearError();
-                  setActivePanel("host");
-                }}
+                onClick={(event) => openSetup("host", event.currentTarget)}
               >
-                <Gamepad2 size={28} />
+                <PixelGamepad aria-hidden="true" height={28} width={28} />
                 <strong>Host game</strong>
               </button>
               <button
                 className="quick-action-card is-join"
                 type="button"
-                onClick={() => {
-                  onClearError();
-                  setActivePanel("join");
-                }}
+                onClick={(event) => openSetup("join", event.currentTarget)}
               >
-                <KeyRound size={28} />
+                <PixelLock aria-hidden="true" height={28} width={28} />
                 <strong>Join game</strong>
               </button>
-              <button className="quick-action-card is-modes" type="button">
-                <Shield size={28} />
+              <a className="quick-action-card is-modes" href="/#modes">
+                <PixelShield aria-hidden="true" height={28} width={28} />
                 <strong>Game modes</strong>
-              </button>
-              <button className="quick-action-card is-how" type="button">
-                <BookOpen size={28} />
+              </a>
+              <a className="quick-action-card is-how" href="/#how-it-works">
+                <PixelBookOpen aria-hidden="true" height={28} width={28} />
                 <strong>How to play</strong>
-              </button>
+              </a>
             </div>
 
-            <button className="profile-strip" type="button">
-              <User size={25} />
+            <button
+              className="profile-strip"
+              type="button"
+              onClick={(event) => openSetup("host", event.currentTarget)}
+            >
+              <PixelUser aria-hidden="true" height={25} width={25} />
               <span>
-                <strong>Profile</strong>
-                View stats & history
+                <strong>Player identity</strong>
+                Choose a nickname and character when you enter
               </span>
-              <ArrowRight size={18} />
+              <PixelArrowRight aria-hidden="true" height={18} width={18} />
             </button>
 
-            <LeaderboardPreview />
+            <RoomLeaderboardNotice />
           </section>
 
           <div className="setup-panel play-setup-panel host-command-panel">
+            <button
+              className="mobile-setup-back"
+              ref={mobileSetupBackRef}
+              type="button"
+              onClick={() => setMobileSetupOpen(false)}
+            >
+              <PixelArrowLeft aria-hidden="true" height={17} width={17} />
+              Back to game menu
+            </button>
             <div className="workspace-heading">
               <span>{activePanel === "host" ? "Host a game" : "Join a game"}</span>
               <h1>{activePanel === "host" ? "Host a game" : "Join a game"}</h1>
@@ -572,26 +692,20 @@ function PlayHomeScreen({
                   : "Enter a lobby code, pick your table identity, and jump in."}
               </p>
             </div>
-            <div className="panel-tabs" role="tablist" aria-label="Choose setup flow">
+            <div className="panel-tabs" role="group" aria-label="Choose setup flow">
               <button
-                aria-selected={activePanel === "host"}
+                aria-pressed={activePanel === "host"}
                 className={activePanel === "host" ? "is-selected" : ""}
                 type="button"
-                onClick={() => {
-                  onClearError();
-                  setActivePanel("host");
-                }}
+                onClick={() => openSetup("host")}
               >
                 Host
               </button>
               <button
-                aria-selected={activePanel === "join"}
+                aria-pressed={activePanel === "join"}
                 className={activePanel === "join" ? "is-selected" : ""}
                 type="button"
-                onClick={() => {
-                  onClearError();
-                  setActivePanel("join");
-                }}
+                onClick={() => openSetup("join")}
               >
                 Join
               </button>
@@ -607,27 +721,27 @@ function PlayHomeScreen({
               />
             )}
 
-            {error ? <p className="form-error">{error}</p> : null}
+            {error ? (
+              <p className="form-error" role="alert">
+                {error}
+              </p>
+            ) : null}
           </div>
 
           <aside className="lobby-preview-panel">
             <div className="preview-heading">
-              <strong>3. Lobby preview</strong>
-              <span>Placeholder</span>
+              <strong>3. Live lobby</strong>
+              <span>After creation</span>
             </div>
-            <div className="preview-code-card">
-              <span>Lobby code</span>
-              <strong>X7K9D</strong>
-              <p>Share this code or scan to join.</p>
-              <div className="mini-qr preview-qr" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </div>
+            <div className="preview-code-card is-empty">
+              <PixelScanBarcode aria-hidden="true" height={68} width={68} />
+              <span>Server-generated code</span>
+              <strong>Ready when you are</strong>
+              <p>Your real room code and join QR appear after the lobby is created.</p>
             </div>
             <div className="preview-player-row">
-              <span>8 / 12 players joined</span>
-              <AvatarStack />
+              <PixelUsers aria-hidden="true" height={20} width={20} />
+              <span>Players appear here as they join the real room.</span>
             </div>
             <button
               aria-label="Create room"
@@ -637,9 +751,9 @@ function PlayHomeScreen({
               type="submit"
             >
               Create lobby
-              <ArrowRight size={18} />
+              <PixelArrowRight aria-hidden="true" height={18} width={18} />
             </button>
-            <p className="preview-expiry-note">Lobby will be active for 30 minutes.</p>
+            <p className="preview-expiry-note">No sample players or room codes are shown.</p>
           </aside>
         </div>
       </div>
@@ -647,55 +761,22 @@ function PlayHomeScreen({
   );
 }
 
-function AvatarStack() {
-  return (
-    <div className="avatar-stack" aria-hidden="true">
-      <AvatarMark avatar="girl-5" color="#ff5a98" size="xs" />
-      <AvatarMark avatar="boy-3" color="#1db4ff" size="xs" />
-      <AvatarMark avatar="girl-11" color="#71f264" size="xs" />
-      <AvatarMark avatar="boy-8" color="#ffd21f" size="xs" />
-      <AvatarMark avatar="girl-2" color="#ff8b3d" size="xs" />
-      <AvatarMark avatar="boy-10" color="#b95cff" size="xs" />
-      <span>+4</span>
-    </div>
-  );
-}
-
-function LeaderboardPreview() {
+function RoomLeaderboardNotice() {
   return (
     <div className="leaderboard-preview">
       <div className="preview-heading">
-        <strong>Leaderboard</strong>
-        <span>Weekly top players</span>
+        <strong>Room leaderboard</strong>
+        <span>During play</span>
       </div>
-      <div className="preview-row">
-        <span>1</span>
-        <AvatarMark avatar="girl-5" color="#7cf25f" size="sm" />
-        <strong>PixelMaster</strong>
-        <b>2,450</b>
+      <div className="leaderboard-empty-state">
+        <PixelTrophy aria-hidden="true" height={34} width={34} />
+        <div>
+          <strong>Scores live inside each room</strong>
+          <p>Results appear after a round. There is no global account ranking in this MVP.</p>
+        </div>
       </div>
-      <div className="preview-row">
-        <span>2</span>
-        <AvatarMark avatar="boy-3" color="#ff2e8b" size="sm" />
-        <strong>DeceptiOn</strong>
-        <b>1,870</b>
-      </div>
-      <div className="preview-row">
-        <span>3</span>
-        <AvatarMark avatar="girl-11" color="#b95cff" size="sm" />
-        <strong>MindGames</strong>
-        <b>1,420</b>
-      </div>
-      <button className="secondary-button full-width" type="button">
-        View full leaderboard
-        <ArrowRight size={16} />
-      </button>
     </div>
   );
-}
-
-function ZapIcon() {
-  return <Zap size={28} strokeWidth={2.5} />;
 }
 
 function CreateRoomForm({
@@ -723,8 +804,7 @@ function CreateRoomForm({
         void onCreate({ host: profile, config });
       }}
     >
-      <div className="form-section-label">2. Game settings</div>
-      <ProfileFields profile={profile} onChange={setProfile} />
+      <div className="form-section-label">1. Game settings</div>
       <SegmentedControl
         label="Game mode"
         options={modeOptions}
@@ -772,6 +852,8 @@ function CreateRoomForm({
           setConfig((current) => ({ ...current, roundDurationSeconds }))
         }
       />
+      <div className="form-section-label">2. Player identity</div>
+      <ProfileFields profile={profile} onChange={setProfile} />
       <button
         className="primary-button host-inline-submit"
         disabled={busy || profile.nickname.trim().length < 2}
@@ -873,6 +955,7 @@ function ProfileFields({
                   {group.avatars.map((avatar) => (
                     <button
                       aria-label={`Use ${getAvatarLabel(avatar)}`}
+                      aria-pressed={profile.avatar === avatar}
                       className={profile.avatar === avatar ? "is-selected" : ""}
                       key={avatar}
                       type="button"
@@ -892,6 +975,7 @@ function ProfileFields({
             {PLAYER_COLORS.map((color) => (
               <button
                 aria-label={`Use ${color} player color`}
+                aria-pressed={profile.color === color}
                 className={profile.color === color ? "is-selected" : ""}
                 key={color}
                 style={{ "--swatch": color } as CSSProperties}
@@ -938,6 +1022,18 @@ function RoomScreen({
     (room.phase === "results" || room.phase === "finished") && Boolean(currentRound?.resolution);
   const [leaderboardOpen, setLeaderboardOpen] = useState(false);
   const visibleLeaderboardOpen = !showResults && leaderboardOpen;
+  const joinUrl = useMemo(() => {
+    const url = new URL("/play", window.location.origin);
+    url.searchParams.set("room", room.code);
+    return url.toString();
+  }, [room.code]);
+  const [copied, setCopied] = useState(false);
+  const copyJoinLink = useCallback(() => {
+    void navigator.clipboard.writeText(joinUrl).then(() => {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1400);
+    });
+  }, [joinUrl]);
 
   if (!me) {
     return (
@@ -951,41 +1047,44 @@ function RoomScreen({
   }
 
   return (
-    <section className={`arcade-app-frame room-layout room-phase-${room.phase}`}>
-      <AppSidebar
-        active={
-          room.phase === "lobby"
-            ? me.isHost
-              ? "host"
-              : "join"
-            : showResults
-              ? "leaderboard"
-              : "play"
+    <section className={`arcade-app-frame play-arcade-frame room-layout room-phase-${room.phase}`}>
+      <PhoneStatusBar />
+      <AppTopBar
+        connectionState={connectionState}
+        copied={copied}
+        eyebrow={`Lobby code: ${room.code}`}
+        me={me}
+        meta={`${room.players.length} / ${room.config.maxPlayers}`}
+        theme={theme}
+        title={
+          room.phase === "lobby" ? "Host lobby" : showResults ? "Round results" : "Take action"
         }
+        onCopyRoomLink={copyJoinLink}
+        onLeave={onLeave}
+        onToggleTheme={onToggleTheme}
       />
+      <AppSidebar active={room.phase === "lobby" ? (me.isHost ? "host" : "join") : "play"} />
       <div className="app-stage">
-        <AppTopBar
-          eyebrow={`Lobby code: ${room.code}`}
-          meta={`${room.players.length} / ${room.config.maxPlayers}`}
-          theme={theme}
-          title={
-            room.phase === "lobby" ? "Host lobby" : showResults ? "Round results" : "Take action"
-          }
-          onToggleTheme={onToggleTheme}
-        />
         <div className="room-content">
           <RoomHeader
+            copied={copied}
             connectionState={connectionState}
+            joinUrl={joinUrl}
             me={me}
             privateSnapshot={privateSnapshot}
             room={room}
             leaderboardOpen={visibleLeaderboardOpen}
             showLeaderboardButton={!showResults}
+            onCopyRoomLink={copyJoinLink}
             onToggleLeaderboard={() => setLeaderboardOpen((open) => !open)}
             onLeave={onLeave}
           />
 
-          {error ? <p className="form-error">{error}</p> : null}
+          {error ? (
+            <p className="form-error" role="alert">
+              {error}
+            </p>
+          ) : null}
 
           {room.phase === "lobby" ? (
             <LobbyPanel me={me} room={room} onSend={onSend} />
@@ -1007,8 +1106,11 @@ function RoomHeader({
   me,
   privateSnapshot,
   connectionState,
+  copied,
+  joinUrl,
   leaderboardOpen,
   showLeaderboardButton,
+  onCopyRoomLink,
   onToggleLeaderboard,
   onLeave
 }: {
@@ -1016,18 +1118,15 @@ function RoomHeader({
   me: PublicPlayerSnapshot;
   privateSnapshot: PrivatePlayerSnapshot;
   connectionState: ConnectionState;
+  copied: boolean;
+  joinUrl: string;
   leaderboardOpen: boolean;
   showLeaderboardButton: boolean;
+  onCopyRoomLink: () => void;
   onToggleLeaderboard: () => void;
   onLeave: () => void;
 }) {
-  const joinUrl = useMemo(() => {
-    const url = new URL("/play", window.location.origin);
-    url.searchParams.set("room", room.code);
-    return url.toString();
-  }, [room.code]);
   const [qrCode, setQrCode] = useState<string>("");
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     void QRCode.toDataURL(joinUrl, {
@@ -1064,11 +1163,7 @@ function RoomHeader({
           className="icon-button"
           title="Copy join link"
           type="button"
-          onClick={() => {
-            void navigator.clipboard.writeText(joinUrl);
-            setCopied(true);
-            window.setTimeout(() => setCopied(false), 1400);
-          }}
+          onClick={onCopyRoomLink}
         >
           {copied ? <Check size={18} /> : <Clipboard size={18} />}
         </button>
@@ -1292,6 +1387,16 @@ function RoundPanel({
   const canAct = room.phase === "round" && !round.resolution;
   const isImpostor = privateSnapshot.role === "impostor";
   const canAccuse = canAct && !isImpostor;
+  const focusActionTargets = (id: string) => {
+    const section = document.getElementById(id);
+    section?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "center"
+    });
+    section?.querySelector<HTMLButtonElement>("button:not(:disabled)")?.focus({
+      preventScroll: true
+    });
+  };
 
   return (
     <section className="round-panel live-game-board">
@@ -1305,7 +1410,7 @@ function RoundPanel({
         </div>
         <div className="instruction-grid">
           <InstructionCard
-            icon={<BookOpen size={36} />}
+            icon={<PixelBookOpen aria-hidden="true" height={36} width={36} />}
             title="1. The word"
             text={
               isImpostor
@@ -1314,14 +1419,18 @@ function RoundPanel({
             }
           />
           <InstructionCard
-            icon={<Users size={36} />}
+            icon={<PixelUsers aria-hidden="true" height={36} width={36} />}
             title="2. Discuss & deceive"
             text="Talk, ask questions, and try to figure out who does not know."
           />
           <InstructionCard
-            icon={<Zap size={36} />}
+            icon={<PixelZap aria-hidden="true" height={36} width={36} />}
             title="3. Take action"
-            text="Accuse, suspect, or clear players. Earn points when your read is right."
+            text={
+              room.config.mode === "suspicion"
+                ? "Lock in one suspicion or make a final accusation when your read is ready."
+                : "Make a final accusation when your read is ready. A correct call earns points."
+            }
           />
         </div>
         <div className={isImpostor ? "role-card is-impostor" : "role-card is-word"}>
@@ -1371,44 +1480,36 @@ function RoundPanel({
             className="take-action-button is-accuse"
             disabled={!canAccuse}
             type="button"
-            onClick={() => {
-              const firstTarget = room.players.find((player) => player.id !== me.id);
-              if (firstTarget) {
-                setPendingAccusation({ roundId: round.id, playerId: firstTarget.id });
-              }
-            }}
+            onClick={() => focusActionTargets("accusation-targets")}
           >
-            <Flag size={24} />
+            <PixelFlag aria-hidden="true" height={24} width={24} />
             <span>
               <strong>Accuse</strong>
-              Eliminate a player
+              Choose a player and confirm
             </span>
           </button>
-          <button
-            className="take-action-button is-suspect"
-            disabled={!canAct || Boolean(mySuspicion)}
-            type="button"
-          >
-            <Eye size={24} />
-            <span>
-              <strong>Suspect</strong>
-              Mark as suspicious
-            </span>
-          </button>
-          <button className="take-action-button is-clear" disabled={!canAct} type="button">
-            <Shield size={24} />
-            <span>
-              <strong>Clear</strong>
-              Defend a player
-            </span>
-          </button>
+          {room.config.mode === "suspicion" ? (
+            <button
+              className="take-action-button is-suspect"
+              disabled={!canAct || Boolean(mySuspicion)}
+              type="button"
+              onClick={() => focusActionTargets("suspicion-targets")}
+            >
+              <PixelEye aria-hidden="true" height={24} width={24} />
+              <span>
+                <strong>Suspect</strong>
+                {mySuspicion ? "Locked for this round" : "Choose one player"}
+              </span>
+            </button>
+          ) : null}
         </div>
 
         <div className="action-grid live-target-grid">
           {room.config.mode === "suspicion" ? (
             <ActionSection
               disabled={!canAct || Boolean(mySuspicion)}
-              icon={<Eye size={18} />}
+              icon={<PixelEye aria-hidden="true" height={18} width={18} />}
+              id="suspicion-targets"
               title="Suspicion"
               description={
                 mySuspicion
@@ -1437,7 +1538,8 @@ function RoundPanel({
 
           <ActionSection
             disabled={!canAccuse}
-            icon={<Flag size={18} />}
+            icon={<PixelFlag aria-hidden="true" height={18} width={18} />}
+            id="accusation-targets"
             title="Accusation"
             description={
               isImpostor
@@ -1460,7 +1562,10 @@ function RoundPanel({
         </div>
 
         {pendingPlayer && canAccuse ? (
-          <div className="accuse-confirm" role="dialog" aria-labelledby="accuse-confirm-title">
+          <AccessibleConfirmation
+            labelledBy="accuse-confirm-title"
+            onCancel={() => setPendingAccusation(undefined)}
+          >
             <AvatarMark avatar={pendingPlayer.avatar} color={pendingPlayer.color} size="lg" />
             <div>
               <span>Final accusation</span>
@@ -1491,7 +1596,7 @@ function RoundPanel({
                 Accuse
               </button>
             </div>
-          </div>
+          </AccessibleConfirmation>
         ) : null}
       </aside>
     </section>
@@ -1504,6 +1609,56 @@ function InstructionCard({ icon, title, text }: { icon: ReactNode; title: string
       <span>{icon}</span>
       <strong>{title}</strong>
       <p>{text}</p>
+    </div>
+  );
+}
+
+function AccessibleConfirmation({
+  labelledBy,
+  onCancel,
+  children
+}: {
+  labelledBy: string;
+  onCancel: () => void;
+  children: ReactNode;
+}) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const onCancelRef = useRef(onCancel);
+
+  useEffect(() => {
+    onCancelRef.current = onCancel;
+  }, [onCancel]);
+
+  useEffect(() => {
+    const returnFocus =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onCancelRef.current();
+      }
+    };
+
+    dialogRef.current?.focus();
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      if (returnFocus?.isConnected) {
+        returnFocus.focus();
+      }
+    };
+  }, []);
+
+  return (
+    <div
+      aria-labelledby={labelledBy}
+      className="accuse-confirm"
+      ref={dialogRef}
+      role="dialog"
+      tabIndex={-1}
+    >
+      {children}
     </div>
   );
 }
@@ -1574,7 +1729,10 @@ function ResultsPanel({
         </>
       ) : null}
       {room.phase === "results" && me.isHost && resetConfirmationOpen ? (
-        <div className="accuse-confirm" role="dialog" aria-labelledby="reset-confirm-title">
+        <AccessibleConfirmation
+          labelledBy="reset-confirm-title"
+          onCancel={() => setResetConfirmationOpen(false)}
+        >
           <RotateCcw size={28} />
           <div>
             <span>Reset room</span>
@@ -1602,7 +1760,7 @@ function ResultsPanel({
               Reset game
             </button>
           </div>
-        </div>
+        </AccessibleConfirmation>
       ) : null}
       {room.phase === "finished" ? (
         <div className="final-note">
@@ -1670,12 +1828,14 @@ function Leaderboard({ players }: { players: PublicPlayerSnapshot[] }) {
 }
 
 function ActionSection({
+  id,
   title,
   description,
   icon,
   disabled,
   children
 }: {
+  id?: string;
   title: string;
   description: string;
   icon: ReactNode;
@@ -1683,7 +1843,7 @@ function ActionSection({
   children: ReactNode;
 }) {
   return (
-    <div className={disabled ? "action-section is-disabled" : "action-section"}>
+    <div className={disabled ? "action-section is-disabled" : "action-section"} id={id}>
       <div className="action-heading">
         <span>{icon}</span>
         <div>
@@ -1801,7 +1961,11 @@ function ConnectionPill({ state }: { state: ConnectionState }) {
 
   return (
     <span className={online ? "connection-pill is-online" : "connection-pill"}>
-      {online ? <Wifi size={15} /> : <WifiOff size={15} />}
+      {online ? (
+        <PixelWifi aria-hidden="true" height={15} width={15} />
+      ) : (
+        <WifiOff aria-hidden="true" size={15} />
+      )}
       {online ? "Live" : state}
     </span>
   );
@@ -1841,6 +2005,10 @@ function sendCommand(socket: WebSocket | undefined, command: ClientCommand): voi
       requestId: command.requestId ?? crypto.randomUUID()
     })
   );
+}
+
+function getRequestErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error && error.message.trim() ? error.message : fallback;
 }
 
 function roomConfigsEqual(left: RoomConfig, right: RoomConfig): boolean {

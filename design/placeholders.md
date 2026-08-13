@@ -1,14 +1,15 @@
-# Impostor Design Placeholder Inventory
+# Impostor Design Asset Inventory
 
-These are the temporary visual slots that should be replaced when final brand/game assets are ready.
+The supplied arcade cabinet, distorted wordmark, and complete 13-character roster are now production assets under `apps/web/public/arcade`. Pixel UI actions use the installed `pixelarticons` library.
 
-| Placeholder                  | Current Location                                     | Needed Asset                                                                                                      |
-| ---------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Final wordmark               | App top bars and splash title                        | Distorted pixel/arcade `IMPOSTOR` wordmark as SVG/PNG, with dark and neon-friendly variants.                      |
-| Mascot shield key art        | Splash center mascot slot                            | High-resolution split blue/pink Impostor shield mascot, preferably transparent PNG/SVG with glow-safe edges.      |
-| Glitch texture pack          | Splash and app backgrounds                           | Tileable cyberpunk scanline/glitch texture overlays for mobile and desktop frames.                                |
-| Pixel action icons           | Host, join, quick play, modes, profile, action cards | Cohesive pixel icon set matching the screenshot: host invader, QR/join, mask, book, user, accuse, suspect, clear. |
-| Decorative QR treatment      | Lobby preview placeholder QR blocks                  | Final QR frame/corner artwork and scan-label treatment; live QR generation can remain inside the frame.           |
-| Avatar art direction         | Player rows, lobby preview, leaderboard              | Final avatar set in the target neon cartoon style, replacing the current bundled avatar pack if desired.          |
-| Lobby preview particle frame | Desktop lobby preview panel                          | Magenta pixel particle/corner frame artwork around the lobby code and QR.                                         |
-| Score/star badge             | Live round footer area                               | Star/score badge asset for the bottom score strip shown in the desktop game mock.                                 |
+The remaining items are optional polish rather than placeholders blocking the current implementation.
+
+| Optional asset              | Potential use                             | Notes                                                                                                     |
+| --------------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Mascot shield key art       | Future splash or marketing surface        | A transparent split blue/pink Impostor shield could support a separate splash treatment.                  |
+| Glitch texture pack         | Background variation                      | Current scanlines and gradients are CSS effects; a tileable texture is only needed for richer art detail. |
+| Decorative QR frame         | Live room-sharing polish                  | Live QR generation appears after room creation; this would style the generated code, not simulate one.    |
+| Lobby particle frame        | Future lobby embellishment                | Current lobby uses lightweight CSS framing around real room state.                                        |
+| Score/star badge            | Future score-strip embellishment          | The live leaderboard is implemented without an image badge dependency.                                    |
+| Reference coin/UFO sprites  | Landing-page fidelity polish              | These were not included in the supplied asset set, so the page uses library icons or omits them.          |
+| Mini-cabinet screen artwork | Final landing call-to-action illustration | The supplied cabinet is reused honestly; custom `LET'S PLAY` screen art could tighten the last detail.    |

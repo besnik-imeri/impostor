@@ -1,0 +1,1041 @@
+.play-arcade-frame {
+  --play-display: "Press Start 2P", ui-monospace, monospace;
+  --play-body: "Space Mono", ui-monospace, monospace;
+  --play-panel: rgb(8 8 31 / 92%);
+  --play-panel-strong: rgb(13 10 40 / 96%);
+  --play-line: rgb(123 112 232 / 42%);
+  --play-line-soft: rgb(123 112 232 / 22%);
+  --play-copy: #f8f5ff;
+  --play-copy-soft: #c2badf;
+  --play-copy-muted: #8e86b6;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-areas:
+    "topbar topbar"
+    "sidebar stage";
+  grid-template-columns: 196px minmax(0, 1fr);
+  grid-template-rows: 60px minmax(0, 1fr);
+  width: min(1440px, calc(100vw - 24px));
+  min-height: calc(100dvh - 24px);
+  overflow: hidden;
+  border: 1px solid rgb(126 112 241 / 68%);
+  border-radius: 12px;
+  background:
+    linear-gradient(118deg, rgb(0 169 255 / 7%), transparent 28% 72%, rgb(255 45 135 / 8%)),
+    linear-gradient(180deg, rgb(3 4 17 / 98%), rgb(5 5 24 / 98%));
+  color: var(--play-copy);
+  font-family: var(--play-body);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 4%),
+    0 0 28px rgb(83 70 224 / 22%),
+    0 24px 70px rgb(0 0 0 / 54%);
+}
+
+.play-arcade-frame::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background:
+    linear-gradient(90deg, transparent 0 18%, rgb(0 169 255 / 8%) 18.1% 18.25%, transparent 18.4%),
+    linear-gradient(90deg, transparent 0 84%, rgb(255 45 135 / 8%) 84.1% 84.25%, transparent 84.4%),
+    repeating-linear-gradient(180deg, transparent 0 7px, rgb(255 255 255 / 2.5%) 7px 8px);
+}
+
+:root[data-theme="light"] .play-arcade-frame {
+  --play-panel: rgb(255 255 255 / 91%);
+  --play-panel-strong: rgb(250 248 255 / 97%);
+  --play-line: rgb(91 72 196 / 30%);
+  --play-line-soft: rgb(91 72 196 / 16%);
+  --play-copy: #171139;
+  --play-copy-soft: #493f71;
+  --play-copy-muted: #73698f;
+  background:
+    linear-gradient(118deg, rgb(0 137 230 / 9%), transparent 30% 70%, rgb(233 27 121 / 8%)),
+    linear-gradient(180deg, rgb(252 253 255 / 98%), rgb(249 246 255 / 98%));
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 74%),
+    0 18px 58px rgb(67 48 126 / 17%);
+}
+
+.play-arcade-frame > .phone-status-bar {
+  display: none;
+}
+
+.play-arcade-frame > .app-topbar {
+  z-index: 4;
+  grid-area: topbar;
+}
+
+.play-arcade-frame > .app-sidebar {
+  grid-area: sidebar;
+}
+
+.play-arcade-frame > .app-stage {
+  grid-area: stage;
+  min-width: 0;
+  min-height: 0;
+}
+
+.play-arcade-frame .app-topbar {
+  display: grid;
+  grid-template-columns: minmax(140px, auto) minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  min-height: 60px;
+  padding: 0 18px 0 26px;
+  border-bottom: 1px solid var(--play-line);
+  background: rgb(6 5 25 / 91%);
+}
+
+:root[data-theme="light"] .play-arcade-frame .app-topbar {
+  background: rgb(255 255 255 / 90%);
+}
+
+.play-arcade-frame .brand-lockup {
+  width: clamp(118px, 12vw, 152px);
+}
+
+.play-arcade-frame .brand-wordmark {
+  filter: drop-shadow(0 0 8px rgb(255 45 135 / 30%));
+}
+
+:root[data-theme="light"] .play-arcade-frame .brand-wordmark {
+  filter: drop-shadow(0 1px 1px rgb(23 17 57 / 36%));
+}
+
+.play-arcade-frame .topbar-center {
+  display: none;
+  min-width: 0;
+  justify-items: center;
+}
+
+.play-arcade-frame.room-layout .topbar-center {
+  display: grid;
+}
+
+.play-arcade-frame .topbar-center span {
+  color: var(--cyan);
+  font-family: var(--play-display);
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.play-arcade-frame .topbar-center strong {
+  color: var(--play-copy);
+  font-family: var(--play-display);
+  font-size: 0.7rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.play-arcade-frame .topbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.play-arcade-frame .icon-button,
+.play-arcade-frame .topbar-leave-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  min-height: 34px;
+  border: 1px solid var(--play-line);
+  border-radius: 4px;
+  background: rgb(5 6 23 / 76%);
+  color: var(--play-copy-soft);
+}
+
+:root[data-theme="light"] .play-arcade-frame .icon-button,
+:root[data-theme="light"] .play-arcade-frame .topbar-leave-button {
+  background: rgb(255 255 255 / 78%);
+}
+
+.play-arcade-frame .icon-button:hover,
+.play-arcade-frame .topbar-leave-button:hover {
+  border-color: var(--accent);
+  color: var(--play-copy);
+}
+
+.play-arcade-frame .topbar-leave-button {
+  gap: 7px;
+  padding: 0 12px;
+  border-color: rgb(255 49 95 / 68%);
+  color: #ff6889;
+  font-family: var(--play-display);
+  font-size: 0.54rem;
+  text-transform: uppercase;
+}
+
+:root[data-theme="light"] .play-arcade-frame .topbar-leave-button {
+  color: #a9153f;
+}
+
+.play-arcade-frame .topbar-player {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  min-width: 0;
+  color: var(--play-copy-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.play-arcade-frame .topbar-player > span:last-child {
+  max-width: 92px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.play-arcade-frame .connection-pill {
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 9px;
+  border: 1px solid var(--play-line);
+  border-radius: 3px;
+  background: rgb(6 7 27 / 74%);
+  color: var(--play-copy-muted);
+  font-family: var(--play-body);
+  font-size: 0.65rem;
+}
+
+.play-arcade-frame .connection-pill.is-online {
+  border-color: rgb(48 247 138 / 45%);
+  color: var(--green);
+}
+
+:root[data-theme="light"] .play-arcade-frame .connection-pill {
+  background: rgb(255 255 255 / 86%);
+  color: var(--play-copy-soft);
+}
+
+:root[data-theme="light"] .play-arcade-frame .connection-pill.is-online {
+  color: #087344;
+}
+
+.play-arcade-frame .topbar-meta {
+  color: var(--play-copy-soft);
+}
+
+.play-arcade-frame .app-sidebar {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 22px;
+  padding: 18px 14px 18px;
+  border-right: 1px solid var(--play-line);
+  background: linear-gradient(180deg, rgb(0 169 255 / 8%), transparent 34%), rgb(3 5 20 / 88%);
+}
+
+:root[data-theme="light"] .play-arcade-frame .app-sidebar {
+  background: linear-gradient(180deg, rgb(0 137 230 / 8%), transparent 34%), rgb(249 250 255 / 92%);
+}
+
+.play-arcade-frame .app-sidebar nav {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.play-arcade-frame .app-sidebar nav a {
+  gap: 11px;
+  min-height: 42px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 0;
+  color: var(--play-copy-soft);
+  font-family: var(--play-body);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.play-arcade-frame .app-sidebar nav a:hover {
+  color: var(--play-copy);
+  background: rgb(255 255 255 / 4%);
+}
+
+.play-arcade-frame .app-sidebar nav a.is-active {
+  background:
+    linear-gradient(90deg, rgb(255 45 135 / 30%), rgb(255 45 135 / 10%) 76%, transparent),
+    linear-gradient(90deg, var(--accent) 0 3px, transparent 3px);
+  color: #fff;
+  box-shadow: none;
+}
+
+:root[data-theme="light"] .play-arcade-frame .app-sidebar nav a.is-active {
+  background:
+    linear-gradient(90deg, rgb(255 45 135 / 22%), rgb(255 45 135 / 8%) 76%, transparent),
+    linear-gradient(90deg, var(--accent) 0 3px, transparent 3px);
+  color: #71103f;
+}
+
+.play-arcade-frame .app-sidebar .stat-pill {
+  border-color: var(--play-line);
+  border-radius: 4px;
+  background: rgb(3 6 22 / 76%);
+  font-family: var(--play-body);
+}
+
+:root[data-theme="light"] .play-arcade-frame .app-sidebar .stat-pill {
+  background: rgb(255 255 255 / 86%);
+}
+
+.play-arcade-frame .app-stage {
+  background:
+    radial-gradient(circle at 18% 0%, rgb(0 169 255 / 8%), transparent 34%),
+    radial-gradient(circle at 92% 12%, rgb(255 45 135 / 8%), transparent 28%);
+}
+
+.play-arcade-frame .host-workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 340px);
+  gap: 18px;
+  align-items: start;
+  padding: 20px 24px 24px;
+}
+
+.play-arcade-frame .mobile-lobby-summary {
+  display: none;
+}
+
+.play-arcade-frame .host-command-panel,
+.play-arcade-frame .lobby-preview-panel,
+.play-arcade-frame .current-lobby-card,
+.play-arcade-frame .quick-play-row,
+.play-arcade-frame .profile-strip,
+.play-arcade-frame .leaderboard-preview,
+.play-arcade-frame .how-play-panel,
+.play-arcade-frame .round-score-panel,
+.play-arcade-frame .take-action-panel,
+.play-arcade-frame .instruction-card {
+  border: 1px solid var(--play-line);
+  border-radius: 5px;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 4%), rgb(255 255 255 / 1%)), var(--play-panel);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 2%);
+}
+
+.play-arcade-frame .host-command-panel {
+  display: grid;
+  gap: 15px;
+  align-content: start;
+  padding: 18px 20px 20px;
+}
+
+.play-arcade-frame .workspace-heading {
+  gap: 7px;
+}
+
+.play-arcade-frame .workspace-heading > span {
+  display: none;
+}
+
+.play-arcade-frame .workspace-heading h1,
+.play-arcade-frame .phase-heading h2 {
+  margin: 0;
+  color: var(--play-copy);
+  font-family: var(--play-display);
+  font-size: clamp(1.35rem, 2.2vw, 2rem);
+  font-weight: 400;
+  line-height: 1.16;
+  text-shadow: 2px 1px 0 rgb(2 169 255 / 54%);
+}
+
+.play-arcade-frame .workspace-heading p,
+.play-arcade-frame .phase-heading p {
+  margin: 0;
+  color: var(--play-copy-soft);
+  font-size: 0.78rem;
+}
+
+.play-arcade-frame .panel-tabs {
+  width: min(280px, 100%);
+  order: initial;
+  border-radius: 4px;
+}
+
+.play-arcade-frame .panel-tabs button {
+  font-family: var(--play-display);
+  font-size: 0.58rem;
+}
+
+.play-arcade-frame .form-stack {
+  gap: 11px;
+  margin-top: 0;
+}
+
+.play-arcade-frame .form-section-label,
+.play-arcade-frame .field > span,
+.play-arcade-frame .field-group > legend {
+  color: var(--play-copy);
+  font-family: var(--play-display);
+  font-size: 0.58rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.play-arcade-frame .form-section-label {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--play-line-soft);
+}
+
+.play-arcade-frame .form-section-label:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.play-arcade-frame .field input,
+.play-arcade-frame .field select,
+.play-arcade-frame .number-stepper {
+  min-height: 40px;
+  border-radius: 3px;
+  background: rgb(3 5 21 / 84%);
+  color: var(--play-copy);
+  font-family: var(--play-body);
+}
+
+:root[data-theme="light"] .play-arcade-frame .field input,
+:root[data-theme="light"] .play-arcade-frame .field select,
+:root[data-theme="light"] .play-arcade-frame .number-stepper {
+  background: rgb(255 255 255 / 82%);
+}
+
+.play-arcade-frame .mode-card-group {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.play-arcade-frame .mode-card-group button {
+  min-height: 124px;
+  padding: 11px 9px;
+  border-radius: 4px;
+  background: rgb(4 6 24 / 74%);
+}
+
+.play-arcade-frame .mode-card-group button strong {
+  font-family: var(--play-display);
+  font-size: 0.6rem;
+  line-height: 1.35;
+}
+
+.play-arcade-frame .mode-card-group button > span:last-child {
+  font-size: 0.66rem;
+  line-height: 1.4;
+}
+
+.play-arcade-frame .mode-card-group button.is-selected {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, rgb(255 45 135 / 22%), rgb(255 45 135 / 5%));
+  box-shadow:
+    inset 0 0 18px rgb(255 45 135 / 12%),
+    0 0 16px rgb(255 45 135 / 27%);
+}
+
+:root[data-theme="light"] .play-arcade-frame .mode-card-group button {
+  background: rgb(255 255 255 / 86%);
+  color: var(--play-copy-soft);
+}
+
+:root[data-theme="light"] .play-arcade-frame .mode-card-group button strong {
+  color: var(--play-copy);
+}
+
+:root[data-theme="light"] .play-arcade-frame .mode-card-group button > span:last-child {
+  color: var(--play-copy-soft);
+}
+
+:root[data-theme="light"] .play-arcade-frame .mode-card-group button.is-selected {
+  background: linear-gradient(180deg, rgb(255 45 135 / 20%), rgb(255 255 255 / 92%));
+}
+
+.play-arcade-frame .profile-customizer summary {
+  border-radius: 3px;
+  background: rgb(255 255 255 / 4%);
+  color: var(--play-copy-soft);
+  font-size: 0.7rem;
+}
+
+.play-arcade-frame .avatar-picker button {
+  border-radius: 4px;
+  background: rgb(3 5 21 / 74%);
+}
+
+.play-arcade-frame .avatar-mark img {
+  width: 112%;
+  height: 112%;
+  object-fit: contain;
+  object-position: center bottom;
+  image-rendering: pixelated;
+  transform: translateY(7%);
+}
+
+.play-arcade-frame .primary-button,
+.play-arcade-frame .secondary-button,
+.play-arcade-frame .danger-button {
+  border-radius: 4px;
+  font-family: var(--play-display);
+  font-size: 0.66rem;
+  line-height: 1.3;
+}
+
+.play-arcade-frame .host-inline-submit {
+  width: min(280px, 100%);
+  justify-self: end;
+}
+
+.play-arcade-frame .lobby-preview-panel {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: 16px;
+  background:
+    linear-gradient(180deg, rgb(255 45 135 / 10%), transparent 50%), var(--play-panel-strong);
+}
+
+.play-arcade-frame .preview-heading strong,
+.play-arcade-frame .preview-heading span {
+  font-family: var(--play-display);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.play-arcade-frame .preview-heading strong {
+  color: var(--play-copy);
+  font-size: 0.62rem;
+}
+
+.play-arcade-frame .preview-heading span {
+  color: var(--play-copy-muted);
+  font-size: 0.48rem;
+}
+
+.play-arcade-frame .preview-code-card {
+  min-height: 272px;
+  border-radius: 4px;
+}
+
+.play-arcade-frame .preview-code-card.is-empty {
+  align-content: center;
+  gap: 12px;
+  border-style: dashed;
+}
+
+.play-arcade-frame .preview-code-card.is-empty > svg {
+  color: var(--accent);
+  filter: drop-shadow(0 0 10px rgb(255 45 135 / 44%));
+}
+
+.play-arcade-frame .preview-code-card.is-empty strong {
+  color: var(--play-copy);
+  font-family: var(--play-display);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  text-shadow: none;
+}
+
+.play-arcade-frame .preview-player-row {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  color: var(--cyan);
+}
+
+.play-arcade-frame .preview-player-row > span {
+  color: var(--play-copy-muted);
+  font-family: var(--play-body);
+  font-size: 0.67rem;
+  line-height: 1.4;
+  text-transform: none;
+}
+
+.play-arcade-frame .mobile-setup-back {
+  display: none;
+}
+
+.play-arcade-frame .room-content {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  padding: 18px;
+}
+
+.play-arcade-frame .room-header {
+  border-radius: 5px;
+  background: var(--play-panel);
+}
+
+.play-arcade-frame .room-code {
+  font-family: var(--play-display);
+  font-size: clamp(1.7rem, 4vw, 3rem);
+}
+
+.play-arcade-frame .live-game-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 0.58fr) minmax(240px, 0.42fr);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.play-arcade-frame .how-play-panel,
+.play-arcade-frame .round-score-panel,
+.play-arcade-frame .take-action-panel {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: 15px;
+}
+
+.play-arcade-frame .instruction-grid {
+  gap: 9px;
+}
+
+.play-arcade-frame .instruction-card {
+  min-height: 150px;
+  border-color: var(--play-line-soft);
+  box-shadow: none;
+}
+
+.play-arcade-frame .instruction-card strong,
+.play-arcade-frame .take-action-button strong,
+.play-arcade-frame .round-score-header {
+  font-family: var(--play-display);
+  font-weight: 400;
+}
+
+.play-arcade-frame .instruction-card strong {
+  font-size: 0.57rem;
+  line-height: 1.4;
+}
+
+.play-arcade-frame .instruction-card p {
+  color: var(--play-copy-soft);
+  font-size: 0.69rem;
+}
+
+.play-arcade-frame .round-score-header {
+  font-size: 0.62rem;
+  line-height: 1.5;
+}
+
+.play-arcade-frame .take-action-panel {
+  background:
+    linear-gradient(180deg, rgb(255 45 135 / 9%), transparent 44%), var(--play-panel-strong);
+}
+
+.play-arcade-frame .take-action-button {
+  min-height: 70px;
+  border-radius: 4px;
+  background: rgb(255 255 255 / 3%);
+}
+
+.play-arcade-frame .take-action-button strong {
+  font-size: 0.7rem;
+}
+
+.play-arcade-frame .take-action-button span {
+  color: var(--play-copy-soft);
+  font-size: 0.67rem;
+}
+
+.play-arcade-frame .live-target-grid .action-section {
+  scroll-margin: 80px;
+  border-radius: 4px;
+  background: rgb(255 255 255 / 3%);
+}
+
+.play-arcade-frame .player-action {
+  border-radius: 3px;
+}
+
+.play-arcade-frame .quick-play-row,
+.play-arcade-frame .profile-strip {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  min-height: 64px;
+  padding: 10px 14px;
+  color: var(--yellow);
+  text-align: left;
+}
+
+.play-arcade-frame .quick-play-row.is-unavailable {
+  opacity: 0.72;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.play-arcade-frame .quick-play-row span,
+.play-arcade-frame .profile-strip span {
+  display: grid;
+  gap: 3px;
+  color: var(--play-copy-muted);
+  font-size: 0.69rem;
+}
+
+.play-arcade-frame .quick-play-row strong,
+.play-arcade-frame .profile-strip strong {
+  color: var(--play-copy);
+  font-family: var(--play-display);
+  font-size: 0.62rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.play-arcade-frame .availability-chip {
+  display: inline-flex;
+  padding: 5px 7px;
+  border: 1px solid rgb(255 210 31 / 38%);
+  border-radius: 3px;
+  color: var(--yellow);
+  font-family: var(--play-display);
+  font-size: 0.47rem;
+}
+
+.play-arcade-frame .quick-action-grid {
+  gap: 10px;
+}
+
+.play-arcade-frame .quick-action-card {
+  display: grid;
+  gap: 10px;
+  align-content: center;
+  justify-items: center;
+  min-height: 108px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 5%), rgb(255 255 255 / 1%));
+  text-align: center;
+}
+
+.play-arcade-frame .quick-action-card strong {
+  font-family: var(--play-display);
+  font-size: 0.67rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.play-arcade-frame .quick-action-card.is-modes {
+  border-color: rgb(182 77 255 / 60%);
+  color: var(--purple);
+  box-shadow: 0 0 18px rgb(182 77 255 / 19%);
+}
+
+.play-arcade-frame .quick-action-card.is-how {
+  border-color: rgb(255 210 31 / 62%);
+  color: var(--yellow);
+  box-shadow: 0 0 18px rgb(255 210 31 / 18%);
+}
+
+:root[data-theme="light"] .play-arcade-frame .quick-action-card.is-host {
+  color: #9e1451;
+}
+
+:root[data-theme="light"] .play-arcade-frame .quick-action-card.is-join {
+  color: #005f9f;
+}
+
+:root[data-theme="light"] .play-arcade-frame .quick-action-card.is-how,
+:root[data-theme="light"] .play-arcade-frame .availability-chip {
+  color: #705700;
+}
+
+.play-arcade-frame .accuse-confirm:focus-visible {
+  outline: 3px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+.play-arcade-frame .profile-strip {
+  border-color: rgb(48 247 138 / 52%);
+  color: var(--green);
+}
+
+.play-arcade-frame .current-lobby-card,
+.play-arcade-frame .leaderboard-preview {
+  display: grid;
+  gap: 13px;
+  padding: 14px;
+}
+
+.play-arcade-frame .honest-empty-state {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  min-height: 118px;
+  color: var(--cyan);
+}
+
+.play-arcade-frame .honest-empty-state h2 {
+  margin: 0 0 7px;
+  color: var(--play-copy);
+  font-family: var(--play-display);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.play-arcade-frame .honest-empty-state p,
+.play-arcade-frame .honest-empty-state span {
+  margin: 0;
+  color: var(--play-copy-soft);
+  font-size: 0.69rem;
+  line-height: 1.45;
+}
+
+.play-arcade-frame .honest-empty-state span {
+  display: block;
+  margin-top: 5px;
+  color: var(--play-copy-muted);
+}
+
+.play-arcade-frame .leaderboard-empty-state {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  color: var(--yellow);
+}
+
+.play-arcade-frame .leaderboard-empty-state strong {
+  color: var(--play-copy);
+  font-size: 0.75rem;
+}
+
+.play-arcade-frame .leaderboard-empty-state p {
+  margin: 4px 0 0;
+  color: var(--play-copy-muted);
+  font-size: 0.67rem;
+  line-height: 1.45;
+}
+
+.play-arcade-frame :is(a, button, input, select, summary):focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1180px) and (min-width: 980px) {
+  .play-arcade-frame .host-workspace-grid,
+  .play-arcade-frame .live-game-board {
+    grid-template-columns: 1fr;
+  }
+
+  .play-arcade-frame .lobby-preview-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.6fr);
+  }
+
+  .play-arcade-frame .lobby-preview-panel .preview-heading,
+  .play-arcade-frame .lobby-preview-panel .lobby-preview-submit,
+  .play-arcade-frame .lobby-preview-panel .preview-expiry-note {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 980px) {
+  .play-arcade-frame .host-inline-submit {
+    display: none;
+  }
+}
+
+@media (max-width: 979px) {
+  .play-arcade-frame {
+    grid-template-areas:
+      "status"
+      "topbar"
+      "stage";
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 44px 66px minmax(0, 1fr);
+    width: min(390px, calc(100vw - 16px));
+    height: calc(100dvh - 16px);
+    min-height: 680px;
+    border-width: 3px;
+    border-color: rgb(127 186 255 / 84%);
+    border-radius: 31px;
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 14%),
+      0 0 24px rgb(0 169 255 / 31%),
+      0 20px 60px rgb(0 0 0 / 52%);
+  }
+
+  .play-arcade-frame > .phone-status-bar {
+    z-index: 4;
+    display: flex;
+    grid-area: status;
+    height: 44px;
+    padding: 0 25px;
+    background: rgb(3 4 17 / 82%);
+    font-family: var(--play-body);
+    font-size: 0.78rem;
+  }
+
+  .play-arcade-frame > .app-sidebar {
+    display: none;
+  }
+
+  .play-arcade-frame > .app-stage {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  .play-arcade-frame .app-topbar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    min-height: 66px;
+    padding: 0 15px 0 18px;
+  }
+
+  .play-arcade-frame .brand-lockup {
+    width: min(128px, 100%);
+  }
+
+  .play-arcade-frame .topbar-center,
+  .play-arcade-frame.room-layout .topbar-center,
+  .play-arcade-frame .topbar-meta,
+  .play-arcade-frame .topbar-player {
+    display: none;
+  }
+
+  .play-arcade-frame .topbar-actions {
+    gap: 5px;
+  }
+
+  .play-arcade-frame .topbar-actions .connection-pill {
+    width: 34px;
+    min-width: 34px;
+    padding: 0;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 0;
+  }
+
+  .play-arcade-frame .topbar-leave-button {
+    width: 34px;
+    min-width: 34px;
+    padding: 0;
+  }
+
+  .play-arcade-frame .topbar-leave-button span {
+    display: none;
+  }
+
+  .play-arcade-frame .host-workspace-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 13px;
+    padding: 13px;
+  }
+
+  .play-arcade-frame .mobile-lobby-summary {
+    display: grid;
+    gap: 12px;
+  }
+
+  .play-arcade-frame .host-command-panel {
+    display: none;
+    padding: 14px;
+  }
+
+  .play-arcade-frame.is-mobile-setup-open .mobile-lobby-summary {
+    display: none;
+  }
+
+  .play-arcade-frame.is-mobile-setup-open .host-command-panel {
+    display: grid;
+  }
+
+  .play-arcade-frame .mobile-setup-back {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    justify-self: start;
+    min-height: 34px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--cyan);
+    font-family: var(--play-body);
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .play-arcade-frame .lobby-preview-panel {
+    display: none;
+  }
+
+  .play-arcade-frame .workspace-heading h1 {
+    font-size: 1.15rem;
+  }
+
+  .play-arcade-frame .mode-card-group {
+    grid-template-columns: 1fr;
+  }
+
+  .play-arcade-frame .mode-card-group button {
+    grid-template-columns: auto minmax(0, 1fr);
+    min-height: 82px;
+    text-align: left;
+  }
+
+  .play-arcade-frame .mode-card-group button .mode-card-icon {
+    grid-row: span 2;
+  }
+
+  .play-arcade-frame .room-content {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .play-arcade-frame .room-header {
+    grid-template-columns: 1fr auto;
+  }
+
+  .play-arcade-frame .live-game-board {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .play-arcade-frame .instruction-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .play-arcade-frame .instruction-card {
+    grid-template-columns: auto minmax(0, 1fr);
+    justify-items: start;
+    min-height: 92px;
+    text-align: left;
+  }
+
+  .play-arcade-frame .instruction-card > span {
+    grid-row: span 2;
+  }
+
+  .play-arcade-frame .round-score-panel .round-side {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .play-arcade-frame .take-action-button {
+    min-height: 64px;
+  }
+}
+
+@media (max-width: 420px) {
+  .play-arcade-frame .quick-action-card {
+    min-height: 100px;
+  }
+
+  .play-arcade-frame .current-lobby-card,
+  .play-arcade-frame .leaderboard-preview {
+    padding: 12px;
+  }
+
+  .play-arcade-frame .honest-empty-state {
+    min-height: 106px;
+  }
+}

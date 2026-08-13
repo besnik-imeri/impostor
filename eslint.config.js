@@ -12,7 +12,8 @@ export default [
       "**/node_modules/**",
       "**/playwright-report/**",
       "**/test-results/**",
-      "apps/worker/.wrangler/**"
+      "apps/worker/.wrangler/**",
+      "impostor_arcade_experiment/**"
     ]
   },
   js.configs.recommended,

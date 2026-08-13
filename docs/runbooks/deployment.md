@@ -5,8 +5,8 @@
 - Cloudflare account.
 - `impostorgame.com` added to Cloudflare DNS.
 - `impostorgame.com` connected to the Cloudflare Pages project.
-- Node.js 24.18.0 LTS (minimum supported version: 24.11.0).
-- pnpm 11.11.0 via Corepack.
+- Node.js 24.19.0 LTS (minimum supported version: 24.19.0).
+- pnpm 11.21.0 via Corepack.
 - Wrangler authenticated with `pnpm exec wrangler login`.
 
 ## Production
@@ -73,6 +73,7 @@ Expected live checks:
 
 - `https://impostorgame.com/` returns the web app.
 - `https://impostorgame.com/play` returns the web app through the SPA fallback.
+- `https://impostorgame.com/api/health` returns `{ "status": "ok" }`.
 - `https://impostorgame.com/api/rooms` returns Worker JSON for API routes.
 - Creating a room with `POST /api/rooms` returns `200` and sets the room-scoped `impostor_room_session` HttpOnly cookie.
 - Opening `GET /api/rooms/:code/socket` with the room cookie upgrades to WebSocket and emits `room.snapshot`.

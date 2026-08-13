@@ -49,6 +49,10 @@ export default {
     }
 
     const url = new URL(request.url);
+    if (request.method === "GET" && url.pathname === "/api/health") {
+      return jsonResponse(request, env, { status: "ok" });
+    }
+
     const match = url.pathname.match(/^\/api\/rooms(?:\/([^/]+)(?:\/([^/]+))?)?$/u);
 
     if (!match) {

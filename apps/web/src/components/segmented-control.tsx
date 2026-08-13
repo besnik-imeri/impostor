@@ -32,6 +32,7 @@ export function SegmentedControl<TValue extends string>({
       <div className={isModePicker ? "segmented-control mode-card-group" : "segmented-control"}>
         {options.map((option) => (
           <button
+            aria-pressed={option.value === value}
             className={option.value === value ? "is-selected" : ""}
             key={option.value}
             type="button"

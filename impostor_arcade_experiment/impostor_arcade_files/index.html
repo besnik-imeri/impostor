@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Impostor — a neon arcade party game landing page with GSAP micro-interactions and Three.js ambience." />
+  <title>Impostor — Bluff. Detect. Survive.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to game console</a>
+  <canvas id="space-webgl" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="cursor-light" aria-hidden="true"></div>
+  <div class="scroll-meter" aria-hidden="true"><span></span></div>
+
+  <main id="main" class="page-shell">
+    <section id="top" class="hero" aria-labelledby="hero-title">
+      <div class="hero__cabinet" data-parallax-root>
+        <img
+          class="cabinet-frame"
+          src="./arcade_cabinet_upscaled_4x_transparent.png"
+          alt=""
+          width="5016"
+          height="5016"
+          decoding="async"
+        />
+
+        <div class="cabinet-marquee">
+          <h1 id="hero-title" class="cabinet-marquee__title">
+            <img
+              class="hero-wordmark glitch-lite"
+              src="./impostor_wordmark_transparent_4x.png"
+              alt="Impostor"
+              width="5016"
+              height="1440"
+              data-text="Impostor"
+            />
+          </h1>
+          <p class="hero-tagline">
+            <span class="tagline-icon tagline-icon--happy" aria-hidden="true"></span>
+            Bluff. Detect. Survive.
+            <span class="tagline-icon tagline-icon--skull" aria-hidden="true"></span>
+          </p>
+        </div>
+
+        <div class="cabinet-screen scanlines" data-parallax="0.18">
+          <div class="screen-hud" data-animate="nav">
+            <p class="screen-hud__label" aria-hidden="true">MAIN MENU</p>
+            <nav class="game-menu" aria-label="Main navigation">
+              <a href="#how" class="game-menu__link magnetic">How it works</a>
+              <span class="game-menu__sep" aria-hidden="true">·</span>
+              <a href="#modes" class="game-menu__link magnetic">Modes</a>
+              <span class="game-menu__sep" aria-hidden="true">·</span>
+              <a href="#play" class="game-menu__link game-menu__link--play magnetic">Play</a>
+            </nav>
+            <button class="sound-toggle game-menu__sfx magnetic" type="button" aria-pressed="false" aria-label="Toggle arcade sound effects">
+              <span class="sound-toggle__icon" aria-hidden="true">
+                <svg class="sound-toggle__icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                </svg>
+                <svg class="sound-toggle__icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                  <line x1="23" y1="9" x2="17" y2="15"/>
+                  <line x1="17" y1="9" x2="23" y2="15"/>
+                </svg>
+              </span>
+              <span class="sound-toggle__text">SFX</span>
+            </button>
+          </div>
+
+          <div class="hero__content">
+            <div class="crew-stage" aria-label="Colorful arcade characters with one impostor in the spotlight">
+              <div class="ufo-beam" aria-hidden="true"></div>
+              <div class="crew-grid">
+                <img class="crew-member" src="./characters/CyberFox.png" alt="Cyber Fox" data-sus="safe" />
+                <img class="crew-member" src="./characters/8BitBunny.png" alt="8-Bit Bunny" data-sus="safe" />
+                <img class="crew-member crew-member--impostor" src="./characters/AstroKoala.png" alt="Astro Koala" data-sus="impostor" />
+                <img class="crew-member" src="./characters/FoggyFrog.png" alt="Foggy Frog" data-sus="safe" />
+                <img class="crew-member" src="./characters/PunkyPenguin.png" alt="Punky Penguin" data-sus="safe" />
+              </div>
+            </div>
+
+            <div class="hero-stats" aria-label="Game stats">
+              <div class="stat-card magnetic"><span class="stat-card__icon" aria-hidden="true">♟</span><strong>3–12</strong><span>players</span></div>
+              <div class="stat-card magnetic"><span class="stat-card__icon" aria-hidden="true">◷</span><strong>15–45</strong><span>minutes</span></div>
+            </div>
+
+            <p class="hero-copy">One word. One liar. Everyone watching.</p>
+          </div>
+          <div class="screen-glow" aria-hidden="true"></div>
+        </div>
+
+        <div class="cabinet-deck" id="play" aria-label="Arcade controls">
+          <div class="cta-row">
+            <button class="btn btn--primary magnetic" type="button" data-action="host">Host game <span>›</span></button>
+            <span class="versus" aria-hidden="true">VS</span>
+            <button class="btn btn--ghost magnetic" type="button" data-action="join">Join game <span>›</span></button>
+          </div>
+        </div>
+
+        <div class="cabinet-ticker" aria-live="polite">
+          <div class="ticker" aria-label="TOP LIAR PIXELCHEAT 12345 PTS"></div>
+        </div>
+
+        <button class="downlink magnetic" type="button" data-scroll-to="#how" aria-label="Scroll to how it works">
+          <span class="downlink__chevrons" aria-hidden="true">
+            <svg class="downlink__chev downlink__chev--top" viewBox="0 0 36 18" fill="none" aria-hidden="true">
+              <polyline points="3,3 18,15 33,3" stroke="currentColor" stroke-width="4" stroke-linecap="square" stroke-linejoin="miter" />
+            </svg>
+            <svg class="downlink__chev downlink__chev--bottom" viewBox="0 0 36 18" fill="none" aria-hidden="true">
+              <polyline points="3,3 18,15 33,3" stroke="currentColor" stroke-width="4" stroke-linecap="square" stroke-linejoin="miter" />
+            </svg>
+          </span>
+        </button>
+      </div>
+    </section>
+
+    <section id="how" class="section section--how" aria-labelledby="how-title">
+      <div class="section-heading">
+        <span class="section-heading__rail" aria-hidden="true"></span>
+        <p class="eyebrow">three beats, fast tension</p>
+        <h2 id="how-title">How it works</h2>
+        <span class="section-heading__rail" aria-hidden="true"></span>
+      </div>
+
+      <div class="steps-grid">
+        <article class="step-card scanlines" data-step="01">
+          <div class="step-card__number">01</div>
+          <div class="step-card__screen">
+            <span class="pixel-door"></span>
+            <span class="tiny-sprite cyan"></span>
+            <span class="tiny-sprite pink"></span>
+          </div>
+          <h3>Create a room</h3>
+          <p>Spin up a lobby, send the code, and let the cabinet pull everyone into the same glowing room.</p>
+        </article>
+        <article class="step-card scanlines" data-step="02">
+          <div class="step-card__number">02</div>
+          <div class="step-card__screen word-screen">
+            <span class="secret-eye">◉</span>
+            <strong>PIZZA</strong>
+          </div>
+          <h3>Reveal the word</h3>
+          <p>Most players get the same word. One player gets no context and has to fake their way through.</p>
+        </article>
+        <article class="step-card scanlines" data-step="03">
+          <div class="step-card__number">03</div>
+          <div class="step-card__screen suspect-lineup">
+            <span class="tiny-sprite yellow"></span>
+            <span class="tiny-sprite pink"></span>
+            <span class="tiny-sprite green"></span>
+            <span class="tiny-sprite blue"></span>
+          </div>
+          <h3>Find the impostor</h3>
+          <p>Ask, bluff, accuse, and vote before the liar learns enough to blend in.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="lobby" class="section section--lobby" aria-labelledby="lobby-title">
+      <div class="section-heading section-heading--compact">
+        <span class="section-heading__rail" aria-hidden="true"></span>
+        <h2 id="lobby-title">Live lobby</h2>
+        <span class="section-heading__rail" aria-hidden="true"></span>
+      </div>
+
+      <div class="lobby-console">
+        <div class="lobby-console__topbar">
+          <div class="room-chip"><span>◌</span> Room code: <strong id="room-code">8421</strong></div>
+          <div class="room-chip room-chip--green"><strong>6 / 12</strong>&nbsp;players</div>
+          <button class="small-btn magnetic" id="shuffle-code" type="button">New code</button>
+        </div>
+        <div class="players-grid" aria-label="Lobby players">
+          <button class="player-card magnetic" type="button" data-player="PixelPanda" data-role="safe" style="--card-accent: var(--cyan)">
+            <span class="player-card__slot">1</span><span class="avatar panda">◕ᴥ◕</span><strong>PixelPanda</strong><span class="ready">✓ Ready</span>
+          </button>
+          <button class="player-card magnetic" type="button" data-player="NeonNinja" data-role="safe" style="--card-accent: var(--pink)">
+            <span class="player-card__slot">2</span><span class="avatar ninja">◼</span><strong>NeonNinja</strong><span class="ready">✓ Ready</span>
+          </button>
+          <button class="player-card magnetic" type="button" data-player="8BitBunny" data-role="safe" style="--card-accent: var(--yellow)">
+            <span class="player-card__slot">3</span><span class="avatar bunny">ᕱ</span><strong>8BitBunny</strong><span class="ready">✓ Ready</span>
+          </button>
+          <button class="player-card magnetic player-card--danger" type="button" data-player="RetroRex" data-role="impostor" style="--card-accent: var(--green)">
+            <span class="player-card__slot">4</span><span class="avatar rex">▰</span><strong>RetroRex</strong><span class="ready">✓ Ready</span>
+          </button>
+          <button class="player-card magnetic" type="button" data-player="GlitchCat" data-role="safe" style="--card-accent: var(--violet)">
+            <span class="player-card__slot">5</span><span class="avatar cat">◔</span><strong>GlitchCat</strong><span class="ready">✓ Ready</span>
+          </button>
+          <button class="player-card magnetic" type="button" data-player="ArcadeOwl" data-role="safe" style="--card-accent: var(--blue)">
+            <span class="player-card__slot">6</span><span class="avatar owl">◉</span><strong>ArcadeOwl</strong><span class="ready">✓ Ready</span>
+          </button>
+        </div>
+        <div class="scan-panel" aria-live="polite">
+          <button class="btn btn--scanner magnetic" id="scan-button" type="button">Run suspicion scan</button>
+          <p id="scan-result">Hover players to hear the cabinet buzz. Run the scan when the table gets loud.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="modes" class="section section--modes" aria-labelledby="modes-title">
+      <div class="section-heading">
+        <span class="section-heading__rail" aria-hidden="true"></span>
+        <p class="eyebrow">choose your social chaos</p>
+        <h2 id="modes-title">Game modes</h2>
+        <span class="section-heading__rail" aria-hidden="true"></span>
+      </div>
+
+      <div class="mode-board" role="tablist" aria-label="Game mode selector">
+        <button class="mode-card magnetic is-active" type="button" role="tab" aria-selected="true" data-mode="accusation" style="--mode-accent: var(--cyan)">
+          <span class="mode-card__icon">⚖</span>
+          <h3>Accusation</h3>
+          <p>Vote fast. Convince others. Kick out the impostor before they decode the word.</p>
+          <span class="best">Best for: Loud groups</span>
+        </button>
+        <button class="mode-card magnetic" type="button" role="tab" aria-selected="false" data-mode="suspicion" style="--mode-accent: var(--pink)">
+          <span class="mode-card__icon">⌕</span>
+          <h3>Suspicion</h3>
+          <p>No votes. Track clue trails and expose the liar by consensus.</p>
+          <span class="best">Best for: Sharp minds</span>
+        </button>
+        <button class="mode-card magnetic" type="button" role="tab" aria-selected="false" data-mode="sabotage" style="--mode-accent: var(--yellow)">
+          <span class="mode-card__icon">⚡</span>
+          <h3>Sabotage</h3>
+          <p>Timed prompts, fake alarms, and power-ups keep every round messy.</p>
+          <span class="best">Best for: Party mode</span>
+        </button>
+      </div>
+
+      <div class="mode-output scanlines" id="mode-output" aria-live="polite">
+        <span class="mode-output__label">Selected cartridge</span>
+        <strong>Accusation</strong>
+        <p>Fastest onboarding. Great default for a public landing page CTA because users instantly understand the stakes: talk, accuse, vote.</p>
+      </div>
+    </section>
+
+    <section class="section section--play" aria-labelledby="ready-title">
+      <div class="ready-card scanlines">
+        <div class="ready-card__mascot sprite sprite--pink sprite--impostor" aria-hidden="true"></div>
+        <div class="ready-card__copy">
+          <p class="eyebrow">insert social courage</p>
+          <h2 id="ready-title">Ready to play?</h2>
+          <p>Launch a room in seconds, then let the table figure out who is smiling too hard.</p>
+        </div>
+        <form class="join-form" aria-label="Join an Impostor room">
+          <label for="room-input">Room code</label>
+          <div class="join-form__row">
+            <input id="room-input" name="room" inputmode="numeric" maxlength="4" pattern="[0-9]{4}" placeholder="8421" aria-describedby="room-help" />
+            <button class="btn btn--ghost magnetic" type="submit">Join <span>›</span></button>
+          </div>
+          <p id="room-help">Four digits from the host cabinet.</p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -25,8 +25,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- Refreshed every direct dependency to the latest compatible stable baseline reviewed on 2026-07-11, including React 19.2.7, Vite 8.1.4, ESLint 10.6.0, Wrangler 4.110.0, and pnpm 11.11.0.
-- Pinned local and CI development to Node.js 24.18.0 LTS and upgraded the GitHub checkout and setup-node actions to v6.
+- Refreshed every direct dependency to the latest compatible stable baseline eligible on 2026-08-14, including React 19.2.8, Vite 8.2.1, ESLint 10.8.1, Wrangler 4.122.0, and pnpm 11.21.0.
+- Pinned local, CI, and Cloudflare Pages tooling to Node.js 24.19.0 LTS and upgraded the GitHub checkout and setup-node actions to v6.
 - Aligned Cloudflare Pages and Worker compatibility dates to 2026-07-10.
 - Added formatting and dependency-audit checks to CI.
 - Standardized product terminology, package names, role values, result states, and documentation on the `Impostor` spelling.
@@ -37,6 +37,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- Made Playwright start and independently await the web and Worker development servers through a binding-free Worker health endpoint.
+- Cleared all known dependency advisories, including vulnerable Babel, Brace Expansion, Nano ID, PostCSS, Sharp, and Undici transitive releases.
 - Made `pnpm dev` build the domain package before starting web and worker services.
 - Made Vite resolve `@impostor/domain` from source during local development.
 - Fixed the local Worker compatibility date so invalid local API routes return responses instead of hanging.

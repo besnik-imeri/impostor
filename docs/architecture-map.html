@@ -1160,7 +1160,7 @@
               "Root pnpm workspace, TypeScript, lint, formatting, and quality-gate coordination.",
             responsibilities: [
               "Define workspace packages under apps/* and packages/*.",
-              "Pin Node.js 24.18.0 LTS and pnpm 11.11.0 expectations.",
+              "Pin Node.js 24.19.0 LTS and pnpm 11.21.0 expectations.",
               "Run recursive build, typecheck, test, lint, format, and deploy scripts."
             ],
             keyFiles: [
@@ -1172,8 +1172,8 @@
             ],
             interfaces: ["corepack pnpm dev", "corepack pnpm build", "corepack pnpm test"],
             dependencies: [
-              "Node.js 24.18.0 LTS",
-              "pnpm 11.11.0",
+              "Node.js 24.19.0 LTS",
+              "pnpm 11.21.0",
               "TypeScript 6",
               "ESLint 10",
               "Prettier 3"
@@ -1291,9 +1291,10 @@
             name: "@impostor/worker Public API Router",
             type: "api",
             summary:
-              "Cloudflare Worker fetch handler that exposes room HTTP and WebSocket routes under /api/rooms.",
+              "Cloudflare Worker fetch handler that exposes readiness plus room HTTP and WebSocket routes under /api.",
             responsibilities: [
               "Handle CORS preflight requests.",
+              "Report Worker readiness without accessing runtime bindings.",
               "Match public /api/rooms routes.",
               "Create room codes and player ids.",
               "Forward room requests to the correct RoomDurableObject."
@@ -1306,6 +1307,7 @@
               "apps/worker/wrangler.jsonc"
             ],
             interfaces: [
+              "GET /api/health",
               "POST /api/rooms",
               "POST /api/rooms/:code/join",
               "GET /api/rooms/:code/socket"
@@ -1534,6 +1536,15 @@
           }
         ],
         endpoints: [
+          {
+            method: "GET",
+            path: "/api/health",
+            handler: "default.fetch(request, env)",
+            auth: "not_required",
+            request: "No body or runtime bindings required",
+            response: "200 JSON readiness response",
+            downstream: []
+          },
           {
             method: "POST",
             path: "/api/rooms",

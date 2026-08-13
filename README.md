@@ -27,8 +27,8 @@ docs           Product, architecture, runbook, cost, and ADR docs
 
 ## Requirements
 
-- Node.js 24.18.0 LTS (the repository supports Node.js 24.11.0 or newer in the 24.x line)
-- pnpm 11.11.0 via Corepack
+- Node.js 24.19.0 LTS (the repository supports Node.js 24.19.0 or newer in the 24.x line)
+- pnpm 11.21.0 via Corepack
 - Cloudflare account for deployment
 
 ## Local Development
@@ -105,6 +105,9 @@ pnpm build
 pnpm deps:audit
 pnpm test:e2e
 ```
+
+Playwright uses its bundled Chromium by default (`pnpm exec playwright install chromium`). To
+reuse an installed Google Chrome for a local run, set `PLAYWRIGHT_CHANNEL=chrome` for that command.
 
 `pnpm deps:audit` fails on high- or critical-severity advisories. See the
 [dependency maintenance guide](docs/dependency-maintenance.md) for the complete dependency

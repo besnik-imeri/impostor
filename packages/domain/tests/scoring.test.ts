@@ -9,28 +9,28 @@ function players(): PlayerProfile[] {
     createPlayer({
       id: "p1",
       nickname: "Alex",
-      avatar: "boy-1",
+      avatar: "pixel-panda",
       color: "#2563eb",
       now
     }),
     createPlayer({
       id: "p2",
       nickname: "Blair",
-      avatar: "girl-1",
+      avatar: "neon-ninja",
       color: "#dc2626",
       now
     }),
     createPlayer({
       id: "p3",
       nickname: "Casey",
-      avatar: "boy-2",
+      avatar: "cyber-fox",
       color: "#059669",
       now
     }),
     createPlayer({
       id: "p4",
       nickname: "Devon",
-      avatar: "girl-2",
+      avatar: "8-bit-bunny",
       color: "#d97706",
       now
     })

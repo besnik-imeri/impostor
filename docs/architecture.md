@@ -44,6 +44,7 @@ The Worker exposes:
 - `POST /api/rooms`
 - `POST /api/rooms/:code/join`
 - `GET /api/rooms/:code/socket`
+- `GET /api/health`
 
 Each active room is owned by one Durable Object instance named by room code. The Durable Object is the only writer for room state.
 

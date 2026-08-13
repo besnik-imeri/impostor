@@ -120,8 +120,8 @@
       ],
       "internal_dependencies": [],
       "external_dependencies": [
-        "Node.js 24.18.0 LTS (>=24.11.0 <25)",
-        "pnpm 11.11.0",
+        "Node.js 24.19.0 LTS (>=24.19.0 <25)",
+        "pnpm 11.21.0",
         "TypeScript",
         "ESLint",
         "Prettier",
@@ -306,9 +306,10 @@
       "id": "worker-api",
       "name": "@impostor/worker Public API Router",
       "type": "api",
-      "summary": "Cloudflare Worker fetch handler that exposes room HTTP and WebSocket routes under /api/rooms.",
+      "summary": "Cloudflare Worker fetch handler that exposes a readiness check plus room HTTP and WebSocket routes under /api.",
       "responsibilities": [
         "Handle CORS preflight requests.",
+        "Report Worker readiness without accessing runtime bindings.",
         "Match public /api/rooms routes.",
         "Create room codes and player ids.",
         "Forward room create, join, and socket requests to the correct RoomDurableObject by room code.",
@@ -323,6 +324,7 @@
         "apps/worker/package.json"
       ],
       "public_interfaces": [
+        "GET /api/health",
         "POST /api/rooms",
         "POST /api/rooms/:code/join",
         "GET /api/rooms/:code/socket",
@@ -1164,6 +1166,17 @@
   ],
   "api_endpoints": [
     {
+      "method": "GET",
+      "path": "/api/health",
+      "handler": "default.fetch(request, env)",
+      "component": "worker-api",
+      "auth": "not_required",
+      "request": "No request body or runtime bindings required",
+      "response": "200 JSON: { status: 'ok' }",
+      "downstream_dependencies": [],
+      "evidence": ["apps/worker/src/index.ts", "apps/worker/tests/routes.test.ts"]
+    },
+    {
       "method": "POST",
       "path": "/api/rooms",
       "handler": "createRoom(request, env)",
@@ -1635,7 +1648,7 @@
   "constraints": [
     {
       "id": "node-pnpm-version",
-      "description": "Repository pins Node.js 24.18.0 LTS and pnpm 11.11.0 via Corepack.",
+      "description": "Repository pins Node.js 24.19.0 LTS and pnpm 11.21.0 via Corepack.",
       "evidence": ["package.json", ".node-version", "README.md", ".github/workflows/ci.yml"]
     },
     {

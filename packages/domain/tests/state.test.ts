@@ -21,7 +21,7 @@ function player(id: string, nickname: string, isHost = false) {
   return createPlayer({
     id,
     nickname,
-    avatar: "boy-1",
+    avatar: "pixel-panda",
     color: "#2563eb",
     isHost,
     now

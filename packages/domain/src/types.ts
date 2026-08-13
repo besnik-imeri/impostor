@@ -3,7 +3,22 @@ export type RoomPhase = "lobby" | "round" | "results" | "finished" | "cancelled"
 export type PlayerRole = "impostor" | "non-impostor";
 export type ResolutionReason = "accusation" | "timer";
 export type RoundOutcome = "impostor-caught" | "impostor-got-away";
-export type AvatarId =
+export type ArcadeAvatarId =
+  | "8-bit-bunny"
+  | "arcade-owl"
+  | "astro-koala"
+  | "cyber-fox"
+  | "foggy-frog"
+  | "glitch-cat"
+  | "master-monkey"
+  | "neon-ninja"
+  | "pixel-panda"
+  | "punky-penguin"
+  | "retro-rex"
+  | "robo-shark"
+  | "turbo-monkey";
+
+export type LegacyAvatarId =
   | "boy-1"
   | "boy-2"
   | "boy-3"
@@ -28,6 +43,8 @@ export type AvatarId =
   | "girl-10"
   | "girl-11"
   | "girl-12";
+
+export type AvatarId = ArcadeAvatarId | LegacyAvatarId;
 
 export type PlayerColor = `#${string}`;
 

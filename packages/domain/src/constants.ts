@@ -1,4 +1,4 @@
-import type { AvatarId, PlayerColor } from "./types";
+import type { ArcadeAvatarId, PlayerColor } from "./types";
 
 export const PRODUCT_NAME = "Impostor";
 
@@ -25,31 +25,20 @@ export const DEFAULT_ROOM_CONFIG = {
   roundDurationSeconds: ROUND_LIMITS.defaultDurationSeconds
 } as const;
 
-export const AVATARS: readonly AvatarId[] = [
-  "boy-1",
-  "boy-2",
-  "boy-3",
-  "boy-4",
-  "boy-5",
-  "boy-6",
-  "boy-7",
-  "boy-8",
-  "boy-9",
-  "boy-10",
-  "boy-11",
-  "boy-12",
-  "girl-1",
-  "girl-2",
-  "girl-3",
-  "girl-4",
-  "girl-5",
-  "girl-6",
-  "girl-7",
-  "girl-8",
-  "girl-9",
-  "girl-10",
-  "girl-11",
-  "girl-12"
+export const AVATARS: readonly ArcadeAvatarId[] = [
+  "8-bit-bunny",
+  "arcade-owl",
+  "astro-koala",
+  "cyber-fox",
+  "foggy-frog",
+  "glitch-cat",
+  "master-monkey",
+  "neon-ninja",
+  "pixel-panda",
+  "punky-penguin",
+  "retro-rex",
+  "robo-shark",
+  "turbo-monkey"
 ];
 
 export const PLAYER_COLORS: readonly PlayerColor[] = [

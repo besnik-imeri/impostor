@@ -1,6 +1,8 @@
 dist
 coverage
 node_modules
+.pnpm-store
 playwright-report
 test-results
 apps/worker/.wrangler
+impostor_arcade_experiment

@@ -1,5 +1,6 @@
 import type { AvatarId, PlayerColor } from "@impostor/domain";
 import type { CSSProperties } from "react";
+import { getAvatarAssetPath } from "../lib/avatars";
 
 interface AvatarMarkProps {
   avatar: AvatarId;
@@ -13,7 +14,7 @@ export function AvatarMark({ avatar, color, size = "md" }: AvatarMarkProps) {
       className={`avatar-mark avatar-mark-${size}`}
       style={{ "--avatar-color": color } as CSSProperties}
     >
-      <img alt="" aria-hidden="true" src={`/avatars/${avatar}.svg`} />
+      <img alt="" aria-hidden="true" src={getAvatarAssetPath(avatar)} />
     </span>
   );
 }
